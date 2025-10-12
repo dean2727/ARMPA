@@ -7,7 +7,6 @@ from tenacity import (
     wait_random_exponential,  # type: ignore
 )
 import openai
-import os
 
 MessageRole = Literal["system", "user", "assistant"]
 
@@ -25,41 +24,6 @@ def message_to_str(message: Message) -> str:
 def messages_to_str(messages: List[Message]) -> str:
     return "\n".join([message_to_str(message) for message in messages])
 
-# Together API configuration
-api_key = os.getenv("TOGETHER_API_KEY", "")
-if api_key != "":
-    openai.api_key = api_key
-    openai.api_base = "https://api.together.xyz/v1"
-else:
-    print("Warning: TOGETHER_API_KEY is not set")
-    
-# Fallback to OpenAI if Together key not available
-if api_key == "":
-    api_key = os.getenv("OPENAI_API_KEY", "")
-    if api_key != "":
-        openai.api_key = api_key
-        print("Using OpenAI API as fallback")
-    else:
-        print("Warning: Neither TOGETHER_API_KEY nor OPENAI_API_KEY is set")
-
-# Together API model mapping
-TOGETHER_MODELS = {
-    "gpt-3.5-turbo": "meta-llama/Llama-2-7b-chat-hf",
-    "gpt-4": "meta-llama/Llama-2-70b-chat-hf", 
-    "gpt-3.5-turbo-16k": "meta-llama/Llama-2-7b-chat-hf",
-    "claude-3": "anthropic/claude-3-sonnet",
-    "llama-2-7b": "meta-llama/Llama-2-7b-chat-hf",
-    "llama-2-13b": "meta-llama/Llama-2-13b-chat-hf", 
-    "llama-2-70b": "meta-llama/Llama-2-70b-chat-hf",
-    "codellama-7b": "codellama/CodeLlama-7b-Instruct-hf",
-    "codellama-13b": "codellama/CodeLlama-13b-Instruct-hf",
-    "codellama-34b": "codellama/CodeLlama-34b-Instruct-hf",
-    "mistral-7b": "mistralai/Mistral-7B-Instruct-v0.1",
-    "mixtral-8x7b": "mistralai/Mixtral-8x7B-Instruct-v0.1",
-    "qwen-7b": "Qwen/Qwen-7B-Chat",
-    "qwen-14b": "Qwen/Qwen-14B-Chat",
-    "qwen-32b": "Qwen/Qwen-32B-Chat"
-}
 
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def gpt_completion(
@@ -95,11 +59,8 @@ def gpt_chat(
     temperature: float = 0.0,
     num_comps=1,
 ) -> Union[List[str], str]:
-    # Map OpenAI model names to Together API models
-    together_model = TOGETHER_MODELS.get(model, model)
-    
     response = openai.ChatCompletion.create(
-        model=together_model,
+        model=model,
         messages=[dataclasses.asdict(message) for message in messages],
         max_tokens=max_tokens,
         temperature=temperature,
