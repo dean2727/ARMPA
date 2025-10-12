@@ -20,7 +20,7 @@ import logging
 import random
  
 completion_tokens = prompt_tokens = 0
-openai.api_key = os.environ["OPENAI_API_KEY"]
+#openai.api_key = os.environ["OPENAI_API_KEY"]
 
 import requests
 from bs4 import BeautifulSoup
@@ -405,94 +405,6 @@ def collect_trajectory(node):
 
 
 
-def lats_search(args, task, idx, iterations=50, to_print=True):
-    global gpt
-    global failed_trajectories
-    global reflection_map
-    action = 'reset'
-    gpt = partial(gpt, model=args.backend, temperature=args.temperature)
-
-    logging.basicConfig(filename=args.log, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', filemode='a')
-    #env.sessions[idx] = {'session': idx, 'page_type': 'init'}
-    x = env.step(idx, action)[0]
-    if to_print:
-        print(idx, x)
-    root = Node(state=None, question=x)
-    root.env_state = copy.deepcopy(env.sessions)
-    #print("ROOTSTATE", root.env_state)
-    all_nodes = []
-    failed_trajectories = []
-    reflection_map = []
-    terminal_nodes = []
-
-    for i in range(iterations):
-        logging.info(f"Iteration {i + 1}...")
-        node = select_node(root)
-
-        while node is None or (node.is_terminal and node.reward != 1):
-            logging.info(f"Need to backtrack or terminal node with reward 0 found at iteration {i + 1}, reselecting...")
-            node = select_node(root)
-        
-        if node is None:
-            logging.info("All paths lead to terminal nodes with reward 0. Ending search.")
-            break
-
-        if node.is_terminal and node.reward == 1:
-            logging.info(f"Terminal node with reward 1 found at iteration {i + 1}")
-            return node.state, node.value, all_nodes, node.reward, node.em
-        
-        expand_node(node, args, task, idx)
-
-        while node.is_terminal:
-            logging.info(f"Depth limit node found at iteration {i + 1}, reselecting...")
-            node = select_node(root)
-            expand_node(node, args, task, idx)
-
-        val = evaluate_node(node, args, task, idx)
-        # Simulation or rollout
-        terminal_node = rollout(max(node.children, key=lambda child: child.value), args, task, idx, max_depth=15)
-        terminal_nodes.append(terminal_node)
-
-        if terminal_node.reward == 1:
-            logging.info("Successful trajectory found")
-            logging.info(f"Terminal node with reward 1 found at iteration {i + 1}")
-            return terminal_node.state, terminal_node.value, terminal_node.reward, terminal_node.em
-        # Backpropagate reward
-        backpropagate(terminal_node, terminal_node.reward)
-        
-        #all_nodes.extend(collect_all_nodes(root))
-        #value = evaluate_node(node, args, task, idx)
-        #backpropagate(node, value)
-        all_nodes = [(node, node.reward) for node in collect_all_nodes(root)]
-        print("searching all nodes...")
-        # Check for terminal nodes with a reward of 1
-        terminal_nodes_with_reward_1 = [node for node, reward in all_nodes if node.is_terminal and node.reward == 1]
-
-        if terminal_nodes_with_reward_1:
-            logging.info("Successful trajectory found")
-            logging.info(f"Terminal node with reward 1 found at iteration {i + 1}")
-            best_node = max(terminal_nodes_with_reward_1, key=lambda x: x.reward)
-            return best_node.state, best_node.value, best_node.reward, best_node.em
-    
-        for j, (node, value) in enumerate(all_nodes):
-            logging.info(f"Node {j+1}: {str(node)}")
-
-        node_strings = '\n'.join(str(node[0]) for node in all_nodes)
-        logging.info(f"State of all_nodes after iteration {i + 1}:\n{node_strings}")
-
-
-
-    #best_child = max(root.children, key=lambda x: x.reward)
-    all_nodes_list = collect_all_nodes(root)
-    all_nodes_list.extend(terminal_nodes)
-    best_child = max(all_nodes_list, key=lambda x: x.reward)
-    failed_trajectories = []
-    print("best value found", best_child.reward)
-    if best_child.reward == 1:
-        logging.info("Successful trajectory found")
-    else:
-        logging.info("Unsuccessful/Partially Successful trajectory found")
-    return best_child.state, best_child.value, best_child.reward, best_child.em
 
 def simple_search(args, task, idx, iterations=8, max_depth=15, to_print=True):
     # Initialization
