@@ -3,6 +3,7 @@ from typing import Any
 
 from llms import (
     generate_from_huggingface_completion,
+    generate_from_litellm_completion,
     generate_from_openai_chat_completion,
     generate_from_openai_completion,
     lm_config,
@@ -51,6 +52,16 @@ def call_llm(
             top_p=lm_config.gen_config["top_p"],
             stop_sequences=lm_config.gen_config["stop_sequences"],
             max_new_tokens=lm_config.gen_config["max_new_tokens"],
+        )
+    elif lm_config.provider == "litellm":
+        assert isinstance(prompt, str)
+        response = generate_from_litellm_completion(
+            prompt=prompt,
+            model=lm_config.model,
+            temperature=lm_config.gen_config["temperature"],
+            max_tokens=lm_config.gen_config["max_tokens"],
+            system_prompt=lm_config.gen_config.get("system_prompt"),
+            stop_sequences=lm_config.gen_config.get("stop_sequences"),
         )
     else:
         raise NotImplementedError(
