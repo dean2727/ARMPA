@@ -121,9 +121,7 @@ class PromptAgent(Agent):
         self.temperature = temperature
         self.use_litellm = use_litellm
         
-        # Load prompt template if using litellm
-        if self.use_litellm and self.instruction_path:
-            self.prompt_template = self._load_prompt_template()
+        self.prompt_template = self._load_prompt_template()
 
     def set_action_set_tag(self, tag: str) -> None:
         self.action_set_tag = tag
