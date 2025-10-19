@@ -10,7 +10,6 @@ from typing import Any
 
 import aiolimiter
 import openai
-import openai.error
 from tqdm.asyncio import tqdm_asyncio
 
 
@@ -20,7 +19,7 @@ def retry_with_exponential_backoff(  # type: ignore
     exponential_base: float = 2,
     jitter: bool = True,
     max_retries: int = 3,
-    errors: tuple[Any] = (openai.error.RateLimitError,),
+    errors: tuple[Any] = (openai.RateLimitError,),
 ):
     """Retry a function with exponential backoff."""
 

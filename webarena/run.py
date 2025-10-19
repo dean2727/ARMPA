@@ -19,6 +19,7 @@ from agent import (
     construct_agent,
 )
 from agent.prompts import *
+from llms import generate_from_litellm_completion
 from browser_env import (
     Action,
     ActionTypes,
@@ -91,7 +92,8 @@ def config() -> argparse.Namespace:
     parser.add_argument("--max_steps", type=int, default=30)
 
     # agent config
-    parser.add_argument("--agent_type", type=str, default="prompt")
+    parser.add_argument("--agent_type", type=str, default="prompt", 
+                       choices=["prompt", "teacher_forcing", "litellm"])
     parser.add_argument(
         "--instruction_path",
         type=str,
@@ -321,6 +323,8 @@ def test(
                 obs, _, terminated, _, info = env.step(action)
                 state_info = {"observation": obs, "info": info}
                 trajectory.append(state_info)
+                
+                logger.info(f"Step completed - Action: {action_str}, Terminated: {terminated}, Obs length: {len(obs) if obs else 0}")
 
                 if terminated:
                     # add a action place holder
@@ -347,7 +351,7 @@ def test(
                     Path(args.result_dir) / "traces" / f"{task_id}.zip"
                 )
 
-        except openai.error.OpenAIError as e:
+        except openai.OpenAIError as e:
             logger.info(f"[OpenAI Error] {repr(e)}")
         except Exception as e:
             logger.info(f"[Unhandled Error] {repr(e)}]")

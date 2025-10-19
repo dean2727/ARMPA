@@ -1,19 +1,18 @@
 import argparse
-from typing import Any
+from typing import Any, Union, List, Dict
 
-from llms import (
-    generate_from_huggingface_completion,
-    generate_from_litellm_completion,
+from .providers.hf_utils import generate_from_huggingface_completion
+from .providers.litellm_utils import generate_from_litellm_completion
+from .providers.openai_utils import (
     generate_from_openai_chat_completion,
     generate_from_openai_completion,
-    lm_config,
 )
 
-APIInput = str | list[Any] | dict[str, Any]
+APIInput = Union[str, List[Any], Dict[str, Any]]
 
 
 def call_llm(
-    lm_config: lm_config.LMConfig,
+    lm_config: Any,  # TODO: Define proper LMConfig type
     prompt: APIInput,
 ) -> str:
     response: str

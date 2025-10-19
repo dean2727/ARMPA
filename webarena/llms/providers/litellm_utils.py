@@ -7,7 +7,6 @@ from tenacity import (
     wait_random_exponential,
 )
 
-
 def generate_from_litellm_completion(
     prompt: str,
     model: str,
@@ -40,43 +39,21 @@ def generate_from_litellm_completion(
     if system_prompt:
         messages.insert(0, {"content": system_prompt, "role": "system"})
     
-    response = _make_completion_request(
-        model=model,
-        messages=messages,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        stop=stop_sequences,
-    )
-    
+    # Call completion directly like the working LiteLLMModel does
+    try:
+        response = completion(
+            model=model,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            stop=stop_sequences,
+        )
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
+    # Together AI returns text directly in choices[0].text
     return response["choices"][0]["message"]["content"]
 
 
-@retry(wait=wait_random_exponential(min=1, max=10), stop=stop_after_attempt(3))
-def _make_completion_request(
-    model: str,
-    messages: List[Dict[str, str]],
-    temperature: float,
-    max_tokens: int,
-    stop: List[str] | None = None,
-) -> Dict:
-    """
-    Makes a completion request with retry logic.
-    
-    Args:
-        model (str): The model name to use for completion.
-        messages (List[Dict[str, str]]): The messages to send to the model.
-        temperature (float): The temperature for text generation.
-        max_tokens (int): Maximum number of tokens to generate.
-        stop (List[str]): Optional list of stop sequences.
-        
-    Returns:
-        Dict: The response from the model.
-    """
-    response = completion(
-        model=model,
-        messages=messages,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        stop=stop,
-    )
-    return response

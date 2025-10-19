@@ -1,5 +1,6 @@
 import asyncio
-
+import sys
+print("Python executable:", sys.executable)
 from .actions import (
     Action,
     ActionParsingError,

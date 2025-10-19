@@ -1,6 +1,10 @@
 # websites domain
 import os
 
+# load dotenv
+from dotenv import load_dotenv
+load_dotenv()
+
 REDDIT = os.environ.get("REDDIT", "")
 SHOPPING = os.environ.get("SHOPPING", "")
 SHOPPING_ADMIN = os.environ.get("SHOPPING_ADMIN", "")
