@@ -19,7 +19,6 @@ from agent import (
     construct_agent,
 )
 from agent.prompts import *
-from llms import generate_from_litellm_completion
 from browser_env import (
     Action,
     ActionTypes,
@@ -299,12 +298,17 @@ def test(
                     action = create_stop_action(f"Early stop: {stop_info}")
                 else:
                     try:
-                        action = agent.next_action(
+                        response = agent.next_action(
                             trajectory, intent, meta_data=meta_data
                         )
+                        action = response["action"]
+                        mean_entropy = response["mean_entropy"]
+                        action_decision_entropy = response["action_decision_entropy"]
                     except ValueError as e:
                         # get the error message
                         action = create_stop_action(f"ERROR: {str(e)}")
+
+                # TODO: (if memory enabled), add entropy-triggered memory recall
 
                 trajectory.append(action)
 
@@ -345,13 +349,10 @@ def test(
 
             scores.append(score)
 
-            # Write the trajectory to a JSON file (pretty format)
-            # set "image" to "" for StateInfo steps only
-            for step in trajectory:
-                if "observation" in step:
-                    step["observation"]["image"] = ""
-            with open("trajectory.json", "w") as f:
-                json.dump(trajectory, f, indent=4)
+            # Write the trajectory to a pickle file
+            import pickle
+            with open("trajectory.pkl", "wb") as f:
+                pickle.dump(trajectory, f)
 
             if score == 1:
                 logger.info(f"[Result] (PASS) {config_file}")

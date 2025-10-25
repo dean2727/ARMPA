@@ -1,6 +1,6 @@
 import argparse
 import json
-from typing import Any
+from typing import Any, Dict, Union
 
 import tiktoken
 from beartype import beartype
@@ -34,7 +34,7 @@ class Agent:
 
     def next_action(
         self, trajectory: Trajectory, intent: str, meta_data: Any
-    ) -> Action:
+    ) -> Union[Action, Dict[str, Any]]:
         """Predict the next action given the observation"""
         raise NotImplementedError
 
@@ -114,6 +114,7 @@ class PromptAgent(Agent):
         model: str = "together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct",
         temperature: float = 0.0,
         use_litellm: bool = False,
+        verbose: bool = False,
     ) -> None:
         super().__init__()
         self.lm_config = lm_config
@@ -123,7 +124,7 @@ class PromptAgent(Agent):
         self.model = model
         self.temperature = temperature
         self.use_litellm = use_litellm
-        
+        self.verbose = verbose
         self.prompt_template = self._load_prompt_template()
 
     def set_action_set_tag(self, tag: str) -> None:
@@ -162,15 +163,16 @@ class PromptAgent(Agent):
     @beartype
     def next_action(
         self, trajectory: Trajectory, intent: str, meta_data: dict[str, Any]
-    ) -> Action:
+    ) -> Union[Action, Dict[str, Any]]:
         if self.use_litellm:
             # Use litellm with Python prompt files
+            # NOTE: this will return a JSON including entropy as well
             return self._next_action_litellm(trajectory, intent, meta_data)
         else:
             # Use original prompt constructor method
             return self._next_action_original(trajectory, intent, meta_data)
 
-    def _next_action_litellm(self, trajectory: Trajectory, intent: str, meta_data: dict[str, Any]) -> Action:
+    def _next_action_litellm(self, trajectory: Trajectory, intent: str, meta_data: dict[str, Any]) -> Dict[str, Any]:
         """Litellm-based action generation using Python prompt files"""
         # Get the latest observation
         latest_state = trajectory[-1]
@@ -195,7 +197,8 @@ class PromptAgent(Agent):
         full_prompt += prompt + "\n\n"
         full_prompt += "Action:"
 
-        print(f"Full prompt: {full_prompt}")
+        if self.verbose:
+            print(f"Full prompt: {full_prompt}")
 
         # Generate action using litellm with retry logic
         n = 0
@@ -205,10 +208,15 @@ class PromptAgent(Agent):
                 model=self.model,
                 temperature=self.temperature,
             )
+            answer = response["answer"]
+            mean_entropy = response["mean_entropy"]
+            action_decision_entropy = response["action_decision_entropy"]
             
             # Extract the action
-            action_str = self._extract_action(response)
-            print(f"Action from the LLM: {action_str}")
+            action_str = self._extract_action(answer)
+
+            if self.verbose:
+                print(f"Action from the LLM: {action_str}")
             
             n += 1
             try:
@@ -220,21 +228,29 @@ class PromptAgent(Agent):
                 else:
                     raise ValueError(f"Unknown action type {self.action_set_tag}")
                 
-                action["raw_prediction"] = response
+                action["raw_prediction"] = answer
                 
                 # Extract reasoning by removing the parsed action from the raw prediction
-                llm_reasoning = response.replace(action_str, "").strip()
+                llm_reasoning = answer.replace(action_str, "").strip()
                 action["llm_reasoning"] = llm_reasoning
                 
-                return action
+                return {
+                    "action": action,
+                    "mean_entropy": mean_entropy,
+                    "action_decision_entropy": action_decision_entropy
+                }
                 
             except ActionParsingError as e:
                 if n >= 3:  # max retry limit
                     action = create_none_action()
-                    action["raw_prediction"] = response
+                    action["raw_prediction"] = answer
                     # For error cases, the reasoning is the full response
-                    action["llm_reasoning"] = response
-                    return action
+                    action["llm_reasoning"] = answer
+                    return {
+                        "action": action,
+                        "mean_entropy": None,
+                        "action_decision_entropy": None
+                    }
                 else:
                     print(f"Action parsing error (attempt {n}): {e}")
                     # Continue to retry
@@ -306,7 +322,7 @@ def construct_agent(args: argparse.Namespace) -> Agent:
     elif args.agent_type == "litellm":
         # Use PromptAgent with litellm for Python prompt files
         model = getattr(args, 'model', 'together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct')
-        temperature = getattr(args, 'temperature', 0.0)
+        temperature = getattr(args, 'temperature', 0.7)
         agent = PromptAgent(
             action_set_tag=args.action_set_tag,
             instruction_path=args.instruction_path,

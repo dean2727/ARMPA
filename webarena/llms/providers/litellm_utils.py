@@ -1,11 +1,55 @@
 import os
-from typing import List, Dict, Union
+from typing import List, Dict, Any
 from litellm import completion
 from tenacity import (
     retry,
     stop_after_attempt,
     wait_random_exponential,
 )
+import numpy as np
+
+def entropy_from_top_logprobs(top_logprobs):
+    """
+    top_logprobs: list[TopLogprob] for a single generated token.
+    """
+    logps = np.array([t.logprob for t in top_logprobs])
+    # Convert logprobs → probs safely
+    probs = np.exp(logps - np.max(logps))  # numerical stability
+    probs /= probs.sum()
+    # Compute entropy (nats)
+    return -np.sum(probs * np.log(probs + 1e-9))
+
+
+def get_mean_and_action_entropies(logprobs_data):
+    action_decision_entropy = None
+    entropies = []
+
+    # TODO: Confirm that tokens indeed look like the following actions when we're on the action generation (e.g. go_back is not 2 tokens)
+    actions = [
+        'click',
+        'type',
+        'hover',
+        'press',
+        'scroll',
+        'new_tab',
+        'tab_focus',
+        'close_tab',
+        'goto',
+        'go_back',
+        'go_forward',
+        'stop'
+    ]
+
+    for token_info in logprobs_data:
+        h = entropy_from_top_logprobs(token_info.top_logprobs)
+        entropies.append(h)
+
+        if token_info.token in actions:
+            action_decision_entropy = h
+
+    mean_entropy = np.mean(entropies)
+
+    return mean_entropy, action_decision_entropy
 
 def generate_from_litellm_completion(
     prompt: str,
@@ -14,7 +58,7 @@ def generate_from_litellm_completion(
     max_tokens: int = 4096,
     system_prompt: str = None,
     stop_sequences: List[str] | None = None,
-) -> str:
+) -> Dict[str, Any]:
     """
     Generate text completion using LiteLLM with retry logic.
     
@@ -47,14 +91,22 @@ def generate_from_litellm_completion(
             temperature=temperature,
             max_tokens=max_tokens,
             stop=stop_sequences,
+            logprobs=True,
+			top_logprobs=5
         )
     except Exception as e:
         print(f"Error: {e}")
         return None
 
+    answer = response["choices"][0]["message"]["content"]
+    logprobs_data = response["choices"][0]["logprobs"]["content"]
+    mean_entropy, action_decision_entropy = get_mean_and_action_entropies(logprobs_data)
 
-    # Together AI returns text directly in choices[0].text
-    return response["choices"][0]["message"]["content"]
+    return {
+        "answer": answer,
+        "mean_entropy": mean_entropy,
+        "action_decision_entropy": action_decision_entropy
+    }
 
 
 
