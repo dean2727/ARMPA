@@ -144,6 +144,9 @@ def config() -> argparse.Namespace:
     parser.add_argument("--test_start_idx", type=int, default=0)
     parser.add_argument("--test_end_idx", type=int, default=1000)
 
+    # Use memories
+    parser.add_argument("--with_memory", action="store_true", help="Store memories (from Qdrant)post-trajectory and store them per-step")
+
     # logging related
     parser.add_argument("--result_dir", type=str, default="")
     args = parser.parse_args()
@@ -159,6 +162,7 @@ def config() -> argparse.Namespace:
 
     return args
 
+MEMORY_COLLECTION_NAME = "webarena"
 
 def early_stop(
     trajectory: Trajectory, max_steps: int, thresholds: dict[str, int]
@@ -341,10 +345,20 @@ def test(
 
             scores.append(score)
 
+            # Write the trajectory to a JSON file (pretty format)
+            # set "image" to "" for StateInfo steps only
+            for step in trajectory:
+                if "observation" in step:
+                    step["observation"]["image"] = ""
+            with open("trajectory.json", "w") as f:
+                json.dump(trajectory, f, indent=4)
+
             if score == 1:
                 logger.info(f"[Result] (PASS) {config_file}")
             else:
                 logger.info(f"[Result] (FAIL) {config_file}")
+
+                # If memory enabled, store the trajectory
 
             if args.save_trace_enabled:
                 env.save_trace(
@@ -353,6 +367,8 @@ def test(
 
         except openai.OpenAIError as e:
             logger.info(f"[OpenAI Error] {repr(e)}")
+            # Count OpenAI errors as failures
+            scores.append(0)
         except Exception as e:
             logger.info(f"[Unhandled Error] {repr(e)}]")
             import traceback
@@ -362,11 +378,21 @@ def test(
                 f.write(f"[Config file]: {config_file}\n")
                 f.write(f"[Unhandled Error] {repr(e)}\n")
                 f.write(traceback.format_exc())  # write stack trace to file
+            
+            # Count unhandled errors as failures
+            scores.append(0)
 
         render_helper.close()
 
     env.close()
-    logger.info(f"Average score: {sum(scores) / len(scores)}")
+    
+    # Handle case where no scores were recorded
+    if len(scores) == 0:
+        logger.info("No tasks completed - no scores to average")
+    else:
+        average_score = sum(scores) / len(scores)
+        logger.info(f"Average score: {average_score:.3f} ({len(scores)} tasks completed)")
+        logger.info(f"Success rate: {sum(1 for s in scores if s == 1) / len(scores) * 100:.1f}%")
 
 
 def prepare(args: argparse.Namespace) -> None:

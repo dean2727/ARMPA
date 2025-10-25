@@ -106,6 +106,7 @@ class Action(TypedDict):
     pw_code: str
     answer: str
     raw_prediction: str  # raw prediction from the model
+    llm_reasoning: str  # reasoning part of the raw prediction (without the parsed action)
 
 
 @beartype
@@ -442,6 +443,7 @@ def create_none_action() -> Action:
         "direction": "",
         "answer": "",
         "raw_prediction": "",
+        "llm_reasoning": "",
     }
 
 

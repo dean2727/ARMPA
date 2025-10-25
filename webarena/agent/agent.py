@@ -76,6 +76,9 @@ class TeacherForcingAgent(Agent):
                 cur_action = create_none_action()
 
             cur_action["raw_prediction"] = a_str
+            # Extract reasoning by removing the parsed action from the raw prediction
+            llm_reasoning = a_str.replace(cur_action.get("element_id", ""), "").strip()
+            cur_action["llm_reasoning"] = llm_reasoning
             actions.append(cur_action)
 
         self.actions: list[Action] = actions
@@ -192,28 +195,50 @@ class PromptAgent(Agent):
         full_prompt += prompt + "\n\n"
         full_prompt += "Action:"
 
-        # Generate action using litellm
-        response = generate_from_litellm_completion(
-            prompt=full_prompt,
-            model=self.model,
-            temperature=self.temperature,
-        )
-        
-        # Extract the action
-        action_str = self._extract_action(response)
+        print(f"Full prompt: {full_prompt}")
 
-        print(f"Action from the LLM: {action_str}")
-        
-        # Create the action
-        if self.action_set_tag == "id_accessibility_tree":
-            action = create_id_based_action(action_str)
-        elif self.action_set_tag == "playwright":
-            action = create_playwright_action(action_str)
-        else:
-            raise ValueError(f"Unknown action type {self.action_set_tag}")
-        
-        action["raw_prediction"] = response
-        return action
+        # Generate action using litellm with retry logic
+        n = 0
+        while True:
+            response = generate_from_litellm_completion(
+                prompt=full_prompt,
+                model=self.model,
+                temperature=self.temperature,
+            )
+            
+            # Extract the action
+            action_str = self._extract_action(response)
+            print(f"Action from the LLM: {action_str}")
+            
+            n += 1
+            try:
+                # Create the action
+                if self.action_set_tag == "id_accessibility_tree":
+                    action = create_id_based_action(action_str)
+                elif self.action_set_tag == "playwright":
+                    action = create_playwright_action(action_str)
+                else:
+                    raise ValueError(f"Unknown action type {self.action_set_tag}")
+                
+                action["raw_prediction"] = response
+                
+                # Extract reasoning by removing the parsed action from the raw prediction
+                llm_reasoning = response.replace(action_str, "").strip()
+                action["llm_reasoning"] = llm_reasoning
+                
+                return action
+                
+            except ActionParsingError as e:
+                if n >= 3:  # max retry limit
+                    action = create_none_action()
+                    action["raw_prediction"] = response
+                    # For error cases, the reasoning is the full response
+                    action["llm_reasoning"] = response
+                    return action
+                else:
+                    print(f"Action parsing error (attempt {n}): {e}")
+                    # Continue to retry
+                    continue
 
     def _next_action_original(self, trajectory: Trajectory, intent: str, meta_data: dict[str, Any]) -> Action:
         """Original prompt constructor method"""
@@ -242,11 +267,17 @@ class PromptAgent(Agent):
                         f"Unknown action type {self.action_set_tag}"
                     )
                 action["raw_prediction"] = response
+                # Extract reasoning by removing the parsed action from the raw prediction
+                parsed_response = self.prompt_constructor.extract_action(response)
+                llm_reasoning = response.replace(parsed_response, "").strip()
+                action["llm_reasoning"] = llm_reasoning
                 break
             except ActionParsingError as e:
                 if n >= lm_config.gen_config["max_retry"]:
                     action = create_none_action()
                     action["raw_prediction"] = response
+                    # For error cases, the reasoning is the full response
+                    action["llm_reasoning"] = response
                     break
 
         return action

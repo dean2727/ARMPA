@@ -116,14 +116,15 @@ python run.py \
   --model gpt-3.5-turbo \
   --result_dir <your_result_dir>
 
-# For Together API
+# For Together API, with memories
 python run.py \
   --instruction_path agent/prompts/raw/p_direct_id_actree_2s_no_na.py \
   --agent_type litellm \
   --model together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct \
   --temperature 0.0 \
   --test_start_idx 0 \
-  --test_end_idx 1
+  --test_end_idx 1 \
+  --with_memory 
 ```
 This script will run the first example with GPT-3.5 reasoning agent. The trajectory will be saved in `<your_result_dir>/0.html`
 
