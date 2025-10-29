@@ -17,11 +17,6 @@ def test_litellm():
     # Check if API key is set
     api_key = os.getenv("TOGETHER_API_KEY")
     print(f"TOGETHER_API_KEY is set: {'YES' if api_key else 'NO'}")
-    if api_key:
-        print(f"API Key starts with: {api_key[:10]}...")
-        # LiteLLM expects TOGETHERAI_API_KEY (without underscore)
-        os.environ["TOGETHERAI_API_KEY"] = api_key
-        print("Set TOGETHERAI_API_KEY for LiteLLM")
     
     # Simple test prompt
     #test_prompt = """You are a helpful assistant. Please respond with a simple greeting."""

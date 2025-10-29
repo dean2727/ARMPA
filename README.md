@@ -1,0 +1,29 @@
+## Set-up
+
+(Assumes a Mac with apple silicon)
+
+An AWS EC2 instance was set up to run ARMPA WebArena, following the README from `webarena/environment_docker/`. The current EC2 is accessible at `http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com`. 
+
+1. Create a .env at the root of the project with these variables:
+
+```bash
+TOGETHER_API_KEY=<YOUR TOGETHER API KEY>
+HUGGINGFACE_HUB_TOKEN=<YOUR HF TOKEN>
+SHOPPING=http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7770
+SHOPPING_ADMIN=http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7780/admin
+REDDIT=http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:9999
+GITLAB=http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:8023
+MAP=http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:3000
+WIKIPEDIA=http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:8888/wikipedia_en_all_maxi_2022-05/A/User:The_other_Kiwix_guy/Landing
+HOMEPAGE=PASS
+QDRANT_URL=<URL>
+QDRANT_API_KEY=<API KEY>
+```
+
+2. Set up virtual environment: `uv sync`
+3. `source .venv/bin/activate`
+4. `source .env`
+5. `cd webarena/`
+6. `export PYTHONPATH="<PATH/TO/PROJECT>:<PATH/TO/PROJECT>/webarena:$PYTHONPATH"`
+7. Run an example: `python run.py --instruction_path agent/prompts/raw/p_direct_id_actree_2s_no_na.py --agent_type litellm --model together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct --temperature 0.0 --test_start_idx 1 --test_end_idx 2 --with_memory`
+    - Remove `--with_memory` to not include memory
