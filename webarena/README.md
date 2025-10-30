@@ -117,6 +117,8 @@ python run.py \
   --result_dir <your_result_dir>
 
 # For Together API, with memories
+# store_memory will store trajectory steps (cues -> action + other metadata)
+# get_memory will recall 
 python run.py \
   --instruction_path agent/prompts/raw/p_direct_id_actree_2s_no_na.py \
   --agent_type litellm \
@@ -124,7 +126,9 @@ python run.py \
   --temperature 0.0 \
   --test_start_idx 0 \
   --test_end_idx 1 \
-  --with_memory 
+  --store_memory \
+  --get_memory \
+  --num_memories 10
 ```
 This script will run the first example with GPT-3.5 reasoning agent. The trajectory will be saved in `<your_result_dir>/0.html`
 

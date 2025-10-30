@@ -139,15 +139,26 @@ class PromptAgent(Agent):
             exec(content, {}, local_namespace)
             return local_namespace['prompt']
 
-    def _construct_prompt(self, observation, url, objective, previous_action):
+    def _construct_prompt(self, observation, url, objective, previous_action, past_memories=None):
         """Construct the prompt using the template"""
         template = self.prompt_template["template"]
-        return template.format(
-            observation=observation,
-            url=url,
-            objective=objective,
-            previous_action=previous_action
-        )
+        # Default value if past_memories is not provided
+        if past_memories is None:
+            past_memories = "None"
+        
+        # Check if template requires past_memories
+        format_args = {
+            "observation": observation,
+            "url": url,
+            "objective": objective,
+            "previous_action": previous_action
+        }
+        
+        # Only include past_memories if the template has the placeholder
+        if "{past_memories}" in template:
+            format_args["past_memories"] = past_memories
+        
+        return template.format(**format_args)
 
     def _extract_action(self, response):
         """Extract action from LLM response using backticks"""
@@ -162,17 +173,17 @@ class PromptAgent(Agent):
 
     @beartype
     def next_action(
-        self, trajectory: Trajectory, intent: str, meta_data: dict[str, Any]
+        self, trajectory: Trajectory, intent: str, meta_data: dict[str, Any], past_memories=None
     ) -> Union[Action, Dict[str, Any]]:
         if self.use_litellm:
             # Use litellm with Python prompt files
             # NOTE: this will return a JSON including entropy as well
-            return self._next_action_litellm(trajectory, intent, meta_data)
+            return self._next_action_litellm(trajectory, intent, meta_data, past_memories)
         else:
             # Use original prompt constructor method
             return self._next_action_original(trajectory, intent, meta_data)
 
-    def _next_action_litellm(self, trajectory: Trajectory, intent: str, meta_data: dict[str, Any]) -> Dict[str, Any]:
+    def _next_action_litellm(self, trajectory: Trajectory, intent: str, meta_data: dict[str, Any], past_memories=None) -> Dict[str, Any]:
         """Litellm-based action generation using Python prompt files"""
         # Get the latest observation
         latest_state = trajectory[-1]
@@ -192,7 +203,7 @@ class PromptAgent(Agent):
                 full_prompt += f"Action: {example[1]}\n\n"
         
         # Add the current observation template
-        prompt = self._construct_prompt(observation, url, objective, previous_action)
+        prompt = self._construct_prompt(observation, url, objective, previous_action, past_memories)
         full_prompt += "Now make prediction given the observation:\n\n"
         full_prompt += prompt + "\n\n"
         full_prompt += "Action:"
@@ -329,6 +340,7 @@ def construct_agent(args: argparse.Namespace) -> Agent:
             model=model,
             temperature=temperature,
             use_litellm=True,
+            verbose=args.verbose,
         )
     else:
         raise NotImplementedError(

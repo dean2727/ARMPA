@@ -88,6 +88,7 @@ def config() -> argparse.Namespace:
     )
     parser.add_argument("--viewport_width", type=int, default=1280)
     parser.add_argument("--viewport_height", type=int, default=720)
+    parser.add_argument("--verbose", action="store_true", help="Verbose output for PromptAgent prompts/actions")
     parser.add_argument("--save_trace_enabled", action="store_true")
     parser.add_argument("--sleep_after_execution", type=float, default=0.0)
 
@@ -149,6 +150,8 @@ def config() -> argparse.Namespace:
     # NEW: memories
     parser.add_argument("--store_memory", action="store_true", help="Store memories (from Qdrant)post-trajectory and store them per-step")
     parser.add_argument("--get_memory", action="store_true", help="Get memories (from Qdrant)post-trajectory and store them per-step")
+    # numebr of memories to retrieve
+    parser.add_argument("--num_memories", type=int, default=3, help="Number of memories to retrieve")
 
     # logging related
     parser.add_argument("--result_dir", type=str, default="")
@@ -290,9 +293,13 @@ def test(
 
             agent.reset(config_file)
             trajectory: Trajectory = []
+            # Stores (observation summary, action taken, reason for action) tuples
+            observations_actions_reasonings = []
             obs, info = env.reset(options={"config_file": config_file})
             state_info: StateInfo = {"observation": obs, "info": info}
             trajectory.append(state_info)
+
+            observation_summary = memory_manager.summarize_webarena_observation(obs["text"])
 
             meta_data = {"action_history": ["None"]}
             while True:
@@ -303,9 +310,21 @@ def test(
                 if early_stop_flag:
                     action = create_stop_action(f"Early stop: {stop_info}")
                 else:
+                    formatted_memories = None
+                    if args.get_memory:
+                        memories = memory_manager.cue_based_recall(
+                            summarized_obs=observation_summary,
+                            goal=intent,
+                            top_k=args.num_memories
+                        )
+                        formatted_memories = memory_manager.get_formatted_memories_for_prompt(memories)
+
+                        # TODO: use recall agent to give us back the best memories (use entropy)
+
+                        print(f"[Retrieved and formatted {len(formatted_memories)} memories]")
                     try:
                         response = agent.next_action(
-                            trajectory, intent, meta_data=meta_data
+                            trajectory, intent, meta_data=meta_data, past_memories=formatted_memories
                         )
                         action = response["action"]
                         mean_entropy = response["mean_entropy"]
@@ -313,8 +332,6 @@ def test(
                     except ValueError as e:
                         # get the error message
                         action = create_stop_action(f"ERROR: {str(e)}")
-
-                # TODO: (if memory enabled), add entropy-triggered memory recall
 
                 trajectory.append(action)
 
@@ -326,6 +343,7 @@ def test(
                     if isinstance(agent, PromptAgent)
                     else None,
                 )
+                observations_actions_reasonings.append((observation_summary, action_str, action.get('llm_reasoning')))
                 render_helper.render(
                     action, state_info, meta_data, args.render_screenshot
                 )
@@ -336,13 +354,16 @@ def test(
 
                 obs, _, terminated, _, info = env.step(action)
                 state_info = {"observation": obs, "info": info}
+                observation_summary = memory_manager.summarize_webarena_observation(obs["text"])
                 trajectory.append(state_info)
                 
                 logger.info(f"Step completed - Action: {action_str}, Terminated: {terminated}, Obs length: {len(obs) if obs else 0}")
 
                 if terminated:
                     # add a action place holder
-                    trajectory.append(create_stop_action(""))
+                    c = create_stop_action("")
+                    trajectory.append(c)
+                    observations_actions_reasonings.append((observation_summary, str(c['action_type']), ""))
                     break
 
             evaluator = evaluator_router(config_file)
@@ -363,28 +384,28 @@ def test(
             # If memory enabled, store the trajectory
             if args.store_memory:
                 logger.info(f"[Storing trajectory to memory...]")
-                observations_actions_reasonings = memory_manager.store_trajectory(
-                    trajectory=trajectory,
+                memory_manager.store_trajectory(
+                    observations_actions_reasonings=observations_actions_reasonings,
                     goal=intent,
                     success=score == 1,
-                    prompt_constructor=agent.prompt_constructor
                 )
-                # store the array in runs/<timestamp>/trajectory/
-                run_dir = Path(getattr(args, "run_dir", "runs"))
-                (run_dir / "trajectory").mkdir(parents=True, exist_ok=True)
-                with open(run_dir / "trajectory" / f"{task_id}.pkl", "wb") as f:
-                    pickle.dump(observations_actions_reasonings, f)
+            # TODO: in RL training, use the LLM judge to give per-step trajectory rewards, in conjunction with number of steps and success or failure
 
-                # append results to runs/<timestamp>/results.csv with columns: success,steps
-                actions = trajectory[1::2]  # type: ignore[assignment]
-                steps = sum(1 for a in actions if a["action_type"] != ActionTypes.STOP)
-                results_csv = run_dir / "results.csv"
-                if not results_csv.exists():
-                    with open(results_csv, "w") as rf:
-                        rf.write("success,steps\n")
-                with open(results_csv, "a") as rf:
-                    rf.write(f"{1 if score == 1 else 0},{steps}\n")
-                logger.info("[Stored trajectory and updated results]")
+            # store the array in runs/<timestamp>/trajectories/
+            run_dir = Path(getattr(args, "run_dir", "runs"))
+            (run_dir / "trajectories").mkdir(parents=True, exist_ok=True)
+            with open(run_dir / "trajectories" / f"{task_id}.pkl", "wb") as f:
+                pickle.dump(observations_actions_reasonings, f)
+
+            # append results to runs/<timestamp>/results.csv with columns: success,steps
+            actions = trajectory[1::2]  # type: ignore[assignment]
+            steps = sum(1 for a in actions if a["action_type"] != ActionTypes.STOP)
+            results_csv = run_dir / "results.csv"
+            if not results_csv.exists():
+                with open(results_csv, "w") as rf:
+                    rf.write("success,steps\n")
+            with open(results_csv, "a") as rf:
+                rf.write(f"{1 if score == 1 else 0},{steps}\n")
 
             if args.save_trace_enabled:
                 env.save_trace(
@@ -448,7 +469,7 @@ def prepare(args: argparse.Namespace) -> None:
     # create a new run directory under runs/ with date-time, plus trajectory subfolder
     run_timestamp = time.strftime('%Y%m%d%H%M%S', time.localtime())
     run_dir = Path("runs") / run_timestamp
-    (run_dir / "trajectory").mkdir(parents=True, exist_ok=True)
+    (run_dir / "trajectories").mkdir(parents=True, exist_ok=True)
     # attach to args for downstream use
     args.run_dir = str(run_dir)
 

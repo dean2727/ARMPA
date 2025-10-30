@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as rest
 from litellm import embedding, completion
@@ -37,7 +37,30 @@ class MemoryManager:
                 raise e
 
     # ---------- STORE ---------- #
-    def store_trajectory(self, trajectory: List[Dict[str, Any]], goal: str, success: bool, prompt_constructor: PromptConstructor = None):
+    def store_trajectory(self, observations_actions_reasonings: List[Tuple[str, str, str]], goal: str, success: bool):
+        points = []
+        step_id = 0
+
+        # Iterate over (observation -> next action) pairs
+        for i in tqdm(range(0, len(observations_actions_reasonings))):
+            observation_summary, action_taken, reason_for_action = observations_actions_reasonings[i]
+
+            # Store this (cue -> next action) mapping
+            point = self._get_trajectory_step_point(
+                goal=goal,
+                obs_text=observation_summary,
+                action_taken=action_taken,
+                reason_for_action=reason_for_action,
+                success=success,
+                step_id=step_id,
+            )
+            points.append(point)
+            step_id += 1
+
+        self.client.upsert(collection_name=self.collection_name, points=points)
+        print(f"✅ Stored {len(points)} step memories.")
+
+    def store_trajectory_testing(self, trajectory: List[Dict[str, Any]], goal: str, success: bool, prompt_constructor: PromptConstructor = None):
         points = []
         observations_actions_reasonings = []
         step_id = 0
@@ -48,7 +71,7 @@ class MemoryManager:
             next_action_item = trajectory[i + 1]
 
             # Summarize the current observation (cue)
-            summarized_obs = self._summarize_obs(observation_item["observation"]["text"])
+            summarized_obs = self.summarize_webarena_observation(observation_item["observation"]["text"])
 
             # Describe the next action taken after this observation
             next_action_text = get_action_description(
@@ -73,7 +96,6 @@ class MemoryManager:
 
         self.client.upsert(collection_name=self.collection_name, points=points)
         print(f"✅ Stored {len(points)} step memories.")
-        return observations_actions_reasonings
 
     def _get_trajectory_step_point(self, goal: str, obs_text: str, action_taken: str, 
                               reason_for_action: str, success: bool, step_id: int) -> rest.PointStruct:
@@ -98,9 +120,8 @@ class MemoryManager:
         return rest.PointStruct(id=metadata["memory_id"], vector=cue_emb, payload=metadata)
 
     # ---------- RETRIEVE ---------- #
-    def cue_based_recall(self, current_obs: Dict[str, Any], goal: str, top_k: int = 3):
-        summarized_current_obs = self._summarize_obs(current_obs["observation"]["text"])
-        cue_emb = self._create_cue_embedding(goal, summarized_current_obs, last_action=None)
+    def cue_based_recall(self, summarized_obs: str, goal: str, top_k: int = 3):
+        cue_emb = self._create_cue_embedding(goal, summarized_obs, last_action=None)
 
         results = self.client.search(
             collection_name=self.collection_name,
@@ -119,7 +140,6 @@ class MemoryManager:
                     "goal": m["goal"],
                     "obs_summary": m["obs_summary"],
                     "action_taken": m["action_taken"],  # Corrected key from "action"
-                    #"reason_for_action": m["reason_for_action"],
                     "success": m["success"],
                     "strength": m["strength"],
                     "timestamp": m["timestamp"],
@@ -128,6 +148,25 @@ class MemoryManager:
 
         return recalls
 
+    def get_formatted_memories_for_prompt(self, mems: List[Dict[str, Any]]):
+        formatted_mems = []
+        for m in mems:
+            # If there is an 'obs_summary' field, then we know it's a cue-action mapping
+            if 'obs_summary' in m:
+                success = "success" if m['success'] else "failure"
+                pointer = "(DONT DO AGAIN)" if m['success'] else ""
+                formatted_mems.append(f"""Last time I was in a similar situation, I tried doing the corresponding action, and it ultimately led to {success}:
+
+        WHAT I SAW:
+        {m['obs_summary']}
+
+        WHAT I DID{pointer}:
+        {m['action_taken']}
+        """)
+            else: # Learned skills -> just take the embedding (TODO)
+                ...
+        
+        return formatted_mems
 
     def _create_cue_embedding(self, goal: str, current_obs: str, last_action: str = None):
         # A cue consists of <goal> | <what I last did> | <what I now see (summarized)>
@@ -243,7 +282,7 @@ class MemoryManager:
                 raise e
 
     # ---------- UTILITIES ---------- #
-    def _summarize_obs(self, obs_text: str) -> str:
+    def summarize_webarena_observation(self, obs_text: str) -> str:
         query = f"""Summarize the following web observation according to the instructions:
         {obs_text}
         """
