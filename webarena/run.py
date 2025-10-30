@@ -8,6 +8,7 @@ import random
 import subprocess
 import tempfile
 import time
+import pickle
 from pathlib import Path
 
 import openai
@@ -34,6 +35,8 @@ from browser_env.helper_functions import (
     get_action_description,
 )
 from evaluation_harness import evaluator_router
+
+from memory.manager import MemoryManager
 
 LOG_FOLDER = "log_files"
 Path(LOG_FOLDER).mkdir(parents=True, exist_ok=True)
@@ -143,8 +146,9 @@ def config() -> argparse.Namespace:
     parser.add_argument("--test_start_idx", type=int, default=0)
     parser.add_argument("--test_end_idx", type=int, default=1000)
 
-    # Use memories
-    parser.add_argument("--with_memory", action="store_true", help="Store memories (from Qdrant)post-trajectory and store them per-step")
+    # NEW: memories
+    parser.add_argument("--store_memory", action="store_true", help="Store memories (from Qdrant)post-trajectory and store them per-step")
+    parser.add_argument("--get_memory", action="store_true", help="Get memories (from Qdrant)post-trajectory and store them per-step")
 
     # logging related
     parser.add_argument("--result_dir", type=str, default="")
@@ -227,6 +231,8 @@ def test(
     scores = []
     max_steps = args.max_steps
 
+    memory_manager = MemoryManager(collection_name=MEMORY_COLLECTION_NAME)
+    
     early_stop_thresholds = {
         "parsing_failure": args.parsing_failure_th,
         "repeating_action": args.repeating_action_failure_th,
@@ -349,17 +355,36 @@ def test(
 
             scores.append(score)
 
-            # Write the trajectory to a pickle file
-            import pickle
-            with open("trajectory.pkl", "wb") as f:
-                pickle.dump(trajectory, f)
-
             if score == 1:
                 logger.info(f"[Result] (PASS) {config_file}")
             else:
                 logger.info(f"[Result] (FAIL) {config_file}")
 
-                # If memory enabled, store the trajectory
+            # If memory enabled, store the trajectory
+            if args.store_memory:
+                logger.info(f"[Storing trajectory to memory...]")
+                observations_actions_reasonings = memory_manager.store_trajectory(
+                    trajectory=trajectory,
+                    goal=intent,
+                    success=score == 1,
+                    prompt_constructor=agent.prompt_constructor
+                )
+                # store the array in runs/<timestamp>/trajectory/
+                run_dir = Path(getattr(args, "run_dir", "runs"))
+                (run_dir / "trajectory").mkdir(parents=True, exist_ok=True)
+                with open(run_dir / "trajectory" / f"{task_id}.pkl", "wb") as f:
+                    pickle.dump(observations_actions_reasonings, f)
+
+                # append results to runs/<timestamp>/results.csv with columns: success,steps
+                actions = trajectory[1::2]  # type: ignore[assignment]
+                steps = sum(1 for a in actions if a["action_type"] != ActionTypes.STOP)
+                results_csv = run_dir / "results.csv"
+                if not results_csv.exists():
+                    with open(results_csv, "w") as rf:
+                        rf.write("success,steps\n")
+                with open(results_csv, "a") as rf:
+                    rf.write(f"{1 if score == 1 else 0},{steps}\n")
+                logger.info("[Stored trajectory and updated results]")
 
             if args.save_trace_enabled:
                 env.save_trace(
@@ -419,6 +444,29 @@ def prepare(args: argparse.Namespace) -> None:
     # log the log file
     with open(os.path.join(result_dir, "log_files.txt"), "a+") as f:
         f.write(f"{LOG_FILE_NAME}\n")
+
+    # create a new run directory under runs/ with date-time, plus trajectory subfolder
+    run_timestamp = time.strftime('%Y%m%d%H%M%S', time.localtime())
+    run_dir = Path("runs") / run_timestamp
+    (run_dir / "trajectory").mkdir(parents=True, exist_ok=True)
+    # attach to args for downstream use
+    args.run_dir = str(run_dir)
+
+    # write run metadata about memory usage
+    store = bool(getattr(args, "store_memory", False))
+    retrieve = bool(getattr(args, "get_memory", False))
+    if store and retrieve:
+        mode = "store_and_retrieve"
+    elif store:
+        mode = "store"
+    elif retrieve:
+        mode = "retrieve"
+    else:
+        mode = "none"
+    with open(run_dir / "metadata.txt", "w") as mf:
+        mf.write(f"mode={mode}\n")
+        mf.write(f"store_memory={str(store).lower()}\n")
+        mf.write(f"get_memory={str(retrieve).lower()}\n")
 
 
 def get_unfinished(config_files: list[str], result_dir: str) -> list[str]:

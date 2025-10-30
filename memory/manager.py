@@ -4,6 +4,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models as rest
 from litellm import embedding, completion
 import uuid
+from tqdm import tqdm
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -13,14 +14,14 @@ from webarena.browser_env.helper_functions import get_action_description
 from webarena.agent.prompts import PromptConstructor
 
 class MemoryManager:
-    def __init__(self, collection_name: str = "trajectory_learnings"):
+    def __init__(self, collection_name: str = "test"):
         self.embed_model = "together_ai/BAAI/bge-large-en-v1.5"
-        self.summarize_model = "together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct" # qwen-3.5-8b-instruct
+        self.summarize_model = "together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct"
 
         self.client = QdrantClient(
             os.getenv("QDRANT_URL"),
             api_key=os.getenv("QDRANT_API_KEY"),
-        )  # replace with host="your-qdrant-url", api_key="..." if using cloud
+        )
         self.collection_name = collection_name
 
         # Create collection if not exists
@@ -42,7 +43,7 @@ class MemoryManager:
         step_id = 0
 
         # Iterate over (observation -> next action) pairs
-        for i in range(0, len(trajectory) - 1, 2):
+        for i in tqdm(range(0, len(trajectory) - 1, 2)):
             observation_item = trajectory[i]
             next_action_item = trajectory[i + 1]
 
@@ -97,7 +98,7 @@ class MemoryManager:
         return rest.PointStruct(id=metadata["memory_id"], vector=cue_emb, payload=metadata)
 
     # ---------- RETRIEVE ---------- #
-    def recall(self, current_obs: Dict[str, Any], goal: str, top_k: int = 3):
+    def cue_based_recall(self, current_obs: Dict[str, Any], goal: str, top_k: int = 3):
         summarized_current_obs = self._summarize_obs(current_obs["observation"]["text"])
         cue_emb = self._create_cue_embedding(goal, summarized_current_obs, last_action=None)
 
