@@ -15,4 +15,5 @@ GUIDELINES:
 5. **Summarize in 2-4 sentences total**.
     - The summary should reflect what's visually and functionally on the page.
     - Write in natural language, *not* bullet points or JSON.
+6. DO NOT include any URLs in your response, including the URL of the current web page.
 """
