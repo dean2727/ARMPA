@@ -1,4 +1,10 @@
 """Script to run end-to-end evaluation on the benchmark"""
+import warnings
+
+# Suppress all beartype warnings before any other imports
+warnings.filterwarnings("ignore", message=".*PEP 484 type hint.*deprecated by PEP 585.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="beartype")
+
 import argparse
 import glob
 import json
@@ -6,6 +12,7 @@ import logging
 import os
 import random
 import subprocess
+import sys
 import tempfile
 import time
 from pathlib import Path
@@ -264,7 +271,7 @@ def test(
                     # subprocess to renew the cookie
                     subprocess.run(
                         [
-                            "python",
+                            sys.executable,
                             "browser_env/auto_login.py",
                             "--auth_folder",
                             temp_dir,

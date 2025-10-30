@@ -3,9 +3,14 @@ import argparse
 import glob
 import os
 import time
+import warnings
 from concurrent.futures import ThreadPoolExecutor
 from itertools import combinations
 from pathlib import Path
+
+# Suppress all beartype warnings
+warnings.filterwarnings("ignore", message=".*PEP 484 type hint.*deprecated by PEP 585.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="beartype")
 
 from playwright.sync_api import sync_playwright
 
