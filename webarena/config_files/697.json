@@ -5,7 +5,7 @@
   "task_id": 697,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
   "intent_template": "Add a simple product named {{product}} with {{stock}} in stock, available in size {{size}} and color {{color}}, priced at ${{price}}",
   "instantiation_dict": {
@@ -23,7 +23,7 @@
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7780/admin/catalog/product",
+    "reference_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/catalog/product",
     "program_html": [
       {
         "url": "last",

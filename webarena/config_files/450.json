@@ -5,7 +5,7 @@
   "task_id": 450,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
   "intent_template": "set the homepage URL on my GitLab profile to {{url}}",
   "instantiation_dict": {
@@ -21,7 +21,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:8023/byteblaze",
+        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/byteblaze",
         "locator": "document.querySelector('.profile-header [itemprop=\"url\"]').outerText",
         "required_contents": {
           "exact_match": "a11yproject.contributor.me"

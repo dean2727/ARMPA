@@ -7,6 +7,9 @@ import re
 import subprocess
 import time
 
+from dotenv import load_dotenv
+load_dotenv()
+
 SLEEP = 1.5
 
 # Check if environment variables are set, if not provide helpful error message

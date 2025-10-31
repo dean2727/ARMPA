@@ -5,7 +5,7 @@
   "task_id": 770,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
   "intent_template": "We've received {{quantity}}, update the inventory.",
   "instantiation_dict": {
@@ -21,14 +21,14 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/1836/",
+        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/1836/",
         "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
         "required_contents": {
           "exact_match": "112"
         }
       },
       {
-        "url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/1838/",
+        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/1838/",
         "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
         "required_contents": {
           "exact_match": "156"

@@ -209,7 +209,10 @@ class PromptAgent(Agent):
         full_prompt += "Action:"
 
         if self.verbose:
-            print(f"Full prompt: {full_prompt}")
+            # write to file append
+            with open("full_prompts.txt", "a") as f:
+                f.write(full_prompt + "\n\n\n\n")
+            #print(f"Full prompt: {full_prompt}")
 
         # Generate action using litellm with retry logic
         n = 0

@@ -12,6 +12,7 @@ import pickle
 from pathlib import Path
 
 import openai
+from tqdm import tqdm
 
 from agent import (
     Agent,
@@ -58,6 +59,8 @@ formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 console_handler.setFormatter(formatter)
 file_handler.setFormatter(formatter)
 
+RANDOM_SEED = 43
+random.seed(RANDOM_SEED)
 
 def config() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -146,6 +149,8 @@ def config() -> argparse.Namespace:
     # example config
     parser.add_argument("--test_start_idx", type=int, default=0)
     parser.add_argument("--test_end_idx", type=int, default=1000)
+    parser.add_argument("--num_tasks", type=int, default=None, 
+                       help="Number of config files to randomly sample and run. If specified, overrides test_start_idx and test_end_idx")
 
     # NEW: memories
     parser.add_argument("--store_memory", action="store_true", help="Store memories (from Qdrant)post-trajectory and store them per-step")
@@ -254,7 +259,12 @@ def test(
         sleep_after_execution=args.sleep_after_execution,
     )
 
-    for config_file in config_file_list:
+    for config_file in tqdm(config_file_list, desc="Processing config files"):
+        # temp
+        # with open(config_file) as f:
+        #     _c = json.load(f)
+        #     if _c["task_id"] not in [524, 717, 800]:
+        #         continue
         try:
             render_helper = RenderHelper(
                 config_file, args.result_dir, args.action_set_tag
@@ -343,7 +353,10 @@ def test(
                     if isinstance(agent, PromptAgent)
                     else None,
                 )
-                observations_actions_reasonings.append((observation_summary, action_str, action.get('llm_reasoning')))
+
+                if args.store_memory:
+                    observations_actions_reasonings.append((observation_summary, action_str, action.get('llm_reasoning')))
+
                 render_helper.render(
                     action, state_info, meta_data, args.render_screenshot
                 )
@@ -363,7 +376,8 @@ def test(
                     # add a action place holder
                     c = create_stop_action("")
                     trajectory.append(c)
-                    observations_actions_reasonings.append((observation_summary, str(c['action_type']), ""))
+                    if args.store_memory:
+                        observations_actions_reasonings.append((observation_summary, str(c['action_type']), ""))
                     break
 
             evaluator = evaluator_router(config_file)
@@ -393,9 +407,10 @@ def test(
 
             # store the array in runs/<timestamp>/trajectories/
             run_dir = Path(getattr(args, "run_dir", "runs"))
-            (run_dir / "trajectories").mkdir(parents=True, exist_ok=True)
-            with open(run_dir / "trajectories" / f"{task_id}.pkl", "wb") as f:
-                pickle.dump(observations_actions_reasonings, f)
+            if args.store_memory:
+                (run_dir / "trajectories").mkdir(parents=True, exist_ok=True)
+                with open(run_dir / "trajectories" / f"{task_id}.pkl", "wb") as f:
+                    pickle.dump(observations_actions_reasonings, f)
 
             # append results to runs/<timestamp>/results.csv with columns: success,steps
             actions = trajectory[1::2]  # type: ignore[assignment]
@@ -403,9 +418,9 @@ def test(
             results_csv = run_dir / "results.csv"
             if not results_csv.exists():
                 with open(results_csv, "w") as rf:
-                    rf.write("success,steps\n")
+                    rf.write("task,success,steps\n")
             with open(results_csv, "a") as rf:
-                rf.write(f"{1 if score == 1 else 0},{steps}\n")
+                rf.write(f"{intent},{1 if score == 1 else 0},{steps}\n")
 
             if args.save_trace_enabled:
                 env.save_trace(
@@ -516,11 +531,25 @@ if __name__ == "__main__":
     args.sleep_after_execution = 2.0
     prepare(args)
 
-    test_file_list = []
-    st_idx = args.test_start_idx
-    ed_idx = args.test_end_idx
-    for i in range(st_idx, ed_idx):
-        test_file_list.append(f"config_files/{i}.json")
+    # Get all available config files
+    config_dir = Path("config_files")
+    all_config_files = sorted([str(config_dir / f) for f in os.listdir(config_dir) 
+                               if f.endswith(".json") and os.path.isfile(config_dir / f)])
+    
+    # If num_tasks is specified, randomly sample files. Otherwise, use start/end indices
+    if args.num_tasks is not None:
+        num_tasks = min(args.num_tasks, len(all_config_files))
+        test_file_list = random.sample(all_config_files, num_tasks)
+        logger.info(f"Randomly selected {len(test_file_list)} config files from {len(all_config_files)} available")
+    else:
+        # Use start/end index approach
+        st_idx = args.test_start_idx
+        ed_idx = args.test_end_idx
+        test_file_list = []
+        for i in range(st_idx, ed_idx):
+            test_file_list.append(f"config_files/{i}.json")
+        logger.info(f"Using indices {st_idx} to {ed_idx} ({len(test_file_list)} config files)")
+    
     if "debug" not in args.result_dir:
         test_file_list = get_unfinished(test_file_list, args.result_dir)
 

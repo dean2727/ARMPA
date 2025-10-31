@@ -5,7 +5,7 @@
   "task_id": 666,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:8023/primer/design",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/primer/design",
   "geolocation": null,
   "intent_template": "Submit a request to merge {{source_branch}} branch into {{target_branch}} branch, assign {{reviewer}} as the reviewer",
   "instantiation_dict": {
@@ -21,7 +21,7 @@
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:8023/primer/design/-/merge_requests",
+    "reference_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/primer/design/-/merge_requests",
     "program_html": [
       {
         "url": "last",

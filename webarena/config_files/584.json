@@ -5,7 +5,7 @@
   "task_id": 584,
   "require_login": true,
   "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:9999",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
   "intent_template": "Create a new forum named {{name}}, with a description of {{description}}, and include {{sidebar_list}} in the sidebar?",
   "instantiation_dict": {
@@ -26,7 +26,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:9999/f/Karaoke",
+        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:9999/f/Karaoke",
         "locator": "document.querySelector(\"#forum_description\").value",
         "required_contents": {
           "must_include": [
@@ -35,7 +35,7 @@
         }
       },
       {
-        "url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:9999/f/Karaoke",
+        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:9999/f/Karaoke",
         "locator": "document.querySelector(\"#forum_sidebar\").value",
         "required_contents": {
           "must_include": [
