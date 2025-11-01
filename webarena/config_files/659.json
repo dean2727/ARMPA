@@ -5,7 +5,7 @@
   "task_id": 659,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
   "intent_template": "Create an issue in {{repo}} repo with title \"{{issue}}\". Assign the issue to {{account}}. Set due date to be {{due}}",
   "instantiation_dict": {
@@ -22,7 +22,7 @@
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:8023/byteblaze/empathy-prompts/-/issues",
+    "reference_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/byteblaze/empathy-prompts/-/issues",
     "program_html": [
       {
         "url": "last",

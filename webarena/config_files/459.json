@@ -5,7 +5,7 @@
   "task_id": 459,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/237/",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/237/",
   "geolocation": null,
   "intent_template": "{{action}} the price of this product by {{amount}}",
   "instantiation_dict": {
@@ -22,7 +22,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/237/",
+        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/237/",
         "locator": "document.querySelector('[name=\"product[price]\"').value",
         "required_contents": {
           "exact_match": "62.10"

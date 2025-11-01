@@ -5,7 +5,7 @@
   "task_id": 466,
   "require_login": true,
   "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7770",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
   "intent_template": "Add {{product}} to my wish list",
   "instantiation_dict": {
@@ -21,7 +21,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7770/wishlist/",
+        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7770/wishlist/",
         "locator": "document.querySelector('.products-grid.wishlist').outerText",
         "required_contents": {
           "must_include": [

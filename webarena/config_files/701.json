@@ -5,7 +5,7 @@
   "task_id": 701,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
   "intent_template": "Draft a new marketing price rule for {{topic}} that offers {{rule}} for all customers",
   "instantiation_dict": {
@@ -20,7 +20,7 @@
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7780/admin/sales_rule/promo_quote",
+    "reference_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/sales_rule/promo_quote",
     "program_html": [
       {
         "url": "last",

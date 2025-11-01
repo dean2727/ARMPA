@@ -5,7 +5,7 @@
   "task_id": 473,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
   "intent_template": "Cancel order {{id}}",
   "instantiation_dict": {
@@ -21,7 +21,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7780/admin/sales/order/view/order_id/301/",
+        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/sales/order/view/order_id/301/",
         "locator": "document.querySelector(\"#order_status\").outerText",
         "required_contents": {
           "exact_match": "Canceled"

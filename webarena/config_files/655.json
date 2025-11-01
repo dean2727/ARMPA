@@ -5,7 +5,7 @@
   "task_id": 655,
   "require_login": true,
   "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7770",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
   "intent_template": "Fill the \"contact us\" form in the site for a refund on the {{product}} I bought, stating that it broke after just three days of use. Also, ensure to include the order number #{{order_id}} and the product SKU. Don't submit yet, I will check.",
   "instantiation_dict": {
@@ -20,7 +20,7 @@
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7770/contact",
+    "reference_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7770/contact",
     "program_html": [
       {
         "url": "last",

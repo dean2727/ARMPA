@@ -5,7 +5,7 @@
   "task_id": 23,
   "require_login": true,
   "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7770/3-pack-samsung-galaxy-s6-screen-protector-nearpow-tempered-glass-screen-protector-with-9h-hardness-crystal-clear-easy-bubble-free-installation-scratch-resist.html",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7770/3-pack-samsung-galaxy-s6-screen-protector-nearpow-tempered-glass-screen-protector-with-9h-hardness-crystal-clear-easy-bubble-free-installation-scratch-resist.html",
   "geolocation": null,
   "intent_template": "List out reviewers, if exist, who mention about {{description}}",
   "instantiation_dict": {

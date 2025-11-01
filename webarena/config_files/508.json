@@ -5,7 +5,7 @@
   "task_id": 508,
   "require_login": true,
   "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:7770",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
   "intent_template": "Buy the highest rated product from the {{product_category}} category within a budget {{dollar_value}}.",
   "instantiation_dict": {

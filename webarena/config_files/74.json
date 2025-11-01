@@ -5,7 +5,7 @@
   "task_id": 74,
   "require_login": true,
   "storage_state": null,
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:3000",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
   "intent_template": "Given the following locations, {{place_list}}, what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
   "instantiation_dict": {

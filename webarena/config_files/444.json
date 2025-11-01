@@ -5,7 +5,7 @@
   "task_id": 444,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:8023/byteblaze/gimmiethat.space",
+  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/byteblaze/gimmiethat.space",
   "geolocation": null,
   "intent_template": "Update the project site's title to \"{{title}}\"",
   "instantiation_dict": {
@@ -21,7 +21,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-3-128-25-196.us-east-2.compute.amazonaws.com:8023/byteblaze/gimmiethat.space/-/raw/main/index.html",
+        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/byteblaze/gimmiethat.space/-/raw/main/index.html",
         "locator": "",
         "required_contents": {
           "must_include": [

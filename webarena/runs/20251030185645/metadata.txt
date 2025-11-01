@@ -1,0 +1,3 @@
+mode=retrieve
+store_memory=false
+get_memory=true
