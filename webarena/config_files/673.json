@@ -6,7 +6,7 @@
   "task_id": 673,
   "require_login": true,
   "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7770",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
   "intent_template": "Gather the titles of {{product}} reviews with {{rating}} rating from OneStopShop, and post them in the games subreddit under the title \"real user feedback on {{product}}\"",
   "instantiation_dict": {
@@ -21,7 +21,7 @@
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:9999/f/gaming",
+    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:9999/f/gaming",
     "program_html": [
       {
         "url": "func:reddit_get_post_url('__last_url__')",

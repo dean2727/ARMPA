@@ -5,7 +5,7 @@
   "task_id": 523,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
   "intent_template": "Star the top {{number}} most stared repos in Gitlab",
   "instantiation_dict": {
@@ -21,7 +21,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/users/byteblaze/starred",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/users/byteblaze/starred",
         "locator": "",
         "required_contents": {
           "must_include": [

@@ -5,7 +5,7 @@
   "task_id": 520,
   "require_login": true,
   "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7770/magnetic-metal-stainless-steel-d-pads-kits-directional-pad-replacement-parts-for-xbox-one-elite-controller-elite-series-2-xbox-one-xbox-one-s-x-controller.html",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770/magnetic-metal-stainless-steel-d-pads-kits-directional-pad-replacement-parts-for-xbox-one-elite-controller-elite-series-2-xbox-one-xbox-one-s-x-controller.html",
   "geolocation": null,
   "intent_template": "Add this product to my wishlist",
   "instantiation_dict": {},
@@ -19,7 +19,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7770/wishlist/",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770/wishlist/",
         "locator": "document.querySelector('.products-grid.wishlist').outerText",
         "required_contents": {
           "must_include": [

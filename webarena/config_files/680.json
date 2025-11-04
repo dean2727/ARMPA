@@ -5,7 +5,7 @@
   "task_id": 680,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
   "intent_template": "Lookup orders that are {{status}}",
   "instantiation_dict": {
@@ -19,7 +19,7 @@
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/sales/order/",
+    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin/sales/order/",
     "program_html": [
       {
         "url": "last",

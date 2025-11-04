@@ -5,7 +5,7 @@
   "task_id": 418,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
   "intent_template": "Set my gitlab status as {{status}}.",
   "instantiation_dict": {
@@ -21,7 +21,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/byteblaze",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze",
         "locator": "document.querySelector('.cover-status').lastChild.textContent",
         "required_contents": {
           "exact_match": "Busy"

@@ -5,7 +5,7 @@
   "task_id": 177,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
   "intent_template": "Open my latest updated issue that has keyword \"{{keyword}}\" in its title to check if it is closed",
   "instantiation_dict": {
@@ -23,7 +23,7 @@
         "Yes, it is closed"
       ]
     },
-    "reference_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com/-/issues/719",
+    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com/-/issues/719",
     "program_html": [],
     "reference_answer_raw_annotation": "closed",
     "string_note": ""

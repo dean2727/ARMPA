@@ -5,7 +5,7 @@
   "task_id": 284,
   "require_login": true,
   "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7770",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
   "intent_template": "Show the least expensive {{product}} with a minimum storage capacity of {{min_storage}}.",
   "instantiation_dict": {
@@ -19,7 +19,7 @@
       "url_match"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7770/onlyeasy-over-the-door-shoe-storage-organizer-hanging-shoe-rack-holder-with-24-large-fabric-pockets-22-1-x-61-4-herringbone-grey-mxrodsb1p.html",
+    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770/onlyeasy-over-the-door-shoe-storage-organizer-hanging-shoe-rack-holder-with-24-large-fabric-pockets-22-1-x-61-4-herringbone-grey-mxrodsb1p.html",
     "program_html": [],
     "url_note": "GOLD in PRED"
   },

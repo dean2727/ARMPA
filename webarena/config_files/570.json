@@ -5,7 +5,7 @@
   "task_id": 570,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
   "intent_template": "Invite {{collaborator_account_list}} as collaborator to {{repo}} repo",
   "instantiation_dict": {
@@ -22,7 +22,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/byteblaze/timeit/-/project_members",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze/timeit/-/project_members",
         "locator": "",
         "required_contents": {
           "must_include": [

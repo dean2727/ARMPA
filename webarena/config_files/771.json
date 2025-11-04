@@ -5,7 +5,7 @@
   "task_id": 771,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
   "intent_template": "Approve the positive reviews to display in our store.",
   "instantiation_dict": {},
@@ -19,21 +19,21 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/352",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/352",
         "locator": "document.querySelector('[name=\"status_id\"').value",
         "required_contents": {
           "exact_match": "1"
         }
       },
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/349",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/349",
         "locator": "document.querySelector('[name=\"status_id\"').value",
         "required_contents": {
           "exact_match": "1"
         }
       },
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/347",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/347",
         "locator": "document.querySelector('[name=\"status_id\"').value",
         "required_contents": {
           "exact_match": "1"

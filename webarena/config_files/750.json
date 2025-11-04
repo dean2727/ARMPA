@@ -5,7 +5,7 @@
   "task_id": 750,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
   "intent_template": "Start a private project {{project_name}} with {{template}} template and add {{account_list}} as members",
   "instantiation_dict": {
@@ -23,7 +23,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/byteblaze/agi_index",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze/agi_index",
         "locator": "document.querySelector('.visibility-icon').getAttribute('title')",
         "required_contents": {
           "must_include": [
@@ -32,7 +32,7 @@
         }
       },
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/byteblaze/agi_index",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze/agi_index",
         "locator": "document.querySelector('.home-panel-description-markdown').outerText",
         "required_contents": {
           "must_include": [
@@ -41,7 +41,7 @@
         }
       },
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/byteblaze/agi_index/-/project_members",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze/agi_index/-/project_members",
         "locator": "",
         "required_contents": {
           "must_include": [

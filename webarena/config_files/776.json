@@ -5,7 +5,7 @@
   "task_id": 776,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
   "intent_template": "Delete all {{review_type}}",
   "instantiation_dict": {
@@ -21,7 +21,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/93",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/93",
         "locator": "",
         "required_contents": {
           "must_include": [
@@ -30,7 +30,7 @@
         }
       },
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/109",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/109",
         "locator": "",
         "required_contents": {
           "must_include": [

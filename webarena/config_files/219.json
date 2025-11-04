@@ -5,7 +5,7 @@
   "task_id": 219,
   "require_login": true,
   "storage_state": null,
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:3000",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
   "intent_template": "Show me the walking distance from nearby hotels to {{location}} that take at most {{n}} minutes?",
   "instantiation_dict": {
