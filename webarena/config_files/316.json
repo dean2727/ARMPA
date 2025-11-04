@@ -5,7 +5,7 @@
   "task_id": 316,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
   "intent_template": "List the {{attribute}} of the top 3 contributors to {{repo}} repo, ranked by the number of commits?",
   "instantiation_dict": {

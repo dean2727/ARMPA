@@ -5,7 +5,7 @@
   "task_id": 670,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/byteblaze/dotfiles",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze/dotfiles",
   "geolocation": null,
   "intent_template": "Open a new issue to discuss the implementation of {{feature}}",
   "instantiation_dict": {
@@ -19,7 +19,7 @@
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/byteblaze/dotfiles/-/issues",
+    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze/dotfiles/-/issues",
     "program_html": [
       {
         "url": "last",

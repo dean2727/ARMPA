@@ -5,7 +5,7 @@
   "task_id": 746,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
   "intent_template": "Create a new {{scope}} project \"llm_bulk_inference\" and add {{account_list}} as members",
   "instantiation_dict": {
@@ -22,7 +22,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/byteblaze/llm_bulk_inference",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze/llm_bulk_inference",
         "locator": "document.querySelector('.visibility-icon').getAttribute('title')",
         "required_contents": {
           "must_include": [
@@ -31,7 +31,7 @@
         }
       },
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:8023/byteblaze/llm_bulk_inference/-/project_members",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze/llm_bulk_inference/-/project_members",
         "locator": "",
         "required_contents": {
           "must_include": [

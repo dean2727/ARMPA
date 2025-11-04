@@ -10,11 +10,20 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from memory.prompts.storage import summarize_observation_prompt
-from webarena.browser_env.helper_functions import get_action_description
-from webarena.agent.prompts import PromptConstructor
+
+# Optional WebArena imports (only needed for specific methods)
+try:
+    from webarena.browser_env.helper_functions import get_action_description
+    from webarena.agent.prompts import PromptConstructor
+    WEBARENA_AVAILABLE = True
+except ImportError:
+    WEBARENA_AVAILABLE = False
+    get_action_description = None
+    PromptConstructor = None
 
 class MemoryManager:
     def __init__(self, collection_name: str = "test"):
+        # Use BGE-large for embeddings (1024 dims, 512 token limit)
         self.embed_model = "together_ai/BAAI/bge-large-en-v1.5"
         self.summarize_model = "together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct"
 
@@ -60,7 +69,7 @@ class MemoryManager:
         self.client.upsert(collection_name=self.collection_name, points=points)
         print(f"✅ Stored {len(points)} step memories.")
 
-    def store_trajectory_testing(self, trajectory: List[Dict[str, Any]], goal: str, success: bool, prompt_constructor: PromptConstructor = None):
+    def store_trajectory_testing(self, trajectory: List[Dict[str, Any]], goal: str, success: bool, prompt_constructor = None):
         points = []
         observations_actions_reasonings = []
         step_id = 0
@@ -170,7 +179,18 @@ class MemoryManager:
 
     def _create_cue_embedding(self, goal: str, current_obs: str, last_action: str = None):
         # A cue consists of <goal> | <what I last did> | <what I now see (summarized)>
-        cue_text = f"{goal} | {current_obs}{f' | {last_action}' if last_action else ''}"
+        # BGE-large has 512 token limit. Empirically: ~4 chars per token.
+        # Strategy: Truncate each field to ensure total stays under 512 tokens (~2000 chars total)
+        max_goal_chars = 400
+        max_obs_chars = 1200  # Observations are most important
+        max_action_chars = 300
+        
+        goal_trunc = goal[:max_goal_chars] if len(goal) > max_goal_chars else goal
+        obs_trunc = current_obs[:max_obs_chars] if len(current_obs) > max_obs_chars else current_obs
+        action_trunc = last_action[:max_action_chars] if last_action and len(last_action) > max_action_chars else last_action
+        
+        cue_text = f"{goal_trunc} | {obs_trunc}{f' | {action_trunc}' if action_trunc else ''}"
+        
         cue_emb = embedding(model=self.embed_model, input=[cue_text])
         cue_emb = cue_emb["data"][0]["embedding"]
         return cue_emb

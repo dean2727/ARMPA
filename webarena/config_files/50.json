@@ -5,7 +5,7 @@
   "task_id": 50,
   "require_login": true,
   "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7770",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
   "intent_template": "Today is 6/12/2023. Tell me how many fulfilled orders I have {{period}}, and the total amount of money I spent.",
   "instantiation_dict": {

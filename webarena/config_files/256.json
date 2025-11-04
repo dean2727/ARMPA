@@ -5,7 +5,7 @@
   "task_id": 256,
   "require_login": true,
   "storage_state": null,
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:3000",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
   "intent_template": "What is the {{information}} of {{location}}",
   "instantiation_dict": {

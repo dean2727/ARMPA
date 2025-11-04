@@ -5,7 +5,7 @@
   "task_id": 494,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
   "intent_template": "Notify {{name}} in their most recent pending order with message \"{{message}}\"",
   "instantiation_dict": {
@@ -22,7 +22,7 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-13-59-34-214.us-east-2.compute.amazonaws.com:7780/admin/sales/order/view/order_id/304/",
+        "url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin/sales/order/view/order_id/304/",
         "locator": "document.querySelector(\"#order_history_block\").querySelector(\".note-list\").firstElementChild.querySelector(\".note-list-comment\").outerText",
         "required_contents": {
           "exact_match": "Yo, your order will be shipped soon!"
