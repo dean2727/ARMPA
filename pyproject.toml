@@ -50,4 +50,5 @@ dependencies = [
     "types-tqdm>=4.67.0.20250809",
     "urllib3>=2.5.0",
     "yarl>=1.22.0",
+    "seaborn"
 ]

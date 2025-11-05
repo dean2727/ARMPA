@@ -2,7 +2,7 @@ import argparse
 import json
 from typing import Any, Dict, Union
 
-import tiktoken
+#import tiktoken
 from beartype import beartype
 
 from agent.prompts import *
