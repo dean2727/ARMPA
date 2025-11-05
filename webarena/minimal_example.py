@@ -10,6 +10,10 @@ import time
 from dotenv import load_dotenv
 load_dotenv()
 
+print("~~~~~~~~~~~~~~")
+print(os.environ["SHOPPING_ADMIN"])
+print("~~~~~~~~~~~~~~")
+
 SLEEP = 1.5
 
 # Check if environment variables are set, if not provide helpful error message
