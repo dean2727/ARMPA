@@ -111,7 +111,7 @@ class PromptAgent(Agent):
         lm_config: lm_config.LMConfig = None,
         prompt_constructor: PromptConstructor = None,
         instruction_path: str = None,
-        model: str = "together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct",
+        model: str = "together_ai/OpenAI/gpt-oss-120B",
         temperature: float = 0.0,
         use_litellm: bool = False,
         verbose: bool = False,
@@ -335,7 +335,7 @@ def construct_agent(args: argparse.Namespace) -> Agent:
         )
     elif args.agent_type == "litellm":
         # Use PromptAgent with litellm for Python prompt files
-        model = getattr(args, 'model', 'together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct')
+        model = getattr(args, 'model', 'together_ai/OpenAI/gpt-oss-120B')
         temperature = getattr(args, 'temperature', 0.7)
         agent = PromptAgent(
             action_set_tag=args.action_set_tag,

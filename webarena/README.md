@@ -122,7 +122,7 @@ python run.py \
 python run.py \
   --instruction_path agent/prompts/raw/p_direct_id_actree_2s_no_na.py \
   --agent_type litellm \
-  --model together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct \
+  --model together_ai/OpenAI/gpt-oss-120B \
   --temperature 0.0 \
   --test_start_idx 0 \
   --test_end_idx 1 \

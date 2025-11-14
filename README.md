@@ -26,5 +26,5 @@ QDRANT_API_KEY=<API KEY>
 5. `source .env`
 6. `cd webarena/`
 7. `export PYTHONPATH="<PATH/TO/PROJECT>:<PATH/TO/PROJECT>/webarena:$PYTHONPATH"`
-8. Run an example: `python run.py --instruction_path agent/prompts/raw/p_direct_id_actree_2s_no_na.py --agent_type litellm --model together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct --temperature 0.0 --test_start_idx 1 --test_end_idx 2 --with_memory`
+8. Run an example: `python run.py --instruction_path agent/prompts/raw/p_direct_id_actree_2s_no_na.py --agent_type litellm --model together_ai/OpenAI/gpt-oss-120B --temperature 0.0 --test_start_idx 1 --test_end_idx 2 --with_memory`
     - Remove `--with_memory` to not include memory
