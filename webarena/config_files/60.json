@@ -1,32 +1,30 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 60,
+  "task_id": 182,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Tell me the closest {{place1}}(s) to {{place2}}",
+  "intent_template": "Open my latest created issue that has {{keyword}} in its title to check if it is closed",
   "instantiation_dict": {
-    "place1": "restaurant",
-    "place2": "CMU Posner Hall"
+    "keyword": "homepage content"
   },
-  "intent": "Tell me the closest restaurant(s) to CMU Posner Hall",
+  "intent": "Open my latest created issue that has homepage content in its title to check if it is closed",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "string_match",
+      "url_match"
     ],
     "reference_answers": {
-      "must_include": [
-        "The exchange"
-      ]
+      "exact_match": "Yes"
     },
-    "reference_url": "",
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com/-/issues/719",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "The exchange"
+    "reference_answer_raw_annotation": "closed",
+    "string_note": ""
   },
-  "intent_template_id": 69
+  "intent_template_id": 500
 }

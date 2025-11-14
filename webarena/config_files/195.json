@@ -1,18 +1,18 @@
 {
   "sites": [
-    "shopping_admin"
+    "map"
   ],
-  "task_id": 195,
+  "task_id": 61,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Get the total payment amount of the last {{N}} {{status}} orders",
+  "intent_template": "Tell me the closest {{place1}}(s) to {{place2}}",
   "instantiation_dict": {
-    "status": "pending",
-    "N": "5"
+    "place1": "restaurant",
+    "place2": "CMU Sorrells Library"
   },
-  "intent": "Get the total payment amount of the last 5 pending orders",
+  "intent": "Tell me the closest restaurant(s) to CMU Sorrells Library",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -20,13 +20,13 @@
     ],
     "reference_answers": {
       "must_include": [
-        "885.4"
+        "La Prima Espresso"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "885.4"
+    "reference_answer_raw_annotation": "La Prima Espresso"
   },
-  "intent_template_id": 367
+  "intent_template_id": 69
 }

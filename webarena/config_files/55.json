@@ -2,31 +2,30 @@
   "sites": [
     "map"
   ],
-  "task_id": 55,
+  "task_id": 383,
   "require_login": true,
   "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "How long does it take to walk from {{start}} to {{end}}?",
-  "instantiation_dict": {
-    "start": "the starbuck near CMU",
-    "end": "Chatham university"
-  },
-  "intent": "How long does it take to walk from the starbuck near CMU to Chatham university?",
+  "intent_template": "I am arriving at Pittsburgh Airport. Show me the name of a Hyatt hotel if there is any nearby. Tell me the names of supermarkets that are within 15mins driving from the hotel",
+  "instantiation_dict": {},
+  "intent": "I am arriving at Pittsburgh Airport. Show me the name of a Hyatt hotel if there is any nearby. Tell me the names of supermarkets that are within 15mins driving from the hotel",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "30 min"
+      "must_include": [
+        "Hyatt Regency Pittsburgh International Airport",
+        "Giant Eagle",
+        "ALDI"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "30 min"
+    "reference_answer_raw_annotation": "Hyatt Regency Pittsburgh International Airport Giant Eagle, ALDI"
   },
-  "intent_template_id": 68
+  "intent_template_id": 782
 }

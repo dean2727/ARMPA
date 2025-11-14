@@ -1,35 +1,37 @@
 {
   "sites": [
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 32,
+  "task_id": 676,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "I will arrive {{place}} soon. Provide the name of a {{target1}} in the vicinity, if available. Then, tell me the {{information}} to {{target2}} from the hotel.",
+  "intent_template": "Lookup orders that are {{status}}",
   "instantiation_dict": {
-    "place": "Pittsburgh Airport",
-    "information": "the walking distance",
-    "target1": "Hilton hotel",
-    "target2": "the nearest supermarket own by a local company"
+    "status": "suspected of being fraudulent"
   },
-  "intent": "I will arrive Pittsburgh Airport soon. Provide the name of a Hilton hotel in the vicinity, if available. Then, tell me the the walking distance to the nearest supermarket own by a local company from the hotel.",
+  "intent": "Lookup orders that are suspected of being fraudulent",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "DoubleTree by Hilton Hotel Pittsburgh Airport",
-        "2.0km"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "DoubleTree by Hilton Hotel Pittsburgh Airport Distance: 2.0km"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/sales/order/",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector(\"div.admin__data-grid-filters-current\").outerText",
+        "required_contents": {
+          "must_include": [
+            "Suspected Fraud"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 78
+  "intent_template_id": 253
 }

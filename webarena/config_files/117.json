@@ -1,15 +1,18 @@
 {
   "sites": [
-    "shopping"
+    "shopping_admin"
   ],
-  "task_id": 117,
+  "task_id": 186,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "What is the date when I made my first purchase on this site?",
-  "instantiation_dict": {},
-  "intent": "What is the date when I made my first purchase on this site?",
+  "intent_template": "Give me the {{Attribute}} of the products that have {{N}} units left",
+  "instantiation_dict": {
+    "Attribute": "product names and the sizes",
+    "N": "2-3"
+  },
+  "intent": "Give me the product names and the sizes of the products that have 2-3 units left",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -17,13 +20,14 @@
     ],
     "reference_answers": {
       "fuzzy_match": [
-        "3/2/22"
+        "Eos V-Neck Hoodie: S",
+        "Minera Luma Tech V-Tee: XS"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "3/2/22"
+    "reference_answer_raw_annotation": "Eos V-Neck Hoodie: S Minera Luma Tech V-Tee: XS"
   },
-  "intent_template_id": 161
+  "intent_template_id": 368
 }

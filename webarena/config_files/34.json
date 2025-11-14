@@ -1,20 +1,17 @@
 {
   "sites": [
-    "map"
+    "shopping"
   ],
-  "task_id": 34,
+  "task_id": 21,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/6s-wireless-headphones-over-ear-noise-canceling-hi-fi-bass-foldable-stereo-wireless-kid-headsets-earbuds-with-built-in-mic-micro-sd-tf-fm-for-iphone-samsung-ipad-pc-black-gold.html",
   "geolocation": null,
-  "intent_template": "I will arrive {{place}} soon. Provide the name of a {{target1}} in the vicinity, if available. Then, tell me the {{information}} to {{target2}} from the hotel.",
+  "intent_template": "List out reviewers, if exist, who mention about {{description}}",
   "instantiation_dict": {
-    "place": "Pittsburgh Airport",
-    "target1": "Hyatt hotel",
-    "information": "the shortest walking time",
-    "target2": "a supermarket"
+    "description": "ear cups being small"
   },
-  "intent": "I will arrive Pittsburgh Airport soon. Provide the name of a Hyatt hotel in the vicinity, if available. Then, tell me the the shortest walking time to a supermarket from the hotel.",
+  "intent": "List out reviewers, if exist, who mention about ear cups being small",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -22,16 +19,17 @@
     ],
     "reference_answers": {
       "must_include": [
-        "Hyatt Regency Pittsburgh International Airport"
-      ],
-      "fuzzy_match": [
-        "Time: 3h 30min"
+        "Joseph Brzezinski",
+        "Catso",
+        "Dibbins",
+        "Anglebert Dinkherhump",
+        "Michelle Davis"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Hyatt Regency Pittsburgh International Airport\n3:30"
+    "reference_answer_raw_annotation": "Joseph Brzezinski, Catso, Dibbins, Anglebert Dinkherhump, Michelle Davis"
   },
-  "intent_template_id": 78
+  "intent_template_id": 222
 }

@@ -1,17 +1,17 @@
 {
   "sites": [
-    "shopping_admin"
+    "map"
   ],
-  "task_id": 15,
+  "task_id": 91,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Tell me the the number of reviews that our store received by far that mention term \"{{term}}\"",
+  "intent_template": "Which US states border {{state}}?",
   "instantiation_dict": {
-    "term": "best"
+    "state": "Massachusetts"
   },
-  "intent": "Tell me the the number of reviews that our store received by far that mention term \"best\"",
+  "intent": "Which US states border Massachusetts?",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,13 +19,17 @@
     ],
     "reference_answers": {
       "must_include": [
-        "2"
+        "Rhode Island",
+        "Connecticut",
+        "New York",
+        "New Hampshire",
+        "Vermont"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "2"
+    "reference_answer_raw_annotation": "Rhode Island, Connecticut, New York, New Hampshire, Vermont"
   },
-  "intent_template_id": 288
+  "intent_template_id": 67
 }

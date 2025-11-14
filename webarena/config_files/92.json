@@ -1,33 +1,39 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 92,
+  "task_id": 799,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Which US states border {{state}}?",
+  "intent_template": "create a new group \"{{name}}\" with members {{members}}",
   "instantiation_dict": {
-    "state": "Vermont"
+    "name": "n-lab",
+    "members": "patou, egpast, westurner, jontutcher"
   },
-  "intent": "Which US states border Vermont?",
+  "intent": "create a new group \"n-lab\" with members patou, egpast, westurner, jontutcher",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "New York",
-        "New Hampshire",
-        "Massachusetts"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "New York, New Hampshire, Massachusetts"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/groups/n-lab/-/group_members",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "@patou",
+            "@egpast",
+            "@westurner",
+            "@jontutcher"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 67
+  "intent_template_id": 600
 }

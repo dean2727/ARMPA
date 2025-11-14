@@ -1,17 +1,17 @@
 {
   "sites": [
-    "reddit"
+    "shopping_admin"
   ],
-  "task_id": 31,
+  "task_id": 65,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:9999",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Tell me the count of comments that have received more downvotes than upvotes for the user who made the latest post on the {{forum}} forum.",
+  "intent_template": "Which customer has completed the {{quantifier}} number of orders in the entire history?",
   "instantiation_dict": {
-    "forum": "photoshopbattles"
+    "quantifier": "fifth most"
   },
-  "intent": "Tell me the count of comments that have received more downvotes than upvotes for the user who made the latest post on the photoshopbattles forum.",
+  "intent": "Which customer has completed the fifth most number of orders in the entire history?",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,13 +19,13 @@
     ],
     "reference_answers": {
       "must_include": [
-        "0"
+        "Jane Doe"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "0"
+    "reference_answer_raw_annotation": "Jane Doe"
   },
-  "intent_template_id": 33
+  "intent_template_id": 276
 }

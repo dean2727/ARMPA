@@ -2,20 +2,17 @@
   "sites": [
     "map"
   ],
-  "task_id": 76,
+  "task_id": 57,
   "require_login": true,
   "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Given the following locations, {{place_list}}, what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
+  "intent_template": "Tell me the closest {{place1}}(s) to {{place2}}",
   "instantiation_dict": {
-    "place_list": [
-      "Princeton University",
-      "Yale University",
-      "Harvard University"
-    ]
+    "place1": "restaurant",
+    "place2": "university center at Carnegie Mellon University"
   },
-  "intent": "Given the following locations, ['Princeton University', 'Yale University', 'Harvard University'], what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
+  "intent": "Tell me the closest restaurant(s) to university center at Carnegie Mellon University",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -23,13 +20,19 @@
     ],
     "reference_answers": {
       "must_include": [
-        "The order is Princeton University, Yale University, Harvard University"
+        "El Gallo de Oro",
+        "Back Bar Grill",
+        "Grano",
+        "Beefsteak",
+        "Nourish",
+        "Schatz Dining Room",
+        "Au Bon Pain"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Princeton University, Yale University, Harvard University"
+    "reference_answer_raw_annotation": "El Gallo de Oro, Back Bar Grill, Grano, Beefsteak, Nourish, Schatz Dining Room, Au Bon Pain"
   },
-  "intent_template_id": 65
+  "intent_template_id": 69
 }

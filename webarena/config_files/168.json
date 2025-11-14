@@ -1,29 +1,33 @@
 {
   "sites": [
-    "gitlab"
+    "shopping_admin"
   ],
-  "task_id": 168,
+  "task_id": 505,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Tell me the full names of the repositories where I made contributions and they got {{description}} stars?",
+  "intent_template": "Make all {{product}} as out of stock",
   "instantiation_dict": {
-    "description": "more than 100"
+    "product": "Aeno capri"
   },
-  "intent": "Tell me the full names of the repositories where I made contributions and they got more than 100 stars?",
+  "intent": "Make all Aeno capri as out of stock",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": "N/A"
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "No repo found",
-    "reference_answer_raw_annotation": "No repo found"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/1861/",
+        "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][is_in_stock]\"').value",
+        "required_contents": {
+          "exact_match": "0"
+        }
+      }
+    ]
   },
-  "intent_template_id": 289
+  "intent_template_id": 287
 }

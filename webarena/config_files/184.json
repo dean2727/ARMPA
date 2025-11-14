@@ -1,30 +1,36 @@
 {
   "sites": [
-    "shopping_admin"
+    "map"
   ],
-  "task_id": 184,
+  "task_id": 372,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Give me the {{Attribute}} of the products that have {{N}} units left",
+  "intent_template": "Pull up the description page of {{location}} on Map",
   "instantiation_dict": {
-    "Attribute": "name",
-    "N": "0"
+    "location": "the Costco in Pittsburhg near a river"
   },
-  "intent": "Give me the name of the products that have 0 units left",
+  "intent": "Pull up the description page of the Costco in Pittsburhg near a river on Map",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "exact_match": "Sinbad Fitness Tank"
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Sinbad Fitness Tank"
+    "reference_answers": null,
+    "reference_url": null,
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('[id=\"sidebar_content\"').outerText",
+        "required_contents": {
+          "must_include": [
+            "Costco",
+            "Waterfront Drive West"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 368
+  "intent_template_id": 52
 }

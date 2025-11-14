@@ -1,29 +1,32 @@
 {
   "sites": [
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 72,
+  "task_id": 42,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "What is the zip code of {{place}}?",
+  "intent_template": "List the top {{n}} search terms in my store",
   "instantiation_dict": {
-    "place": "Yale University"
+    "n": "2"
   },
-  "intent": "What is the zip code of Yale University?",
+  "intent": "List the top 2 search terms in my store",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "exact_match": "06516"
+      "must_include": [
+        "hollister",
+        "Joust Bag"
+      ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "06516"
+    "reference_answer_raw_annotation": "hollister, Joust Bag"
   },
-  "intent_template_id": 70
+  "intent_template_id": 285
 }

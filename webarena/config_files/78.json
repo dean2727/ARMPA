@@ -1,31 +1,27 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 78,
+  "task_id": 106,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "What is the total count of {{status}} reviews amongst all the reviews?",
+  "intent_template": "Display the list of issues in the {{repo}} repository that have labels related to {{label}}",
   "instantiation_dict": {
-    "status": "Approved"
+    "label": "BUG",
+    "repo": "umano/AndroidSlidingUpPanel"
   },
-  "intent": "What is the total count of Approved reviews amongst all the reviews?",
+  "intent": "Display the list of issues in the umano/AndroidSlidingUpPanel repository that have labels related to BUG",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match"
     ],
-    "reference_answers": {
-      "must_include": [
-        "346"
-      ]
-    },
-    "reference_url": "",
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/umano/AndroidSlidingUpPanel/-/issues/?label_name%5B%5D=BUG",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "346"
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 277
+  "intent_template_id": 349
 }

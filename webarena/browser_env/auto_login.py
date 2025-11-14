@@ -66,7 +66,7 @@ def renew_comb(comb: list[str], auth_folder: str = "./.auth") -> None:
     page = context.new_page()
     # print statemnts
     if "shopping" in comb:
-        print("Logging in to shopping")
+        print("Logging in to shopping", os.getenv('SHOPPING'))
         username = ACCOUNTS["shopping"]["username"]
         password = ACCOUNTS["shopping"]["password"]
         page.goto(f"{SHOPPING}/customer/account/login/")

@@ -1,33 +1,29 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 19,
+  "task_id": 296,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Compare the time for walking and driving route from {{start}} to {{end}}",
+  "intent_template": "Show me the command to clone {{repo}} with SSH.",
   "instantiation_dict": {
-    "start": "Carnegie Science Center",
-    "end": "Carnegie Mellon University"
+    "repo": "the best GAN python implementation"
   },
-  "intent": "Compare the time for walking and driving route from Carnegie Science Center to Carnegie Mellon University",
+  "intent": "Show me the command to clone the best GAN python implementation with SSH.",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "driving: 12min",
-        "walking: 1h 44min."
-      ]
+      "exact_match": "ssh://git@metis.lti.cs.cmu.edu:2222/eriklindernoren/PyTorch-GAN.git"
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "driving: 12min, walking: 1h 44min."
+    "reference_answer_raw_annotation": "ssh://git@metis.lti.cs.cmu.edu:2222/eriklindernoren/PyTorch-GAN.git"
   },
-  "intent_template_id": 73
+  "intent_template_id": 329
 }

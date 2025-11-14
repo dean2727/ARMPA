@@ -1,33 +1,36 @@
 {
   "sites": [
-    "gitlab"
+    "reddit"
   ],
-  "task_id": 173,
+  "task_id": 650,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/books/59421/friendly-reminder-bookshop-org-exists",
   "geolocation": null,
-  "intent_template": "Open my latest updated issue that has keyword \"{{keyword}}\" in its title to check if it is closed",
+  "intent_template": "Reply to {{position_description}} with my comment \"{{content_description}}\"",
   "instantiation_dict": {
-    "keyword": "better"
+    "position_description": "the post",
+    "content_description": "I am a big fan of the bookorg"
   },
-  "intent": "Open my latest updated issue that has keyword \"better\" in its title to check if it is closed",
+  "intent": "Reply to the post with my comment \"I am a big fan of the bookorg\"",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match",
-      "url_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "No, it is open"
-      ]
-    },
-    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze/empathy-prompts/-/issues/8",
-    "program_html": [],
-    "reference_answer_raw_annotation": "Not closed",
-    "string_note": "",
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/books/59421/friendly-reminder-bookshop-org-exists",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('.comment__body').outerText",
+        "required_contents": {
+          "exact_match": "I am a big fan of the bookorg"
+        }
+      }
+    ],
     "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 310
+  "intent_template_id": 23
 }

@@ -1,32 +1,39 @@
 {
   "sites": [
-    "shopping"
+    "shopping_admin"
   ],
-  "task_id": 51,
+  "task_id": 116,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Today is 6/12/2023. Tell me how many fulfilled orders I have {{period}}, and the total amount of money I spent.",
+  "intent_template": "Show me the name of the customers who have expressed dissatisfaction with {{product}}?",
   "instantiation_dict": {
-    "period": "over the past six month"
+    "product": "tanks products"
   },
-  "intent": "Today is 6/12/2023. Tell me how many fulfilled orders I have over the past six month, and the total amount of money I spent.",
+  "intent": "Show me the name of the customers who have expressed dissatisfaction with tanks products?",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "12 orders",
-        "$1603.69 total spend"
+      "must_include": [
+        "Alexander",
+        "Carma",
+        "Dominic",
+        "Merrie",
+        "Monroe",
+        "Scotty",
+        "Shaunte",
+        "Teofila",
+        "Valorie"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "12 orders, $1603.69 total spend"
+    "reference_answer_raw_annotation": "Alexander, Carma, Dominic, Merrie, Monroe, Scotty, Shaunte, Teofila, Valorie"
   },
-  "intent_template_id": 197
+  "intent_template_id": 245
 }

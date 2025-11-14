@@ -1,40 +1,27 @@
 {
   "sites": [
-    "gitlab"
+    "shopping"
   ],
-  "task_id": 171,
+  "task_id": 354,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Tell me the full names of the repositories where I made contributions and they got {{description}} stars?",
+  "intent_template": "List products from {{product_category}} category by {{order}} price",
   "instantiation_dict": {
-    "description": "less than 5"
+    "product_category": "living room furtniture",
+    "order": "descending"
   },
-  "intent": "Tell me the full names of the repositories where I made contributions and they got less than 5 stars?",
+  "intent": "List products from living room furtniture category by descending price",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match"
     ],
-    "reference_answers": {
-      "must_include": [
-        "a11y-syntax-highlighting",
-        "a11y-webring.club",
-        "accessible-html-content-patterns",
-        "ericwbailey.website",
-        "cloud-to-butt",
-        "dotfiles",
-        "timeit",
-        "solarized-prism-theme",
-        "gimmiethat.space",
-        "remove-board-movement-events-from-the-github-issue-timeline"
-      ]
-    },
-    "reference_url": "",
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/home-kitchen/furniture/living-room-furniture.html?product_list_order=price&product_list_dir=desc",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "a11y-syntax-highlighting, a11y-webring.club, accessible-html-content-patterns, ericwbailey.website, cloud-to-butt, dotfiles, timeit, solarized-prism-theme,  gimmiethat.space, remove-board-movement-events-from-the-github-issue-timeline"
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 289
+  "intent_template_id": 137
 }

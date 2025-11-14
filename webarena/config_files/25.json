@@ -1,17 +1,17 @@
 {
   "sites": [
-    "shopping"
+    "shopping_admin"
   ],
-  "task_id": 25,
+  "task_id": 94,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770/epson-workforce-wf-3620-wifi-direct-all-in-one-color-inkjet-printer-copier-scanner-amazon-dash-replenishment-ready.html",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "List out reviewers, if exist, who mention about {{description}}",
+  "intent_template": "Telll me the grand total of invoice {{id}}.",
   "instantiation_dict": {
-    "description": "average print quality"
+    "id": "000000001"
   },
-  "intent": "List out reviewers, if exist, who mention about average print quality",
+  "intent": "Telll me the grand total of invoice 000000001.",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,14 +19,13 @@
     ],
     "reference_answers": {
       "must_include": [
-        "Goldfish",
-        "Roxanne Brandon Coffey"
+        "36.39"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "GoldfishGoldfish, Roxanne Brandon Coffey"
+    "reference_answer_raw_annotation": "$36.39"
   },
-  "intent_template_id": 222
+  "intent_template_id": 274
 }

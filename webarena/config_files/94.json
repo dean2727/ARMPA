@@ -1,31 +1,56 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 94,
+  "task_id": 659,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Telll me the grand total of invoice {{id}}.",
+  "intent_template": "Create an issue in {{repo}} repo with title \"{{issue}}\". Assign the issue to {{account}}. Set due date to be {{due}}",
   "instantiation_dict": {
-    "id": "000000001"
+    "repo": "empathy-prompts",
+    "issue": "Integrating LLMs for better prompts",
+    "account": "Roshanjossey",
+    "due": "the beginning of Q2 2033"
   },
-  "intent": "Telll me the grand total of invoice 000000001.",
+  "intent": "Create an issue in empathy-prompts repo with title \"Integrating LLMs for better prompts\". Assign the issue to Roshanjossey. Set due date to be the beginning of Q2 2033",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "36.39"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "$36.39"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/empathy-prompts/-/issues",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('[data-qa-selector=\"title_content\"]').outerText",
+        "required_contents": {
+          "exact_match": "Integrating LLMs for better prompts"
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector('[data-testid=\"sidebar-due-date\"').outerText",
+        "required_contents": {
+          "must_include": [
+            "Apr 1, 2033"
+          ]
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector('.block.assignee').outerText",
+        "required_contents": {
+          "must_include": [
+            "Roshan Jossey"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 274
+  "intent_template_id": 327
 }

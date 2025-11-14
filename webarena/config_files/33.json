@@ -1,35 +1,53 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 33,
+  "task_id": 806,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "I will arrive {{place}} soon. Provide the name of a {{target1}} in the vicinity, if available. Then, tell me the {{information}} to {{target2}} from the hotel.",
+  "intent_template": "Submit a merge request for {{source_branch}} branch to be merged into {{target_branch}} branch, assign {{reviewer}} as the reviewer",
   "instantiation_dict": {
-    "place": "Pittsburgh Airport",
-    "target1": "Hilton hotel",
-    "information": "the shortest walking distance",
-    "target2": "a supermarket"
+    "source_branch": "a11yproject.com/redesign",
+    "target_branch": "markdown-figure-block",
+    "reviewer": "myself"
   },
-  "intent": "I will arrive Pittsburgh Airport soon. Provide the name of a Hilton hotel in the vicinity, if available. Then, tell me the the shortest walking distance to a supermarket from the hotel.",
+  "intent": "Submit a merge request for a11yproject.com/redesign branch to be merged into markdown-figure-block branch, assign myself as the reviewer",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "DoubleTree by Hilton Hotel Pittsburgh Airport",
-        "1.4km"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "DoubleTree by Hilton Hotel Pittsburgh Airport Distance: 1.4km"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com/-/merge_requests",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelectorAll(\".detail-page-description > a.gl-font-monospace\")[0].outerText",
+        "required_contents": {
+          "exact_match": "redesign"
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelectorAll(\".detail-page-description > a.gl-font-monospace\")[1].outerText",
+        "required_contents": {
+          "exact_match": "feature/markdown-figure-block"
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector('.block.reviewer').outerText",
+        "required_contents": {
+          "must_include": [
+            "Byte Blaze"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 78
+  "intent_template_id": 335
 }

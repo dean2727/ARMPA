@@ -1,32 +1,31 @@
 {
   "sites": [
-    "map"
+    "shopping"
   ],
-  "task_id": 138,
+  "task_id": 521,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "What is the estimated driving time between {{city1}} and {{city2}}?",
-  "instantiation_dict": {
-    "city1": "the big apple",
-    "city2": "the city with the most authentic Philly cheesesteaks"
-  },
-  "intent": "What is the estimated driving time between the big apple and the city with the most authentic Philly cheesesteaks?",
+  "intent_template": "Subscribe to the newsletter of OneStopMarket",
+  "instantiation_dict": {},
+  "intent": "Subscribe to the newsletter of OneStopMarket",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "1h 58min"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "1h 58min"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/newsletter/manage/",
+        "locator": "document.querySelector('[title=\"General Subscription\"').checked.toString()",
+        "required_contents": {
+          "exact_match": "true"
+        }
+      }
+    ]
   },
-  "intent_template_id": 51
+  "intent_template_id": 199
 }

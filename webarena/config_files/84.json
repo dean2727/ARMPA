@@ -1,32 +1,30 @@
 {
   "sites": [
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 84,
+  "task_id": 246,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "From my stay at {{hotel}}, what's the estimated driving time to reach {{place}}?",
+  "intent_template": "Show me the {{information}} of the customer who is the most unhappy with {{product}}",
   "instantiation_dict": {
-    "hotel": "DoubleTree by Hilton New York Downtown",
-    "place": "Keens Steakhouse"
+    "information": "name",
+    "product": "Chloe tank"
   },
-  "intent": "From my stay at DoubleTree by Hilton New York Downtown, what's the estimated driving time to reach Keens Steakhouse?",
+  "intent": "Show me the name of the customer who is the most unhappy with Chloe tank",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "14 minutes"
-      ]
+      "exact_match": "Teofila"
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "14 minutes"
+    "reference_answer_raw_annotation": "Teofila"
   },
-  "intent_template_id": 64
+  "intent_template_id": 244
 }

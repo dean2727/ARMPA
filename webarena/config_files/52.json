@@ -1,32 +1,35 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 52,
+  "task_id": 394,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "How long does it take to walk from {{start}} to {{end}}?",
+  "intent_template": "Fork {{repo}}.",
   "instantiation_dict": {
-    "start": "Carnegie Mellon University",
-    "end": "starbucks on Craig Street"
+    "repo": "2019-nCov"
   },
-  "intent": "How long does it take to walk from Carnegie Mellon University to starbucks on Craig Street?",
+  "intent": "Fork 2019-nCov.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "7 min"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "7 min"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/2019-nCov",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "2019-nCov"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 68
+  "intent_template_id": 352
 }

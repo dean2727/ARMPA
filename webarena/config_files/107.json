@@ -1,38 +1,47 @@
 {
   "sites": [
-    "shopping_admin"
+    "reddit"
   ],
-  "task_id": 107,
+  "task_id": 619,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/pics",
   "geolocation": null,
-  "intent_template": "Presents the monthly count of successful orders {{period}} in MM:COUNT format",
+  "intent_template": "Re-post the image of {{content}} in this page to {{subreddit}} subreddit and note \"from /f/pics\"",
   "instantiation_dict": {
-    "period": "from May to December 2022"
+    "content": "costume contest",
+    "subreddit": "funny"
   },
-  "intent": "Presents the monthly count of successful orders from May to December 2022 in MM:COUNT format",
+  "intent": "Re-post the image of costume contest in this page to funny subreddit and note \"from /f/pics\"",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "May: 8 orders",
-        "June: 13 orders",
-        "July: 9 orders",
-        "August: 8 orders",
-        "Sepetember: 10 orders",
-        "October: 4 orders",
-        "November: 5 orders",
-        "December: 10 orders"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "May: 8 orders June: 13 orders July: 9 orders August: 8 orders Sepetember: 10 orders Octorbor: 4 orders November: 5 orders December: 10 orders  "
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/funny",
+    "program_html": [
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
+        "required_contents": {
+          "must_include": [
+            "from /f/pics"
+          ]
+        }
+      },
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "[...document.querySelector('.submission__inner').querySelectorAll('[href],[src]')].map(elem => elem.getAttribute('href') || elem.getAttribute('src')).join(' ')",
+        "required_contents": {
+          "must_include": [
+            "bd8bc5f4c846aac4df08626faa3a34a7d47c8f3bdd92bf615a54afd939f063a7.jpg"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 270
+  "intent_template_id": 11
 }

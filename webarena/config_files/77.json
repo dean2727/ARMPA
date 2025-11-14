@@ -1,31 +1,38 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 77,
+  "task_id": 693,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "What is the total count of {{status}} reviews amongst all the reviews?",
+  "intent_template": "Draft an email to the shop owner via their contact us function for a coupon as {{reason}}",
   "instantiation_dict": {
-    "status": "Pending"
+    "reason": "my refund is suppoed to be replaced by a coupon"
   },
-  "intent": "What is the total count of Pending reviews amongst all the reviews?",
+  "intent": "Draft an email to the shop owner via their contact us function for a coupon as my refund is suppoed to be replaced by a coupon",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "5"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "5"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/contact",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('[title=\"What\u2019s on your mind?\"').value",
+        "required_contents": {
+          "must_include": [
+            "coupon",
+            "refund"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 277
+  "intent_template_id": 163
 }

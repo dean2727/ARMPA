@@ -1,20 +1,17 @@
 {
   "sites": [
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 35,
+  "task_id": 79,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "I will arrive {{place}} soon. Provide the name of a {{target1}} in the vicinity, if available. Then, tell me the {{information}} to {{target2}} from the hotel.",
+  "intent_template": "What is the total count of {{status}} reviews amongst all the reviews?",
   "instantiation_dict": {
-    "place": "Pittsburgh Airport",
-    "target1": "Hyatt hotel",
-    "information": "the minimal driving time",
-    "target2": "a supermarket"
+    "status": "Not Approved"
   },
-  "intent": "I will arrive Pittsburgh Airport soon. Provide the name of a Hyatt hotel in the vicinity, if available. Then, tell me the the minimal driving time to a supermarket from the hotel.",
+  "intent": "What is the total count of Not Approved reviews amongst all the reviews?",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -22,16 +19,13 @@
     ],
     "reference_answers": {
       "must_include": [
-        "Hyatt Regency Pittsburgh International Airport"
-      ],
-      "fuzzy_match": [
-        "Time: 15min"
+        "0"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Hyatt Regency Pittsburgh International Airport Time: 15min"
+    "reference_answer_raw_annotation": "0"
   },
-  "intent_template_id": 78
+  "intent_template_id": 277
 }

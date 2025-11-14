@@ -1,32 +1,33 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 154,
+  "task_id": 419,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "What is the minimum travel time by car from {{location1}} to {{location2}}?",
+  "intent_template": "Set my gitlab status as {{status}}.",
   "instantiation_dict": {
-    "location1": "CMU gates building",
-    "location2": "Schenley park"
+    "status": "Enjoying life"
   },
-  "intent": "What is the minimum travel time by car from CMU gates building to Schenley park?",
+  "intent": "Set my gitlab status as Enjoying life.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "4min"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "4min"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze",
+        "locator": "document.querySelector('.cover-status').lastChild.textContent",
+        "required_contents": {
+          "exact_match": "Enjoying life"
+        }
+      }
+    ]
   },
-  "intent_template_id": 36
+  "intent_template_id": 361
 }

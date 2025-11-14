@@ -1,27 +1,30 @@
 {
   "sites": [
-    "gitlab"
+    "shopping_admin"
   ],
-  "task_id": 106,
+  "task_id": 198,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Display the list of issues in the {{repo}} repository that have labels related to {{label}}",
+  "intent_template": "Get the {{attribute}} of the {{status}} order",
   "instantiation_dict": {
-    "label": "BUG",
-    "repo": "umano/AndroidSlidingUpPanel"
+    "attribute": "customer name",
+    "status": "most recent cancelled"
   },
-  "intent": "Display the list of issues in the umano/AndroidSlidingUpPanel repository that have labels related to BUG",
+  "intent": "Get the customer name of the most recent cancelled order",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match"
+      "string_match"
     ],
-    "reference_answers": null,
-    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/umano/AndroidSlidingUpPanel/-/issues/?label_name%5B%5D=BUG",
+    "reference_answers": {
+      "exact_match": "Lily Potter"
+    },
+    "reference_url": "",
     "program_html": [],
-    "url_note": "GOLD in PRED"
+    "string_note": "",
+    "reference_answer_raw_annotation": "Lily Potter"
   },
-  "intent_template_id": 349
+  "intent_template_id": 366
 }

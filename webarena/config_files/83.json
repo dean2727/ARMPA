@@ -1,33 +1,36 @@
 {
   "sites": [
-    "map"
+    "reddit"
   ],
-  "task_id": 83,
+  "task_id": 651,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/pittsburgh/45899/driving-in-pittsburgh-summed-up-by-one-traffic-sign",
   "geolocation": null,
-  "intent_template": "What is the duration required to first walk from {{place_A}} to {{place_B}}, and then drive to {{place_C}}?",
+  "intent_template": "Reply to {{position_description}} with my comment \"{{content_description}}\"",
   "instantiation_dict": {
-    "place_A": "Carnegie Mellon University",
-    "place_B": "apple store shadyside",
-    "place_C": "starbucks on craig street"
+    "position_description": "the post",
+    "content_description": "Yeah, pittsburgh traffic, you know..."
   },
-  "intent": "What is the duration required to first walk from Carnegie Mellon University to apple store shadyside, and then drive to starbucks on craig street?",
+  "intent": "Reply to the post with my comment \"Yeah, pittsburgh traffic, you know...\"",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "22 min"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "22 min"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/pittsburgh/45899/driving-in-pittsburgh-summed-up-by-one-traffic-sign",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('.comment__body').outerText",
+        "required_contents": {
+          "exact_match": "Yeah, pittsburgh traffic, you know..."
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 72
+  "intent_template_id": 23
 }

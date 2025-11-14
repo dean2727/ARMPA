@@ -1,33 +1,35 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 20,
+  "task_id": 481,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Compare the difference in time for walking and driving route from {{start}} to {{end}}",
+  "intent_template": "{{name}} wants to check my dotfile configurations. Please invite him to the repo as a guest.",
   "instantiation_dict": {
-    "start": "Randyland",
-    "end": "Carnegie Mellon University"
+    "name": "Abishek"
   },
-  "intent": "Compare the difference in time for walking and driving route from Randyland to Carnegie Mellon University",
+  "intent": "Abishek wants to check my dotfile configurations. Please invite him to the repo as a guest.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "driving: 13min",
-        "walking: 1h 45min"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "driving: 13min, walking: 1h 45min."
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/dotfiles/-/project_members",
+        "locator": "func:gitlab_get_project_memeber_role(__page__, 'abisubramanya27')",
+        "required_contents": {
+          "must_include": [
+            "Guest"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 73
+  "intent_template_id": 294
 }

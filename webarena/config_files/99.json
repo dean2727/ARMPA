@@ -1,18 +1,19 @@
 {
   "sites": [
-    "map"
+    "reddit"
   ],
-  "task_id": 99,
+  "task_id": 67,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "Where is the nearest {{places}} to {{start}}, and what is the walking distance to it?",
+  "intent_template": "Among the top {{number}} post in \"{{subreddit}}\" forum, {{description}}",
   "instantiation_dict": {
-    "places": "Five Guys",
-    "start": "5700 Penn Ave"
+    "number": 10,
+    "subreddit": "books",
+    "description": "show me the book names from posts that recommand a single book"
   },
-  "intent": "Where is the nearest Five Guys to 5700 Penn Ave, and what is the walking distance to it?",
+  "intent": "Among the top 10 post in \"books\" forum, show me the book names from posts that recommand a single book",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -20,18 +21,14 @@
     ],
     "reference_answers": {
       "must_include": [
-        "Five Guys",
-        "117",
-        "South Bouquet Street",
-        "North Oakland",
-        "Pittsburgh",
-        "4.0km"
+        "A Christmas Carol",
+        "The Hobbit"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Five Guys, 117, South Bouquet Street, Oakland, North Oakland, Pittsburgh, Allegheny County, Pennsylvania, 15213, United States\n4.0km"
+    "reference_answer_raw_annotation": "A Christmas Carol, The Hobbit"
   },
-  "intent_template_id": 66
+  "intent_template_id": 17
 }

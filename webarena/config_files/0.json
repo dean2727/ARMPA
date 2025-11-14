@@ -2,29 +2,32 @@
   "sites": [
     "shopping_admin"
   ],
-  "task_id": 0,
+  "task_id": 197,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "What is the top-{{n}} best-selling product in {{year}}",
+  "intent_template": "Get the total payment amount of the last {{N}} {{status}} orders",
   "instantiation_dict": {
-    "n": 1,
-    "year": 2022
+    "status": "non-cancelled",
+    "N": "5"
   },
-  "intent": "What is the top-1 best-selling product in 2022",
+  "intent": "Get the total payment amount of the last 5 non-cancelled orders",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "exact_match": "Quest Lumaflex\u2122 Band"
+      "must_include": [
+        "778.2"
+      ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Quest Lumaflex\u2122 Band"
+    "annotation_note": "219.4+210+166.4+93.4+89",
+    "reference_answer_raw_annotation": "778.2"
   },
-  "intent_template_id": 279
+  "intent_template_id": 367
 }

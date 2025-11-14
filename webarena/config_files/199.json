@@ -2,31 +2,33 @@
   "sites": [
     "shopping_admin"
   ],
-  "task_id": 199,
+  "task_id": 490,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Get the {{attribute}} of the {{status}} order",
+  "intent_template": "Change the page title of \"{{old-heading}}\" page on my site to \"{{heading}}\".",
   "instantiation_dict": {
-    "attribute": "order ID",
-    "status": "newest pending"
+    "old-heading": "About us",
+    "heading": "Secret"
   },
-  "intent": "Get the order ID of the newest pending order",
+  "intent": "Change the page title of \"About us\" page on my site to \"Secret\".",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "299"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "299"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/cms/page/edit/page_id/5/",
+        "locator": "document.querySelector('input[name=\"title\"').value",
+        "required_contents": {
+          "exact_match": "Secret"
+        }
+      }
+    ]
   },
-  "intent_template_id": 366
+  "intent_template_id": 275
 }

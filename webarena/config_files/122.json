@@ -2,30 +2,29 @@
   "sites": [
     "shopping_admin"
   ],
-  "task_id": 122,
+  "task_id": 2,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Tell me the reasons why customers like {{product}}",
+  "intent_template": "What is the top-{{n}} best-selling product type in {{period}}",
   "instantiation_dict": {
-    "product": "Olivia zip jacket"
+    "n": 1,
+    "period": "Quarter 1 2022"
   },
-  "intent": "Tell me the reasons why customers like Olivia zip jacket",
+  "intent": "What is the top-1 best-selling product type in Quarter 1 2022",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "Lightweight, comfortable and stylish. Good design and details."
-      ]
+      "exact_match": "Yoga ball"
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Lightweight, comfortable, and stylish. Good design and details."
+    "reference_answer_raw_annotation": "Yoga ball"
   },
-  "intent_template_id": 250
+  "intent_template_id": 279
 }

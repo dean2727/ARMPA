@@ -12,7 +12,11 @@ GITLAB_PORT=8023
 
 # Start the shared kiwix container once
 echo "Starting shared kiwix33 (Wikipedia mirror)..."
-docker start kiwix33 2>/dev/null || docker run -d --name kiwix33 -p 8888:80 kiwix_final_image
+docker run --name kiwix33 \
+  -p 8888:80 \
+  -v /home/ubuntu/wiki/wikipedia_en_all_maxi_2022-05.zim:/data/wiki.zim \
+  -d ghcr.io/kiwix/kiwix-serve:3.3.0 \
+  /data/wiki.zim --port 80
 
 for GROUP in {1..1}; do
   echo ""
@@ -38,6 +42,7 @@ for GROUP in {1..1}; do
   # --- Magento configuration ---
   echo "Configuring Magento for group $GROUP..."
 
+  # Double check this with "docker exec shopping_g1 /var/www/magento2/bin/magento config:show web/unsecure/base_url" (should show nothing)
   docker exec $SHOPPING_NAME /var/www/magento2/bin/magento setup:store-config:set --base-url="http://${IP}:${SHOPPING_PORT}"
   docker exec $SHOPPING_NAME mysql -u magentouser -pMyPassword magentodb -e \
     "UPDATE core_config_data SET value='http://${IP}:${SHOPPING_PORT}/' WHERE path = 'web/secure/base_url';"

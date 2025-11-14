@@ -1,32 +1,54 @@
 {
   "sites": [
-    "map"
+    "reddit"
   ],
-  "task_id": 137,
+  "task_id": 720,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "What is the estimated driving time between {{city1}} and {{city2}}?",
+  "intent_template": "Like all submissions created by {{user}} in subreddit {{subreddit}}",
   "instantiation_dict": {
-    "city1": "the city where the Liberty Bell is located",
-    "city2": "the home city of Pirates"
+    "subreddit": "earthporn",
+    "user": "CameronKelsey"
   },
-  "intent": "What is the estimated driving time between the city where the Liberty Bell is located and the home city of Pirates?",
+  "intent": "Like all submissions created by CameronKelsey in subreddit earthporn",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "5h 47min"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "5h 47min"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/EarthPorn/98332/my-favorite-place-on-the-planet-henry-s-fork-of-the-snake",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/EarthPorn/98297/2-years-later-this-is-still-one-of-the-most-incredible",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/EarthPorn/98256/i-can-t-wait-for-all-this-green-to-start-coming-back-little",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 51
+  "intent_template_id": 25
 }

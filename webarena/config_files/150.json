@@ -1,33 +1,40 @@
 {
   "sites": [
-    "shopping"
+    "reddit",
+    "gitlab"
   ],
-  "task_id": 150,
+  "task_id": 684,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/gitlab.reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "What is the {{option}} configuration of the {{product}} I bought {{time}}",
+  "intent_template": "Promote {{repo}} to subreddit {{subreddit}} with the description from the repo itself.",
   "instantiation_dict": {
-    "option": "price",
-    "product": "fake tree",
-    "time": "Jan 2023"
+    "repo": "byteblaze/cloud-to-butt",
+    "subreddit": "LifeProTips"
   },
-  "intent": "What is the price configuration of the fake tree I bought Jan 2023",
+  "intent": "Promote byteblaze/cloud-to-butt to subreddit LifeProTips with the description from the repo itself.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "260.69"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "260.69"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/LifeProTips",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('.submission__inner').outerText + [...document.querySelector('.submission__inner').querySelectorAll('[href],[src]')].map(elem => elem.getAttribute('href') || elem.getAttribute('src')).join(' ')",
+        "required_contents": {
+          "must_include": [
+            "Chrome extension that replaces occurrences of 'the cloud' with 'my butt'",
+            "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/cloud-to-butt"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 155
+  "intent_template_id": 117
 }

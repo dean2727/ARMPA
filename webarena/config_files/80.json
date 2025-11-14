@@ -1,33 +1,32 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 80,
+  "task_id": 305,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com",
   "geolocation": null,
-  "intent_template": "What is the duration required to first walk from {{place_A}} to {{place_B}}, and then drive to {{place_C}}?",
+  "intent_template": "How many commits did {{user}} make {{period}}?",
   "instantiation_dict": {
-    "place_A": "Carnegie Mellon University",
-    "place_B": "Starbucks on Craig Street",
-    "place_C": "Pittsburgh International Airport"
+    "user": "Philip",
+    "period": "in 2023/1"
   },
-  "intent": "What is the duration required to first walk from Carnegie Mellon University to Starbucks on Craig Street, and then drive to Pittsburgh International Airport?",
+  "intent": "How many commits did Philip make in 2023/1?",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "38 min"
+      "must_include": [
+        "0"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "38 min"
+    "reference_answer_raw_annotation": "0"
   },
-  "intent_template_id": 72
+  "intent_template_id": 321
 }

@@ -1,32 +1,29 @@
 {
   "sites": [
-    "map"
+    "shopping"
   ],
-  "task_id": 61,
+  "task_id": 794,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Tell me the closest {{place1}}(s) to {{place2}}",
+  "intent_template": "Change the delivery address for my most recent order to {{address}}.",
   "instantiation_dict": {
-    "place1": "restaurant",
-    "place2": "CMU Sorrells Library"
+    "address": "4000 Forbes Ave, Pittsburgh, PA"
   },
-  "intent": "Tell me the closest restaurant(s) to CMU Sorrells Library",
+  "intent": "Change the delivery address for my most recent order to 4000 Forbes Ave, Pittsburgh, PA.",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "must_include": [
-        "La Prima Espresso"
-      ]
+      "fuzzy_match": "N/A"
     },
     "reference_url": "",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "La Prima Espresso"
+    "string_note": "The shipping address cannot be changed after an order is placed in the website.",
+    "reference_answer_raw_annotation": "N/A"
   },
-  "intent_template_id": 69
+  "intent_template_id": 191
 }

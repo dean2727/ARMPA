@@ -1,29 +1,29 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 112,
+  "task_id": 797,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Show me the customers who have expressed dissatisfaction with {{product}}?",
+  "intent_template": "Change the delivery address for my most recent order to {{address}}.",
   "instantiation_dict": {
-    "product": "Circe fleece"
+    "address": "3 Oxford St, Cambridge, MA"
   },
-  "intent": "Show me the customers who have expressed dissatisfaction with Circe fleece?",
+  "intent": "Change the delivery address for my most recent order to 3 Oxford St, Cambridge, MA.",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "exact_match": "Hannah Lim"
+      "fuzzy_match": "N/A"
     },
     "reference_url": "",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Hannah Lim"
+    "string_note": "The shipping address cannot be changed after an order is placed in the website.",
+    "reference_answer_raw_annotation": "N/A"
   },
-  "intent_template_id": 245
+  "intent_template_id": 191
 }

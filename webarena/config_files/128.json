@@ -1,31 +1,33 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 128,
+  "task_id": 517,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/skinit-decal-gaming-skin-compatible-with-xbox-one-s-console-and-controller-bundle-officially-licensed-nfl-baltimore-ravens-design.html",
   "geolocation": null,
-  "intent_template": "What's the total number of items sold in the most recent {{k}} orders?",
-  "instantiation_dict": {
-    "k": "2"
-  },
-  "intent": "What's the total number of items sold in the most recent 2 orders?",
+  "intent_template": "Add this product to my wishlist",
+  "instantiation_dict": {},
+  "intent": "Add this product to my wishlist",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "9"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "9"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/wishlist/",
+        "locator": "document.querySelector('.products-grid.wishlist').outerText",
+        "required_contents": {
+          "must_include": [
+            "Skinit Decal Gaming Skin Compatible with Xbox One S Console and Controller Bundle - Officially Licensed NFL Baltimore Ravens Design"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 1002
+  "intent_template_id": 196
 }

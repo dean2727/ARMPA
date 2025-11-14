@@ -1,34 +1,33 @@
 {
   "sites": [
-    "reddit"
+    "shopping_admin"
   ],
-  "task_id": 67,
+  "task_id": 474,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:9999",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Among the top {{number}} post in \"{{subreddit}}\" forum, {{description}}",
+  "intent_template": "Cancel order {{id}}",
   "instantiation_dict": {
-    "number": 10,
-    "subreddit": "books",
-    "description": "show me the book names from posts that recommand a single book"
+    "id": "305"
   },
-  "intent": "Among the top 10 post in \"books\" forum, show me the book names from posts that recommand a single book",
+  "intent": "Cancel order 305",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "A Christmas Carol",
-        "The Hobbit"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "A Christmas Carol, The Hobbit"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/sales/order/view/order_id/305/",
+        "locator": "document.querySelector(\"#order_status\").outerText",
+        "required_contents": {
+          "exact_match": "Canceled"
+        }
+      }
+    ]
   },
-  "intent_template_id": 17
+  "intent_template_id": 257
 }

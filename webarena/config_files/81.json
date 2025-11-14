@@ -1,33 +1,38 @@
 {
   "sites": [
-    "map"
+    "reddit"
   ],
-  "task_id": 81,
+  "task_id": 622,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "What is the duration required to first walk from {{place_A}} to {{place_B}}, and then drive to {{place_C}}?",
+  "intent_template": "Ask for advice about {{issue}} in a subreddit for relations",
   "instantiation_dict": {
-    "place_A": "Univ of Pittsburgh",
-    "place_B": "starbucks on Craig Street",
-    "place_C": "Pittsburgh International Airport"
+    "issue": "sexual harassment"
   },
-  "intent": "What is the duration required to first walk from Univ of Pittsburgh to starbucks on Craig Street, and then drive to Pittsburgh International Airport?",
+  "intent": "Ask for advice about sexual harassment in a subreddit for relations",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "49 min"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "49 min"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/relationship_advice",
+    "program_html": [
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
+        "required_contents": {
+          "must_include": [
+            "sexual",
+            "harassment"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 72
+  "intent_template_id": 12
 }

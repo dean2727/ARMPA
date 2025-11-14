@@ -1,32 +1,35 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 152,
+  "task_id": 788,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/amwhalen/archive-my-tweets/-/tree/github/fork/chtitux/addRssFeed",
   "geolocation": null,
-  "intent_template": "What is the minimum travel time by car from {{location1}} to {{location2}}?",
+  "intent_template": "Tell me the {{attribute}} of the contributor who has the most commits to branch {{branch_name}}",
   "instantiation_dict": {
-    "location1": "Schenley park",
-    "location2": "Upitt"
+    "branch_name": "php52",
+    "attribute": "full name, gitlab account name, location and email address"
   },
-  "intent": "What is the minimum travel time by car from Schenley park to Upitt?",
+  "intent": "Tell me the full name, gitlab account name, location and email address of the contributor who has the most commits to branch php52",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "4min"
+      "must_include": [
+        "Andrew M. Whalen",
+        "amwhalen",
+        "Massachusetts",
+        "github@amwhalen.com"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "4min"
+    "reference_answer_raw_annotation": "Andrew M. Whalen, amwhalen, Massachusetts, github@amwhalen.com"
   },
-  "intent_template_id": 36
+  "intent_template_id": 316
 }

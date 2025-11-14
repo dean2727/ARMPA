@@ -1,42 +1,41 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 109,
+  "task_id": 657,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Presents the monthly count of successful orders {{period}} in MM:COUNT format",
+  "intent_template": "Fill the \"contact us\" form in the site for a refund on the {{product}} I bought, stating that it broke after just three days of use. Also, ensure to include the order number #{{order_id}} and the product SKU. Don't submit yet, I will check.",
   "instantiation_dict": {
-    "period": "from Jan to December 2022"
+    "product": "speaker",
+    "order_id": "148"
   },
-  "intent": "Presents the monthly count of successful orders from Jan to December 2022 in MM:COUNT format",
+  "intent": "Fill the \"contact us\" form in the site for a refund on the speaker I bought, stating that it broke after just three days of use. Also, ensure to include the order number #148 and the product SKU. Don't submit yet, I will check.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "January: 11 orders",
-        "Feburary: 16 orders",
-        "March: 14 orders",
-        "April: 7 orders",
-        "May: 8 orders",
-        "June: 13 orders",
-        "July: 9 orders",
-        "August: 8 orders",
-        "Sepetember: 10 orders",
-        "Octorbor: 4 orders",
-        "November: 5 orders",
-        "December: 10 orders"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "January: 11 orders Feburary: 16 orders March: 14 orders April: 7 orders May: 8 orders June: 13 orders July: 9 orders August: 8 orders Sepetember: 10 orders Octorbor: 4 orders November: 5 orders December: 10 orders  "
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/contact",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('[title=\"What\u2019s on your mind?\"').value",
+        "required_contents": {
+          "must_include": [
+            "refund",
+            "broke after three days of use",
+            "148",
+            "B003FVW3VA"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 270
+  "intent_template_id": 153
 }

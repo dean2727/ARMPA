@@ -1,26 +1,35 @@
 {
   "sites": [
-    "shopping"
+    "gitlab"
   ],
-  "task_id": 159,
+  "task_id": 477,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "I have a lot of Nintendo Switch game cards now, help me find the best storage option to fit all {{num}} cards",
+  "intent_template": "Set up a new, empty repository with the name {{project_name}}?",
   "instantiation_dict": {
-    "num": 31
+    "project_name": "awesome_program_aided_reasoning"
   },
-  "intent": "I have a lot of Nintendo Switch game cards now, help me find the best storage option to fit all 31 cards",
+  "intent": "Set up a new, empty repository with the name awesome_program_aided_reasoning?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match"
+      "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770/game-card-holder-storage-case-for-nintendo-switch-games-or-ps-vita-game-case-or-sd-memory-cards-black.html",
-    "program_html": [],
-    "url_note": "GOLD in PRED"
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/awesome_program_aided_reasoning",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "awesome_program_aided_reasoning"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 171
+  "intent_template_id": 292
 }

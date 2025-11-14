@@ -1,32 +1,32 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 53,
+  "task_id": 206,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com",
   "geolocation": null,
-  "intent_template": "How long does it take to walk from {{start}} to {{end}}?",
+  "intent_template": "How many commits did {{user}} make on {{date}}?",
   "instantiation_dict": {
-    "start": "Univ of Pittsburgh",
-    "end": "starbucks on Craig Street"
+    "user": "Eric",
+    "date": "3/2"
   },
-  "intent": "How long does it take to walk from Univ of Pittsburgh to starbucks on Craig Street?",
+  "intent": "How many commits did Eric make on 3/2?",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "18 min"
+      "must_include": [
+        "2"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "18 min"
+    "reference_answer_raw_annotation": "2"
   },
-  "intent_template_id": 68
+  "intent_template_id": 320
 }

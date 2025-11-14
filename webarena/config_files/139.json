@@ -1,32 +1,38 @@
 {
   "sites": [
-    "map"
+    "reddit"
   ],
-  "task_id": 139,
+  "task_id": 629,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "What is the estimated driving time between {{city1}} and {{city2}}?",
+  "intent_template": "Create a discussion post about \"{{topic}}\" in a relevant subreddit and ask users for their opinions with the simple prompt, \"your opinion\"",
   "instantiation_dict": {
-    "city1": "the hometown of Joe Biden",
-    "city2": "Bridgeport"
+    "topic": "Fun thing to do in Pittsburgh"
   },
-  "intent": "What is the estimated driving time between the hometown of Joe Biden and Bridgeport?",
+  "intent": "Create a discussion post about \"Fun thing to do in Pittsburgh\" in a relevant subreddit and ask users for their opinions with the simple prompt, \"your opinion\"",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "3h 20min"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "3h 20min"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/pittsburgh",
+    "program_html": [
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
+        "required_contents": {
+          "must_include": [
+            "your opinion",
+            "Fun thing to do in Pittsburgh"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 51
+  "intent_template_id": 13
 }

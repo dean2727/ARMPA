@@ -2,32 +2,25 @@
   "sites": [
     "shopping"
   ],
-  "task_id": 146,
+  "task_id": 264,
   "require_login": true,
   "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "What is the {{option}} configuration of the {{product}} I bought {{time}}",
+  "intent_template": "I want to browse the products in the {{category}} category",
   "instantiation_dict": {
-    "option": "size",
-    "product": "picture frame",
-    "time": "Sep 2022"
+    "category": "Cabinets, Racks & Shelves"
   },
-  "intent": "What is the size configuration of the picture frame I bought Sep 2022",
+  "intent": "I want to browse the products in the Cabinets, Racks & Shelves category",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match"
     ],
-    "reference_answers": {
-      "must_include": [
-        "16x24"
-      ]
-    },
-    "reference_url": "",
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/office-products/office-furniture-lighting/cabinets-racks-shelves.html",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "16x24"
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 155
+  "intent_template_id": 211
 }

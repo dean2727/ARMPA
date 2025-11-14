@@ -1,19 +1,18 @@
 {
   "sites": [
-    "shopping"
+    "shopping_admin"
   ],
-  "task_id": 149,
+  "task_id": 6,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "What is the {{option}} configuration of the {{product}} I bought {{time}}",
+  "intent_template": "What are the top-{{n}} best-selling product in {{year}}",
   "instantiation_dict": {
-    "option": "color",
-    "product": "artifical plants",
-    "time": "Feb 2023"
+    "n": 5,
+    "year": 2023
   },
-  "intent": "What is the color configuration of the artifical plants I bought Feb 2023",
+  "intent": "What are the top-5 best-selling product in 2023",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -21,13 +20,17 @@
     ],
     "reference_answers": {
       "must_include": [
-        "Green-vines"
+        "Sprite Yoga Strap 6 foot",
+        "Overnight Duffle",
+        "Ida Workout Parachute Pant-29-Purple",
+        "Hawkeye Yoga Short-32-Blue",
+        "Sprite Stasis Ball 65 cm"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Green-vines"
+    "reference_answer_raw_annotation": "Sprite Yoga Strap 6 foot, Overnight Duffle, Ida Workout Parachute Pant-29-Purple, Hawkeye Yoga Short-32-Blue, Sprite Stasis Ball 65 cm"
   },
-  "intent_template_id": 155
+  "intent_template_id": 279
 }

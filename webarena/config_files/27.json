@@ -1,31 +1,36 @@
 {
   "sites": [
-    "reddit"
+    "wikipedia",
+    "map"
   ],
-  "task_id": 27,
+  "task_id": 430,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:9999",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Tell me the count of comments that have received more downvotes than upvotes for the user who made the latest post on the {{forum}} forum.",
+  "intent_template": "Find the page of {{description}} on the map.",
   "instantiation_dict": {
-    "forum": "Showerthoughts"
+    "description": "the college(s) where The Chair was filmed in Pennsylvania other than the ones in Pittsburgh"
   },
-  "intent": "Tell me the count of comments that have received more downvotes than upvotes for the user who made the latest post on the Showerthoughts forum.",
+  "intent": "Find the page of the college(s) where The Chair was filmed in Pennsylvania other than the ones in Pittsburgh on the map.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "0"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "0"
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('[id=\"sidebar_content\"').outerText",
+        "required_contents": {
+          "must_include": [
+            "Washington & Jefferson College"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 33
+  "intent_template_id": 371
 }

@@ -2,23 +2,61 @@
   "sites": [
     "shopping_admin"
   ],
-  "task_id": 157,
+  "task_id": 769,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Show all customers",
-  "instantiation_dict": {},
-  "intent": "Show all customers",
+  "intent_template": "We've received {{quantity}} {{product}}, please update the inventory.",
+  "instantiation_dict": {
+    "quantity": "378",
+    "product": "brown Aero daily fitness tee in every size"
+  },
+  "intent": "We've received 378 brown Aero daily fitness tee in every size, please update the inventory.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match"
+      "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin/customer/index/",
-    "program_html": [],
-    "url_note": "GOLD in PRED"
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/544/",
+        "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
+        "required_contents": {
+          "exact_match": "478"
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/547/",
+        "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
+        "required_contents": {
+          "exact_match": "478"
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/550/",
+        "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
+        "required_contents": {
+          "exact_match": "478"
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/553/",
+        "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
+        "required_contents": {
+          "exact_match": "478"
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/556/",
+        "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
+        "required_contents": {
+          "exact_match": "478"
+        }
+      }
+    ]
   },
-  "intent_template_id": 255
+  "intent_template_id": 241
 }

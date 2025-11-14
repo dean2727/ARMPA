@@ -1,19 +1,18 @@
 {
   "sites": [
-    "gitlab"
+    "shopping"
   ],
-  "task_id": 134,
+  "task_id": 144,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "How many commits did {{user}} make to {{repo}} on {{date}}?",
+  "intent_template": "How much I spent on {{category}} shopping during {{time}}",
   "instantiation_dict": {
-    "user": "kilian",
-    "repo": "a11yproject",
-    "date": "3/1/2023"
+    "category": "food",
+    "time": "from mid Jan to the end Jan 2023"
   },
-  "intent": "How many commits did kilian make to a11yproject on 3/1/2023?",
+  "intent": "How much I spent on food shopping during from mid Jan to the end Jan 2023",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -29,5 +28,5 @@
     "string_note": "",
     "reference_answer_raw_annotation": "0"
   },
-  "intent_template_id": 322
+  "intent_template_id": 162
 }

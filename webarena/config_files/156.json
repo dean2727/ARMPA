@@ -1,24 +1,31 @@
 {
   "sites": [
-    "gitlab"
+    "shopping_admin"
   ],
-  "task_id": 156,
+  "task_id": 122,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Checkout merge requests assigned to me",
-  "instantiation_dict": {},
-  "intent": "Checkout merge requests assigned to me",
+  "intent_template": "Tell me the reasons why customers like {{product}}",
+  "instantiation_dict": {
+    "product": "Olivia zip jacket"
+  },
+  "intent": "Tell me the reasons why customers like Olivia zip jacket",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match"
+      "string_match"
     ],
-    "reference_answers": null,
-    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/dashboard/merge_requests?assignee_username=byteblaze",
+    "reference_answers": {
+      "fuzzy_match": [
+        "Lightweight, comfortable and stylish. Good design and details."
+      ]
+    },
+    "reference_url": "",
     "program_html": [],
-    "url_note": "GOLD in PRED"
+    "string_note": "",
+    "reference_answer_raw_annotation": "Lightweight, comfortable, and stylish. Good design and details."
   },
-  "intent_template_id": 290
+  "intent_template_id": 250
 }

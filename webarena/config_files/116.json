@@ -1,39 +1,36 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 116,
+  "task_id": 412,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Show me the name of the customers who have expressed dissatisfaction with {{product}}?",
+  "intent_template": "Make the LICENSE of {{repo}} to Apache License",
   "instantiation_dict": {
-    "product": "tanks products"
+    "repo": "byteblaze/accessible-html-content-patterns"
   },
-  "intent": "Show me the name of the customers who have expressed dissatisfaction with tanks products?",
+  "intent": "Make the LICENSE of byteblaze/accessible-html-content-patterns to Apache License",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "Alexander",
-        "Carma",
-        "Dominic",
-        "Merrie",
-        "Monroe",
-        "Scotty",
-        "Shaunte",
-        "Teofila",
-        "Valorie"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Alexander, Carma, Dominic, Merrie, Monroe, Scotty, Shaunte, Teofila, Valorie"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/accessible-html-content-patterns/-/blob/main/LICENSE",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "Apache License",
+            "http://www.apache.org/licenses/LICENSE-2.0"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 245
+  "intent_template_id": 355
 }

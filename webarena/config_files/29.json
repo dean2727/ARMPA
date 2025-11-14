@@ -1,17 +1,17 @@
 {
   "sites": [
-    "reddit"
+    "shopping"
   ],
-  "task_id": 29,
+  "task_id": 232,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:9999",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Tell me the count of comments that have received more downvotes than upvotes for the user who made the latest post on the {{forum}} forum.",
+  "intent_template": "Get the order number of my most recent {{status}} order ",
   "instantiation_dict": {
-    "forum": "DIY"
+    "status": "pending"
   },
-  "intent": "Tell me the count of comments that have received more downvotes than upvotes for the user who made the latest post on the DIY forum.",
+  "intent": "Get the order number of my most recent pending order ",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,13 +19,13 @@
     ],
     "reference_answers": {
       "must_include": [
-        "1"
+        "189"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "1"
+    "reference_answer_raw_annotation": "000000189"
   },
-  "intent_template_id": 33
+  "intent_template_id": 213
 }

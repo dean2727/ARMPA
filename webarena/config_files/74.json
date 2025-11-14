@@ -1,35 +1,30 @@
 {
   "sites": [
-    "map"
+    "map",
+    "wikipedia"
   ],
-  "task_id": 74,
+  "task_id": 97,
   "require_login": true,
   "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Given the following locations, {{place_list}}, what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
-  "instantiation_dict": {
-    "place_list": [
-      "Carnegie Mellon University",
-      "apple store shadyside",
-      "starbucks on craig street"
-    ]
-  },
-  "intent": "Given the following locations, ['Carnegie Mellon University', 'apple store shadyside', 'starbucks on craig street'], what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
+  "intent_template": "Tell me the distance to drive from Carnegie Mellon University to the top computer science school in massachusetts",
+  "instantiation_dict": {},
+  "intent": "Tell me the distance to drive from Carnegie Mellon University to the top computer science school in massachusetts",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "The order is Carnegie Mellon University, starbucks on forbes ave, apple store shadyside"
+      "must_include": [
+        "914km"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Carnegie Mellon University, starbucks on forbes ave, apple store shadyside"
+    "reference_answer_raw_annotation": "914 km"
   },
-  "intent_template_id": 65
+  "intent_template_id": 120
 }

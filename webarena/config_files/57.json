@@ -1,38 +1,26 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 57,
+  "task_id": 340,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/primer/design",
   "geolocation": null,
-  "intent_template": "Tell me the closest {{place1}}(s) to {{place2}}",
+  "intent_template": "List all opened issues {{description}}",
   "instantiation_dict": {
-    "place1": "restaurant",
-    "place2": "university center at Carnegie Mellon University"
+    "description": "that report bugs"
   },
-  "intent": "Tell me the closest restaurant(s) to university center at Carnegie Mellon University",
+  "intent": "List all opened issues that report bugs",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match"
     ],
-    "reference_answers": {
-      "must_include": [
-        "El Gallo de Oro",
-        "Back Bar Grill",
-        "Grano",
-        "Beefsteak",
-        "Nourish",
-        "Schatz Dining Room",
-        "Au Bon Pain"
-      ]
-    },
-    "reference_url": "",
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/primer/design/-/issues/?label_name%5B%5D=type%3A%20bug%20%F0%9F%90%9E",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "El Gallo de Oro, Back Bar Grill, Grano, Beefsteak, Nourish, Schatz Dining Room, Au Bon Pain"
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 69
+  "intent_template_id": 299
 }

@@ -2,29 +2,32 @@
   "sites": [
     "gitlab"
   ],
-  "task_id": 180,
+  "task_id": 418,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Open my latest created issue that has {{keyword}} in its title to check if it is closed",
+  "intent_template": "Set my gitlab status as {{status}}.",
   "instantiation_dict": {
-    "keyword": "dependency"
+    "status": "Busy"
   },
-  "intent": "Open my latest created issue that has dependency in its title to check if it is closed",
+  "intent": "Set my gitlab status as Busy.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match",
-      "url_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "exact_match": "No"
-    },
-    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze/empathy-prompts/-/issues/18",
-    "program_html": [],
-    "reference_answer_raw_annotation": "Not closed",
-    "string_note": ""
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze",
+        "locator": "document.querySelector('.cover-status').lastChild.textContent",
+        "required_contents": {
+          "exact_match": "Busy"
+        }
+      }
+    ]
   },
-  "intent_template_id": 500
+  "intent_template_id": 361
 }

@@ -1,6 +1,7 @@
 """Replace the website placeholders with website domains from env_config
 Generate the test data"""
 import json
+import random
 
 from browser_env.env_config import *
 
@@ -18,7 +19,9 @@ def main() -> None:
         f.write(raw)
     # split to multiple files
     data = json.loads(raw)
-    for idx, item in enumerate(data):
+    # Randomly sample 200 items
+    sampled_data = random.sample(data, min(200, len(data)))
+    for idx, item in enumerate(sampled_data):
         with open(f"config_files/{idx}.json", "w") as f:
             json.dump(item, f, indent=2)
 

@@ -1,32 +1,39 @@
 {
   "sites": [
-    "shopping"
+    "reddit"
   ],
-  "task_id": 144,
+  "task_id": 610,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "How much I spent on {{category}} shopping during {{time}}",
+  "intent_template": "Post a review of my recent reading \"{{book}}\" in the r/books with my comment \"{{content}}\".",
   "instantiation_dict": {
-    "category": "food",
-    "time": "from mid Jan to the end Jan 2023"
+    "book": "To Kill a Mockingbird by Harper Lee",
+    "content": "good book!"
   },
-  "intent": "How much I spent on food shopping during from mid Jan to the end Jan 2023",
+  "intent": "Post a review of my recent reading \"To Kill a Mockingbird by Harper Lee\" in the r/books with my comment \"good book!\".",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "0"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "0"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/books",
+    "program_html": [
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
+        "required_contents": {
+          "must_include": [
+            "To Kill a Mockingbird by Harper Lee",
+            "good book!"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 162
+  "intent_template_id": 9
 }

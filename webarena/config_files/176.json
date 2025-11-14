@@ -2,31 +2,37 @@
   "sites": [
     "gitlab"
   ],
-  "task_id": 176,
+  "task_id": 663,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Open my latest updated issue that has keyword \"{{keyword}}\" in its title to check if it is closed",
+  "intent_template": "Open an issue to {{issue}} in {{repo}}.",
   "instantiation_dict": {
-    "keyword": "theme editor"
+    "repo": "metaseq",
+    "issue": "ask their plan on supporting Llama and other llama family models"
   },
-  "intent": "Open my latest updated issue that has keyword \"theme editor\" in its title to check if it is closed",
+  "intent": "Open an issue to ask their plan on supporting Llama and other llama family models in metaseq.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match",
-      "url_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "No, it is open"
-      ]
-    },
-    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze/a11y-syntax-highlighting/-/issues/1",
-    "program_html": [],
-    "reference_answer_raw_annotation": "Not closed",
-    "string_note": ""
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/root/metaseq/-/issues",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('.detail-page-description').outerText",
+        "required_contents": {
+          "must_include": [
+            "llama"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 310
+  "intent_template_id": 328
 }

@@ -1,33 +1,27 @@
 {
   "sites": [
-    "map"
+    "shopping"
   ],
-  "task_id": 18,
+  "task_id": 273,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Compare the time for walking and driving route from {{start}} to {{end}}",
+  "intent_template": "Show me products under ${{price}} in \"{{product_category}}\" category",
   "instantiation_dict": {
-    "start": "AMC Waterfront",
-    "end": "Univ of Pittsburgh"
+    "price": "199",
+    "product_category": "furtiture with accent"
   },
-  "intent": "Compare the time for walking and driving route from AMC Waterfront to Univ of Pittsburgh",
+  "intent": "Show me products under $199 in \"furtiture with accent\" category",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "driving: 15min",
-        "walking: 1h 47min"
-      ]
-    },
-    "reference_url": "",
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/home-kitchen/furniture/accent-furniture.html?price=0-199",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "driving: 15min, walking: 1h 47min."
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 73
+  "intent_template_id": 139
 }

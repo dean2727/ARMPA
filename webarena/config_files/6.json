@@ -1,18 +1,17 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 6,
+  "task_id": 169,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "What are the top-{{n}} best-selling product in {{year}}",
+  "intent_template": "Tell me the full names of the repositories where I made contributions and they got {{description}} stars?",
   "instantiation_dict": {
-    "n": 5,
-    "year": 2023
+    "description": "the most"
   },
-  "intent": "What are the top-5 best-selling product in 2023",
+  "intent": "Tell me the full names of the repositories where I made contributions and they got the most stars?",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -20,17 +19,14 @@
     ],
     "reference_answers": {
       "must_include": [
-        "Sprite Yoga Strap 6 foot",
-        "Overnight Duffle",
-        "Ida Workout Parachute Pant-29-Purple",
-        "Hawkeye Yoga Short-32-Blue",
-        "Sprite Stasis Ball 65 cm"
+        "a11yproject.com",
+        "design"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Sprite Yoga Strap 6 foot, Overnight Duffle, Ida Workout Parachute Pant-29-Purple, Hawkeye Yoga Short-32-Blue, Sprite Stasis Ball 65 cm"
+    "reference_answer_raw_annotation": "a11yproject.com, Primer/design"
   },
-  "intent_template_id": 279
+  "intent_template_id": 289
 }

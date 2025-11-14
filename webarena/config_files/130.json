@@ -2,30 +2,36 @@
   "sites": [
     "shopping_admin"
   ],
-  "task_id": 130,
+  "task_id": 499,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "What's the total number of items sold in the most recent {{k}} orders?",
+  "intent_template": "Update order #{{order}} with the {{service}} tracking number {{tracking}}",
   "instantiation_dict": {
-    "k": "5"
+    "tracking": "13849373987",
+    "order": "304",
+    "service": "USPS"
   },
-  "intent": "What's the total number of items sold in the most recent 5 orders?",
+  "intent": "Update order #304 with the USPS tracking number 13849373987",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "18"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "18"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/sales/order/commentsHistory/order_id/304/active_tab/order_shipments/",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "Tracking number 13849373987 for United States Postal Service assigned"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 1002
+  "intent_template_id": 284
 }

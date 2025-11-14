@@ -1,33 +1,32 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 185,
+  "task_id": 175,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Give me the {{Attribute}} of the products that have {{N}} units left",
+  "intent_template": "Open my latest updated issue that has keyword \"{{keyword}}\" in its title to check if it is closed",
   "instantiation_dict": {
-    "Attribute": "brand",
-    "N": "3"
+    "keyword": "dependency"
   },
-  "intent": "Give me the brand of the products that have 3 units left",
+  "intent": "Open my latest updated issue that has keyword \"dependency\" in its title to check if it is closed",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "string_match",
+      "url_match"
     ],
     "reference_answers": {
-      "must_include": [
-        "Eos",
-        "Minerva"
+      "fuzzy_match": [
+        "No, it is open"
       ]
     },
-    "reference_url": "",
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/empathy-prompts/-/issues/18",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Eos, Minerva"
+    "reference_answer_raw_annotation": "Not closed",
+    "string_note": ""
   },
-  "intent_template_id": 368
+  "intent_template_id": 310
 }

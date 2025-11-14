@@ -1,32 +1,44 @@
 {
   "sites": [
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 56,
+  "task_id": 773,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "How long does it take to walk from {{start}} to {{end}}?",
+  "intent_template": "Delete all {{review_type}}",
   "instantiation_dict": {
-    "start": "Carnegie Museum of Art",
-    "end": "a library at CMU"
+    "review_type": "pending negative reviews"
   },
-  "intent": "How long does it take to walk from Carnegie Museum of Art to a library at CMU?",
+  "intent": "Delete all pending negative reviews",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "11 min"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "11 min"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/351",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "Rating isn't Available"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/353",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "Rating isn't Available"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 68
+  "intent_template_id": 246
 }

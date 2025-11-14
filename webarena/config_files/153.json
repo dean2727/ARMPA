@@ -1,32 +1,43 @@
 {
   "sites": [
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 153,
+  "task_id": 707,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "What is the minimum travel time by car from {{location1}} to {{location2}}?",
+  "intent_template": "Today is 3/15/2023, generate a {{report}} {{time_span}}",
   "instantiation_dict": {
-    "location1": "REI",
-    "location2": "CMU"
+    "report": "sales order report",
+    "time_span": "for last year"
   },
-  "intent": "What is the minimum travel time by car from REI to CMU?",
+  "intent": "Today is 3/15/2023, generate a sales order report for last year",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "7min"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "7min"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/reports/report_sales/sales",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('[id=\"sales_report_from\"').value",
+        "required_contents": {
+          "exact_match": "1/1/2022"
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector('[id=\"sales_report_to\"').value",
+        "required_contents": {
+          "exact_match": "12/31/2022"
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 36
+  "intent_template_id": 268
 }

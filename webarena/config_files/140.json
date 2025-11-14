@@ -1,32 +1,44 @@
 {
   "sites": [
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 140,
+  "task_id": 776,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "What is the estimated driving time between {{city1}} and {{city2}}?",
+  "intent_template": "Delete all {{review_type}}",
   "instantiation_dict": {
-    "city1": "the city of Niagara Falls",
-    "city2": "the city of Yale University"
+    "review_type": "reviews from the scammer Carlo"
   },
-  "intent": "What is the estimated driving time between the city of Niagara Falls and the city of Yale University?",
+  "intent": "Delete all reviews from the scammer Carlo",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "8h 33min"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "8h 33min"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/93",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "Rating isn't Available"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/109",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "Rating isn't Available"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 51
+  "intent_template_id": 246
 }

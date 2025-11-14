@@ -1,32 +1,29 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 193,
+  "task_id": 295,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Get the total payment amount of the last {{N}} {{status}} orders",
+  "intent_template": "Show me the command to clone {{repo}} with SSH.",
   "instantiation_dict": {
-    "status": "completed",
-    "N": "2"
+    "repo": "metaseq"
   },
-  "intent": "Get the total payment amount of the last 2 completed orders",
+  "intent": "Show me the command to clone metaseq with SSH.",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "must_include": [
-        "182.4"
-      ]
+      "exact_match": "git clone ssh://git@metis.lti.cs.cmu.edu:2222/root/metaseq.git"
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "182.4"
+    "reference_answer_raw_annotation": "git clone ssh://git@metis.lti.cs.cmu.edu:2222/root/metaseq.git"
   },
-  "intent_template_id": 367
+  "intent_template_id": 329
 }

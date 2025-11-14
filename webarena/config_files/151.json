@@ -1,32 +1,32 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 151,
+  "task_id": 786,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/vinta/awesome-python",
   "geolocation": null,
-  "intent_template": "What is the minimum travel time by car from {{location1}} to {{location2}}?",
+  "intent_template": "Tell me the {{attribute}} of the contributor who has the most commits to branch {{branch_name}}",
   "instantiation_dict": {
-    "location1": "CMU",
-    "location2": "University of Pittsburgh"
+    "branch_name": "main",
+    "attribute": "number of commits"
   },
-  "intent": "What is the minimum travel time by car from CMU to University of Pittsburgh?",
+  "intent": "Tell me the number of commits of the contributor who has the most commits to branch main",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "4min"
+      "must_include": [
+        "412"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "4min"
+    "reference_answer_raw_annotation": "412"
   },
-  "intent_template_id": 36
+  "intent_template_id": 316
 }

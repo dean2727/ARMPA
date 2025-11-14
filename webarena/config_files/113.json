@@ -1,17 +1,15 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 113,
+  "task_id": 165,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/sandgrens-swedish-handmade-wooden-clog-sandal-copenhagen.html",
   "geolocation": null,
-  "intent_template": "Show me the customers who have expressed dissatisfaction with {{product}}?",
-  "instantiation_dict": {
-    "product": "Olivia zip jacket"
-  },
-  "intent": "Show me the customers who have expressed dissatisfaction with Olivia zip jacket?",
+  "intent_template": "What are the main criticisms of this product? Please extract the relevant sentences.",
+  "instantiation_dict": {},
+  "intent": "What are the main criticisms of this product? Please extract the relevant sentences.",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,14 +17,18 @@
     ],
     "reference_answers": {
       "must_include": [
-        "Emma Lopez",
-        "Seam Miller"
+        "The 39 was too small. I am afraid the 40 will be too big",
+        "I was very sad when the shoe rubbed up against my baby toe",
+        "I had to return them because I knew in time it would tear up my feet",
+        "The problem is that the strap is made of some really stiff leather and is painful to my heel",
+        "The front is also uncomfortably tight",
+        "The Dansko's were similar (not as bad) and loosened up over time"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Emma Lopez, Seam Miller"
+    "reference_answer_raw_annotation": "The 39 was too small. I am afraid the 40 will be too big. I was very sad when the shoe rubbed up against my baby toe. I had to return them because I knew in time it would tear up my feet. The problem is that the strap is made of some really stiff leather and is painful to my heel. The front is also uncomfortably tight. The Dansko's were similar (not as bad) and loosened up over time."
   },
-  "intent_template_id": 245
+  "intent_template_id": 136
 }

@@ -2,16 +2,16 @@
   "sites": [
     "map"
   ],
-  "task_id": 93,
+  "task_id": 89,
   "require_login": true,
   "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
   "intent_template": "Which US states border {{state}}?",
   "instantiation_dict": {
-    "state": "New Hampshire"
+    "state": "Connecticut"
   },
-  "intent": "Which US states border New Hampshire?",
+  "intent": "Which US states border Connecticut?",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,15 +19,15 @@
     ],
     "reference_answers": {
       "must_include": [
+        "Rhode Island",
         "Massachusetts",
-        "Vermont",
-        "Maine"
+        "New York"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Massachusetts, Vermont, Maine"
+    "reference_answer_raw_annotation": "Rhode Island, Massachusetts, New York"
   },
   "intent_template_id": 67
 }
