@@ -116,9 +116,10 @@ python run.py \
   --model gpt-3.5-turbo \
   --result_dir <your_result_dir>
 
-# For Together API, with memories
+# For ARMPA project:
 # store_memory will store trajectory steps (cues -> action + other metadata)
-# get_memory will recall 
+# get_memory will recall memories at each step (TODO: make these be memories from the recall agent)
+# num_memories is the number of top k memories to retrieve (TODO: recall agent later chooses amongst these)
 python run.py \
   --instruction_path agent/prompts/raw/p_direct_id_actree_2s_no_na.py \
   --agent_type litellm \
