@@ -1,39 +1,31 @@
 {
   "sites": [
-    "reddit",
-    "gitlab"
+    "shopping"
   ],
-  "task_id": 682,
+  "task_id": 233,
   "require_login": true,
-  "storage_state": "./.auth/gitlab.reddit_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Find a GitLab repository related to {{topic}} and make a Reddit post linking to it in a relevant subreddit",
+  "intent_template": "Get the order number of my most recent {{status}} order ",
   "instantiation_dict": {
-    "topic": "chatGPT"
+    "status": "complete"
   },
-  "intent": "Find a GitLab repository related to chatGPT and make a Reddit post linking to it in a relevant subreddit",
+  "intent": "Get the order number of my most recent complete order ",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/machinelearning |OR| http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/singularity |OR| http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/deeplearning |OR| http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/technology",
-    "program_html": [
-      {
-        "url": "last",
-        "locator": "document.querySelector('.submission__inner').outerText",
-        "required_contents": {
-          "must_include": [
-            "chatgpt",
-            "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/convexegg/chatgpt"
-          ]
-        }
-      }
-    ],
-    "url_note": "GOLD in PRED"
+    "reference_answers": {
+      "must_include": [
+        "180"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "000000180"
   },
-  "intent_template_id": 116
+  "intent_template_id": 213
 }

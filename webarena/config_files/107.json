@@ -1,18 +1,19 @@
 {
   "sites": [
-    "reddit"
+    "gitlab"
   ],
-  "task_id": 619,
+  "task_id": 668,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/pics",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Re-post the image of {{content}} in this page to {{subreddit}} subreddit and note \"from /f/pics\"",
+  "intent_template": "Submit a merge request for {{source_branch}} branch to be merged into {{target_branch}} branch, assign {{reviewer}} as the reviewer",
   "instantiation_dict": {
-    "content": "costume contest",
-    "subreddit": "funny"
+    "source_branch": "a11yproject.com/redesign",
+    "target_branch": "master",
+    "reviewer": "Justin Armstrong"
   },
-  "intent": "Re-post the image of costume contest in this page to funny subreddit and note \"from /f/pics\"",
+  "intent": "Submit a merge request for a11yproject.com/redesign branch to be merged into master branch, assign Justin Armstrong as the reviewer",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -20,28 +21,33 @@
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/funny",
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com/-/merge_requests",
     "program_html": [
       {
-        "url": "func:reddit_get_post_url('__last_url__')",
-        "locator": "document.querySelector('.submission__inner').outerText",
+        "url": "last",
+        "locator": "document.querySelectorAll(\".detail-page-description > a.gl-font-monospace\")[0].outerText",
         "required_contents": {
-          "must_include": [
-            "from /f/pics"
-          ]
+          "exact_match": "redesign"
         }
       },
       {
-        "url": "func:reddit_get_post_url('__last_url__')",
-        "locator": "[...document.querySelector('.submission__inner').querySelectorAll('[href],[src]')].map(elem => elem.getAttribute('href') || elem.getAttribute('src')).join(' ')",
+        "url": "last",
+        "locator": "document.querySelectorAll(\".detail-page-description > a.gl-font-monospace\")[1].outerText",
+        "required_contents": {
+          "exact_match": "main"
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector('.block.reviewer').outerText",
         "required_contents": {
           "must_include": [
-            "bd8bc5f4c846aac4df08626faa3a34a7d47c8f3bdd92bf615a54afd939f063a7.jpg"
+            "Justin Armstrong"
           ]
         }
       }
     ],
     "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 11
+  "intent_template_id": 335
 }

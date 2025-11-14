@@ -1,31 +1,26 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 79,
+  "task_id": 239,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "What is the total count of {{status}} reviews amongst all the reviews?",
+  "intent_template": "I am doing a market survey for one stop market, show me the most expensive product from {{product_category}} category",
   "instantiation_dict": {
-    "status": "Not Approved"
+    "product_category": "nutrition bars and drinks"
   },
-  "intent": "What is the total count of Not Approved reviews amongst all the reviews?",
+  "intent": "I am doing a market survey for one stop market, show me the most expensive product from nutrition bars and drinks category",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match"
     ],
-    "reference_answers": {
-      "must_include": [
-        "0"
-      ]
-    },
-    "reference_url": "",
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/kellogg-s-special-k-protein-meal-bars-chocolate-caramel-12-7oz-6-count.html",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "0"
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 277
+  "intent_template_id": 138
 }

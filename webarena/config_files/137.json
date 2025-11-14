@@ -1,54 +1,31 @@
 {
   "sites": [
-    "reddit"
+    "shopping_admin"
   ],
-  "task_id": 720,
+  "task_id": 216,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Like all submissions created by {{user}} in subreddit {{subreddit}}",
+  "intent_template": "What are the key aspects that the customers don't like about {{product}}",
   "instantiation_dict": {
-    "subreddit": "earthporn",
-    "user": "CameronKelsey"
+    "product": "Electra Bra Top"
   },
-  "intent": "Like all submissions created by CameronKelsey in subreddit earthporn",
+  "intent": "What are the key aspects that the customers don't like about Electra Bra Top",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "fuzzy_match": [
+        "Not true to size"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/EarthPorn/98332/my-favorite-place-on-the-planet-henry-s-fork-of-the-snake",
-        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
-        "required_contents": {
-          "must_include": [
-            "vote vote--user-upvoted"
-          ]
-        }
-      },
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/EarthPorn/98297/2-years-later-this-is-still-one-of-the-most-incredible",
-        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
-        "required_contents": {
-          "must_include": [
-            "vote vote--user-upvoted"
-          ]
-        }
-      },
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/EarthPorn/98256/i-can-t-wait-for-all-this-green-to-start-coming-back-little",
-        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
-        "required_contents": {
-          "must_include": [
-            "vote vote--user-upvoted"
-          ]
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Not true to size"
   },
-  "intent_template_id": 25
+  "intent_template_id": 249
 }

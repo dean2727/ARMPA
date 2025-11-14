@@ -1,53 +1,31 @@
 {
   "sites": [
-    "gitlab"
+    "map"
   ],
-  "task_id": 806,
+  "task_id": 222,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Submit a merge request for {{source_branch}} branch to be merged into {{target_branch}} branch, assign {{reviewer}} as the reviewer",
+  "intent_template": "I am at CMU Pittsburgh, how long it takes to drive to the nearest {{location}}",
   "instantiation_dict": {
-    "source_branch": "a11yproject.com/redesign",
-    "target_branch": "markdown-figure-block",
-    "reviewer": "myself"
+    "location": "cold stone ice cream"
   },
-  "intent": "Submit a merge request for a11yproject.com/redesign branch to be merged into markdown-figure-block branch, assign myself as the reviewer",
+  "intent": "I am at CMU Pittsburgh, how long it takes to drive to the nearest cold stone ice cream",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com/-/merge_requests",
-    "program_html": [
-      {
-        "url": "last",
-        "locator": "document.querySelectorAll(\".detail-page-description > a.gl-font-monospace\")[0].outerText",
-        "required_contents": {
-          "exact_match": "redesign"
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelectorAll(\".detail-page-description > a.gl-font-monospace\")[1].outerText",
-        "required_contents": {
-          "exact_match": "feature/markdown-figure-block"
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('.block.reviewer').outerText",
-        "required_contents": {
-          "must_include": [
-            "Byte Blaze"
-          ]
-        }
-      }
-    ],
-    "url_note": "GOLD in PRED"
+    "reference_answers": {
+      "fuzzy_match": [
+        "3min"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "3min"
   },
-  "intent_template_id": 335
+  "intent_template_id": 35
 }

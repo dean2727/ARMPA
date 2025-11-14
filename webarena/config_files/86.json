@@ -1,19 +1,18 @@
 {
   "sites": [
-    "shopping",
     "reddit"
   ],
-  "task_id": 673,
+  "task_id": 612,
   "require_login": true,
   "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "Gather the titles of {{product}} reviews with {{rating}} rating from OneStopShop, and post them in the games subreddit under the title \"real user feedback on {{product}}\"",
+  "intent_template": "Post a review of my recent reading \"{{book}}\" in the r/books with my comment \"{{content}}\".",
   "instantiation_dict": {
-    "product": "Racing Wheel Overdrive for Xbox X",
-    "rating": "1 star"
+    "book": "big little lies",
+    "content": "can't stop it"
   },
-  "intent": "Gather the titles of Racing Wheel Overdrive for Xbox X reviews with 1 star rating from OneStopShop, and post them in the games subreddit under the title \"real user feedback on Racing Wheel Overdrive for Xbox X\"",
+  "intent": "Post a review of my recent reading \"big little lies\" in the r/books with my comment \"can't stop it\".",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -21,30 +20,20 @@
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/gaming",
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/books",
     "program_html": [
       {
         "url": "func:reddit_get_post_url('__last_url__')",
-        "locator": "document.querySelector('.submission__title').outerText",
-        "required_contents": {
-          "exact_match": "real user feedback on Racing Wheel Overdrive for Xbox X"
-        }
-      },
-      {
-        "url": "func:reddit_get_post_url('__last_url__')",
-        "locator": "document.querySelector('.submission__body').outerText",
+        "locator": "document.querySelector('.submission__inner').outerText",
         "required_contents": {
           "must_include": [
-            "Unable to set neutral steering",
-            "Doesn\u2019t work with PC",
-            "Crazy problems in automatic mode",
-            "pedals stopped working",
-            "Only works with certain games"
+            "big little lies",
+            "can't stop it"
           ]
         }
       }
     ],
     "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 101
+  "intent_template_id": 9
 }

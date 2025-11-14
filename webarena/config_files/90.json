@@ -1,87 +1,36 @@
 {
   "sites": [
-    "shopping_admin"
+    "wikipedia",
+    "map"
   ],
-  "task_id": 696,
+  "task_id": 430,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Add a simple product named {{product}} with {{stock}} in stock, available in size {{size}} and color {{color}}, priced at ${{price}}",
+  "intent_template": "Find the page of {{description}} on the map.",
   "instantiation_dict": {
-    "product": "FancyBoy Man Causal Jeans",
-    "stock": "42",
-    "size": "34",
-    "color": "Blue",
-    "price": "169.99"
+    "description": "the college(s) where The Chair was filmed in Pennsylvania other than the ones in Pittsburgh"
   },
-  "intent": "Add a simple product named FancyBoy Man Causal Jeans with 42 in stock, available in size 34 and color Blue, priced at $169.99",
+  "intent": "Find the page of the college(s) where The Chair was filmed in Pennsylvania other than the ones in Pittsburgh on the map.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product",
+    "reference_url": "",
     "program_html": [
       {
         "url": "last",
-        "locator": "document.querySelector('[name=\"product[name]\"').value",
+        "locator": "document.querySelector('[id=\"sidebar_content\"').outerText",
         "required_contents": {
           "must_include": [
-            "FancyBoy Man Causal Jeans"
-          ]
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
-        "required_contents": {
-          "exact_match": "42"
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"product[price]\"').value",
-        "required_contents": {
-          "exact_match": "169.99"
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[data-role=\"selected-option\"').outerText",
-        "required_contents": {
-          "must_include": [
-            "bottom"
-          ]
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"product[size]\"').value",
-        "required_contents": {
-          "exact_match": "177"
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"product[color]\"').value",
-        "required_contents": {
-          "exact_match": "50"
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[data-index=\"category_ids\"').outerText",
-        "required_contents": {
-          "must_include": [
-            "bottoms"
+            "Washington & Jefferson College"
           ]
         }
       }
-    ],
-    "url_note": "GOLD in PRED"
+    ]
   },
-  "intent_template_id": 256
+  "intent_template_id": 371
 }

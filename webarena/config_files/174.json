@@ -1,31 +1,30 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 214,
+  "task_id": 179,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "What are the key aspects that the customers don't like about {{product}}",
+  "intent_template": "Open my latest created issue that has {{keyword}} in its title to check if it is closed",
   "instantiation_dict": {
-    "product": "Zing Jump Rope"
+    "keyword": "feature"
   },
-  "intent": "What are the key aspects that the customers don't like about Zing Jump Rope",
+  "intent": "Open my latest created issue that has feature in its title to check if it is closed",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "string_match",
+      "url_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "It is hard to find the right size. Won't last long"
-      ]
+      "exact_match": "Yes"
     },
-    "reference_url": "",
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com/-/issues/1517",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "It is hard to find the right size. Won't last long"
+    "reference_answer_raw_annotation": "Closed",
+    "string_note": ""
   },
-  "intent_template_id": 249
+  "intent_template_id": 500
 }

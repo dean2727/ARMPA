@@ -1,28 +1,30 @@
 {
   "sites": [
-    "shopping"
+    "map"
   ],
-  "task_id": 302,
+  "task_id": 365,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Show the most recent {{status}} order",
+  "intent_template": "Measure distance between {{location/address_1}} and {{location/address_2}} by walking",
   "instantiation_dict": {
-    "status": "out of delivery"
+    "location/address_1": "Carnegie Music Hall",
+    "location/address_2": "UPMC Shadyside"
   },
-  "intent": "Show the most recent out of delivery order",
+  "intent": "Measure distance between Carnegie Music Hall and UPMC Shadyside by walking",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": "N/A"
+      "exact_match": "2.2km"
     },
     "reference_url": "",
     "program_html": [],
-    "string_note": "there is no order in processing"
+    "string_note": "",
+    "reference_answer_raw_annotation": "2.2km"
   },
-  "intent_template_id": 180
+  "intent_template_id": 58
 }

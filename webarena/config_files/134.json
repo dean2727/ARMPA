@@ -1,32 +1,34 @@
 {
   "sites": [
-    "shopping"
+    "shopping_admin"
   ],
-  "task_id": 144,
+  "task_id": 458,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/1481/",
   "geolocation": null,
-  "intent_template": "How much I spent on {{category}} shopping during {{time}}",
+  "intent_template": "{{action}} the price of this product by {{amount}}",
   "instantiation_dict": {
-    "category": "food",
-    "time": "from mid Jan to the end Jan 2023"
+    "amount": "$5",
+    "action": "Reduce"
   },
-  "intent": "How much I spent on food shopping during from mid Jan to the end Jan 2023",
+  "intent": "Reduce the price of this product by $5",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "0"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "0"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/1481/",
+        "locator": "document.querySelector('[name=\"product[price]\"').value",
+        "required_contents": {
+          "exact_match": "27.00"
+        }
+      }
+    ]
   },
-  "intent_template_id": 162
+  "intent_template_id": 247
 }

@@ -1,34 +1,35 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 4,
+  "task_id": 397,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "What are the top-{{n}} best-selling product in {{period}}",
+  "intent_template": "Fork {{repo}}.",
   "instantiation_dict": {
-    "n": 3,
-    "period": "Jan 2023"
+    "repo": "MetaSeq"
   },
-  "intent": "What are the top-3 best-selling product in Jan 2023",
+  "intent": "Fork MetaSeq.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "Impulse Duffle",
-        "Overnight Duffle",
-        "Hawkeye Yoga Short-32-Blue"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Impulse Duffle, Overnight Duffle, Hawkeye Yoga Short-32-Blue"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/metaseq",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "metaseq"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 279
+  "intent_template_id": 352
 }

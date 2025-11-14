@@ -1,62 +1,32 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 769,
+  "task_id": 26,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/epson-workforce-wf-3620-wifi-direct-all-in-one-color-inkjet-printer-copier-scanner-amazon-dash-replenishment-ready.html",
   "geolocation": null,
-  "intent_template": "We've received {{quantity}} {{product}}, please update the inventory.",
+  "intent_template": "List out reviewers, if exist, who mention about {{description}}",
   "instantiation_dict": {
-    "quantity": "378",
-    "product": "brown Aero daily fitness tee in every size"
+    "description": "complain of the customer service"
   },
-  "intent": "We've received 378 brown Aero daily fitness tee in every size, please update the inventory.",
+  "intent": "List out reviewers, if exist, who mention about complain of the customer service",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "must_include": [
+        "Bob in Vegas",
+        "RemyR"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/544/",
-        "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
-        "required_contents": {
-          "exact_match": "478"
-        }
-      },
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/547/",
-        "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
-        "required_contents": {
-          "exact_match": "478"
-        }
-      },
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/550/",
-        "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
-        "required_contents": {
-          "exact_match": "478"
-        }
-      },
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/553/",
-        "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
-        "required_contents": {
-          "exact_match": "478"
-        }
-      },
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/556/",
-        "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
-        "required_contents": {
-          "exact_match": "478"
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Bob in Vegas, RemyRRemyR"
   },
-  "intent_template_id": 241
+  "intent_template_id": 222
 }

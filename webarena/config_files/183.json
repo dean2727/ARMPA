@@ -1,37 +1,32 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 500,
+  "task_id": 177,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Update order #{{order}} with the {{service}} tracking number {{tracking}}",
+  "intent_template": "Open my latest updated issue that has keyword \"{{keyword}}\" in its title to check if it is closed",
   "instantiation_dict": {
-    "tracking": "239028439840",
-    "order": "301",
-    "service": "DHL"
+    "keyword": "homepage content"
   },
-  "intent": "Update order #301 with the DHL tracking number 239028439840",
+  "intent": "Open my latest updated issue that has keyword \"homepage content\" in its title to check if it is closed",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match",
+      "url_match"
     ],
-    "reference_answers": null,
-    "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/sales/order/commentsHistory/order_id/301/active_tab/order_shipments/",
-        "locator": "",
-        "required_contents": {
-          "must_include": [
-            "Tracking number 239028439840 for DHL assigned"
-          ]
-        }
-      }
-    ]
+    "reference_answers": {
+      "fuzzy_match": [
+        "Yes, it is closed"
+      ]
+    },
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com/-/issues/719",
+    "program_html": [],
+    "reference_answer_raw_annotation": "closed",
+    "string_note": ""
   },
-  "intent_template_id": 284
+  "intent_template_id": 310
 }

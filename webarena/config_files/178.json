@@ -1,41 +1,35 @@
 {
   "sites": [
-    "reddit"
+    "gitlab"
   ],
-  "task_id": 640,
+  "task_id": 411,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Post a notice on a virtual meetup for {{interest}} enthusiasts on {{date}} in the {{subreddit}} subreddit",
+  "intent_template": "Make the LICENSE of {{repo}} to MIT license.",
   "instantiation_dict": {
-    "interest": "book reading",
-    "date": "March 15th",
-    "subreddit": "r/books"
+    "repo": "byteblaze/cloud-to-butt"
   },
-  "intent": "Post a notice on a virtual meetup for book reading enthusiasts on March 15th in the r/books subreddit",
+  "intent": "Make the LICENSE of byteblaze/cloud-to-butt to MIT license.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/books",
+    "reference_url": "",
     "program_html": [
       {
-        "url": "func:reddit_get_post_url('__last_url__')",
-        "locator": "document.querySelector('.submission__inner').outerText",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/cloud-to-butt/-/blob/master/LICENSE.txt",
+        "locator": "",
         "required_contents": {
           "must_include": [
-            "book reading",
-            "March 15th",
-            "virtual meetup"
+            "MIT license"
           ]
         }
       }
-    ],
-    "url_note": "GOLD in PRED"
+    ]
   },
-  "intent_template_id": 16
+  "intent_template_id": 355
 }

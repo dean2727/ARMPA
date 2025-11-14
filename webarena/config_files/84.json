@@ -2,29 +2,36 @@
   "sites": [
     "shopping_admin"
   ],
-  "task_id": 246,
+  "task_id": 677,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
   "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Show me the {{information}} of the customer who is the most unhappy with {{product}}",
+  "intent_template": "Lookup orders that are {{status}}",
   "instantiation_dict": {
-    "information": "name",
-    "product": "Chloe tank"
+    "status": "processing"
   },
-  "intent": "Show me the name of the customer who is the most unhappy with Chloe tank",
+  "intent": "Lookup orders that are processing",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "exact_match": "Teofila"
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Teofila"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/sales/order/",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector(\"div.admin__data-grid-filters-current\").outerText",
+        "required_contents": {
+          "must_include": [
+            "Processing"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 244
+  "intent_template_id": 253
 }

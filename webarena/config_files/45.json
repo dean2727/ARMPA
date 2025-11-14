@@ -1,72 +1,33 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 699,
+  "task_id": 420,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Draft a new marketing price rule for {{topic}} that offers {{rule}} for all customers",
+  "intent_template": "Set my gitlab status as {{status}}.",
   "instantiation_dict": {
-    "topic": "spring sale",
-    "rule": "a 20 percent discount site-wide"
+    "status": "Playing Badminton"
   },
-  "intent": "Draft a new marketing price rule for spring sale that offers a 20 percent discount site-wide for all customers",
+  "intent": "Set my gitlab status as Playing Badminton.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/sales_rule/promo_quote",
+    "reference_url": "",
     "program_html": [
       {
-        "url": "last",
-        "locator": "document.querySelector(\"[name='name'\").value",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze",
+        "locator": "document.querySelector('.cover-status').lastChild.textContent",
         "required_contents": {
-          "must_include": [
-            "spring sale"
-          ]
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"website_ids\"').selectedIndex",
-        "required_contents": {
-          "exact_match": "0"
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"customer_group_ids\"').selectedIndex",
-        "required_contents": {
-          "exact_match": "1"
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"simple_action\"').value",
-        "prep_actions": [
-          "document.querySelector('[data-index=\"actions\"]').querySelector('.admin__collapsible-title').click()"
-        ],
-        "required_contents": {
-          "exact_match": "by_percent"
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"discount_amount\"').value",
-        "prep_actions": [
-          "document.querySelector('[data-index=\"actions\"]').querySelector('.admin__collapsible-title').click()"
-        ],
-        "required_contents": {
-          "exact_match": "20"
+          "exact_match": "Playing Badminton"
         }
       }
-    ],
-    "url_note": "GOLD in PRED"
+    ]
   },
-  "intent_template_id": 258
+  "intent_template_id": 361
 }

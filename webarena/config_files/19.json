@@ -1,29 +1,32 @@
 {
   "sites": [
-    "gitlab"
+    "shopping"
   ],
-  "task_id": 296,
+  "task_id": 358,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Show me the command to clone {{repo}} with SSH.",
+  "intent_template": "Show me the {{info}} for order number {{order_number}}.",
   "instantiation_dict": {
-    "repo": "the best GAN python implementation"
+    "info": "shipping method",
+    "order_number": 187
   },
-  "intent": "Show me the command to clone the best GAN python implementation with SSH.",
+  "intent": "Show me the shipping method for order number 187.",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "exact_match": "ssh://git@metis.lti.cs.cmu.edu:2222/eriklindernoren/PyTorch-GAN.git"
+      "must_include": [
+        "Flat Rate - Fixed"
+      ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "ssh://git@metis.lti.cs.cmu.edu:2222/eriklindernoren/PyTorch-GAN.git"
+    "reference_answer_raw_annotation": "Flat Rate - Fixed"
   },
-  "intent_template_id": 329
+  "intent_template_id": 206
 }

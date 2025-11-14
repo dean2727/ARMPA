@@ -1,33 +1,36 @@
 {
   "sites": [
-    "gitlab"
+    "shopping"
   ],
-  "task_id": 419,
+  "task_id": 362,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Set my gitlab status as {{status}}.",
+  "intent_template": "Show me the {{info}} for order number {{order_number}}.",
   "instantiation_dict": {
-    "status": "Enjoying life"
+    "info": "billing address",
+    "order_number": "00178"
   },
-  "intent": "Set my gitlab status as Enjoying life.",
+  "intent": "Show me the billing address for order number 00178.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "must_include": [
+        "101 S San Mateo Dr",
+        "San Mateo",
+        "California",
+        "94010",
+        "United States"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze",
-        "locator": "document.querySelector('.cover-status').lastChild.textContent",
-        "required_contents": {
-          "exact_match": "Enjoying life"
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Emma Lopez, 101 S San Mateo Dr, San Mateo, California, 94010, United States"
   },
-  "intent_template_id": 361
+  "intent_template_id": 206
 }

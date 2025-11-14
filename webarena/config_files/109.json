@@ -1,41 +1,33 @@
 {
   "sites": [
-    "shopping"
+    "reddit"
   ],
-  "task_id": 657,
+  "task_id": 69,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "Fill the \"contact us\" form in the site for a refund on the {{product}} I bought, stating that it broke after just three days of use. Also, ensure to include the order number #{{order_id}} and the product SKU. Don't submit yet, I will check.",
+  "intent_template": "Among the top {{number}} post in \"{{subreddit}}\" forum, {{description}}",
   "instantiation_dict": {
-    "product": "speaker",
-    "order_id": "148"
+    "number": 10,
+    "subreddit": "books",
+    "description": "is there any post talks about supporting local book stores? If so, tell me the organizations involved"
   },
-  "intent": "Fill the \"contact us\" form in the site for a refund on the speaker I bought, stating that it broke after just three days of use. Also, ensure to include the order number #148 and the product SKU. Don't submit yet, I will check.",
+  "intent": "Among the top 10 post in \"books\" forum, is there any post talks about supporting local book stores? If so, tell me the organizations involved",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/contact",
-    "program_html": [
-      {
-        "url": "last",
-        "locator": "document.querySelector('[title=\"What\u2019s on your mind?\"').value",
-        "required_contents": {
-          "must_include": [
-            "refund",
-            "broke after three days of use",
-            "148",
-            "B003FVW3VA"
-          ]
-        }
-      }
-    ],
-    "url_note": "GOLD in PRED"
+    "reference_answers": {
+      "must_include": [
+        "bookshop.org"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "bookshop.org"
   },
-  "intent_template_id": 153
+  "intent_template_id": 17
 }

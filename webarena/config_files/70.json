@@ -2,35 +2,35 @@
   "sites": [
     "shopping"
   ],
-  "task_id": 362,
+  "task_id": 438,
   "require_login": true,
   "storage_state": "./.auth/shopping_state.json",
   "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Show me the {{info}} for order number {{order_number}}.",
+  "intent_template": "I previously ordered some {{product}} {{time}} and later cancelled. Can you reorder it for me?",
   "instantiation_dict": {
-    "info": "billing address",
-    "order_number": "00178"
+    "product": "a TV stand",
+    "time": "sometime around sep 2022"
   },
-  "intent": "Show me the billing address for order number 00178.",
+  "intent": "I previously ordered some a TV stand sometime around sep 2022 and later cancelled. Can you reorder it for me?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "101 S San Mateo Dr",
-        "San Mateo",
-        "California",
-        "94010",
-        "United States"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Emma Lopez, 101 S San Mateo Dr, San Mateo, California, 94010, United States"
+    "program_html": [
+      {
+        "url": "func:shopping_get_latest_order_url()",
+        "locator": "document.querySelector(\".order-details-items.ordered\").outerText",
+        "required_contents": {
+          "must_include": [
+            "B08PVHRRB7"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 206
+  "intent_template_id": 156
 }

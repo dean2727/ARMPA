@@ -1,36 +1,31 @@
 {
   "sites": [
-    "wikipedia",
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 430,
+  "task_id": 15,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Find the page of {{description}} on the map.",
+  "intent_template": "Tell me the the number of reviews that our store received by far that mention term \"{{term}}\"",
   "instantiation_dict": {
-    "description": "the college(s) where The Chair was filmed in Pennsylvania other than the ones in Pittsburgh"
+    "term": "best"
   },
-  "intent": "Find the page of the college(s) where The Chair was filmed in Pennsylvania other than the ones in Pittsburgh on the map.",
+  "intent": "Tell me the the number of reviews that our store received by far that mention term \"best\"",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "must_include": [
+        "2"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "last",
-        "locator": "document.querySelector('[id=\"sidebar_content\"').outerText",
-        "required_contents": {
-          "must_include": [
-            "Washington & Jefferson College"
-          ]
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "2"
   },
-  "intent_template_id": 371
+  "intent_template_id": 288
 }

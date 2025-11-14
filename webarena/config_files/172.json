@@ -1,39 +1,39 @@
 {
   "sites": [
-    "reddit"
+    "shopping_admin"
   ],
-  "task_id": 614,
+  "task_id": 550,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Post a review of my recent reading \"{{book}}\" in the r/books with my comment \"{{content}}\".",
+  "intent_template": "Add a new {{option}} {{value}} to {{base_setting}} {{product}}",
   "instantiation_dict": {
-    "book": "Gone with the wind",
-    "content": "It's a book with history"
+    "option": "size",
+    "value": "XXS",
+    "base_setting": "blue and purple",
+    "product": "Nona Fitness Tank"
   },
-  "intent": "Post a review of my recent reading \"Gone with the wind\" in the r/books with my comment \"It's a book with history\".",
+  "intent": "Add a new size XXS to blue and purple Nona Fitness Tank",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/books",
+    "reference_url": "",
     "program_html": [
       {
-        "url": "func:reddit_get_post_url('__last_url__')",
-        "locator": "document.querySelector('.submission__inner').outerText",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/1732/",
+        "locator": "document.querySelector('[data-index=\"configurable\"').outerText",
         "required_contents": {
           "must_include": [
-            "Gone with the wind",
-            "It's a book with history"
+            "Tank-XXS-Blue",
+            "Tank-XXS-Purple"
           ]
         }
       }
-    ],
-    "url_note": "GOLD in PRED"
+    ]
   },
-  "intent_template_id": 9
+  "intent_template_id": 252
 }

@@ -1,35 +1,35 @@
 {
   "sites": [
-    "gitlab"
+    "map"
   ],
-  "task_id": 483,
+  "task_id": 32,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "{{name}} wants to check my dotfile configurations. Please invite him to the repo as a guest.",
+  "intent_template": "I will arrive {{place}} soon. Provide the name of a {{target1}} in the vicinity, if available. Then, tell me the {{information}} to {{target2}} from the hotel.",
   "instantiation_dict": {
-    "name": "Koushik"
+    "place": "Pittsburgh Airport",
+    "information": "the walking distance",
+    "target1": "Hilton hotel",
+    "target2": "the nearest supermarket own by a local company"
   },
-  "intent": "Koushik wants to check my dotfile configurations. Please invite him to the repo as a guest.",
+  "intent": "I will arrive Pittsburgh Airport soon. Provide the name of a Hilton hotel in the vicinity, if available. Then, tell me the the walking distance to the nearest supermarket own by a local company from the hotel.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "must_include": [
+        "DoubleTree by Hilton Hotel Pittsburgh Airport",
+        "2.0km"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/dotfiles/-/project_members",
-        "locator": "func:gitlab_get_project_memeber_role(__page__, 'koush')",
-        "required_contents": {
-          "must_include": [
-            "Guest"
-          ]
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "DoubleTree by Hilton Hotel Pittsburgh Airport Distance: 2.0km"
   },
-  "intent_template_id": 294
+  "intent_template_id": 78
 }

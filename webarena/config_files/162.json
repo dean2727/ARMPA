@@ -1,36 +1,36 @@
 {
   "sites": [
-    "gitlab"
+    "map"
   ],
-  "task_id": 414,
+  "task_id": 372,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Make the LICENSE of {{repo}} to MIT license.",
+  "intent_template": "Pull up the description page of {{location}} on Map",
   "instantiation_dict": {
-    "repo": "byteblaze/dotfiles"
+    "location": "the Costco in Pittsburhg near a river"
   },
-  "intent": "Make the LICENSE of byteblaze/dotfiles to MIT license.",
+  "intent": "Pull up the description page of the Costco in Pittsburhg near a river on Map",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "",
+    "reference_url": null,
     "program_html": [
       {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/dotfiles/-/blob/main/LICENSE",
-        "locator": "",
+        "url": "last",
+        "locator": "document.querySelector('[id=\"sidebar_content\"').outerText",
         "required_contents": {
           "must_include": [
-            "MIT license",
-            "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software."
+            "Costco",
+            "Waterfront Drive West"
           ]
         }
       }
     ]
   },
-  "intent_template_id": 355
+  "intent_template_id": 52
 }

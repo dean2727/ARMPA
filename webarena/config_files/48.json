@@ -1,32 +1,33 @@
 {
   "sites": [
-    "shopping"
+    "reddit"
   ],
-  "task_id": 23,
+  "task_id": 399,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/3-pack-samsung-galaxy-s6-screen-protector-nearpow-tempered-glass-screen-protector-with-9h-hardness-crystal-clear-easy-bubble-free-installation-scratch-resist.html",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "List out reviewers, if exist, who mention about {{description}}",
+  "intent_template": "Change my reddit bio to \"{{content}}\"",
   "instantiation_dict": {
-    "description": "good fingerprint resistant"
+    "content": "I am a robot"
   },
-  "intent": "List out reviewers, if exist, who mention about good fingerprint resistant",
+  "intent": "Change my reddit bio to \"I am a robot\"",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "Rachel",
-        "T. Gannon"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Rachel, T. Gannon, "
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/user/MarvelsGrantMan136",
+        "locator": "document.querySelector(\".user-bio__biography\").outerText",
+        "required_contents": {
+          "exact_match": "I am a robot"
+        }
+      }
+    ]
   },
-  "intent_template_id": 222
+  "intent_template_id": 6
 }

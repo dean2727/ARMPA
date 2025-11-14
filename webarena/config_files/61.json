@@ -1,29 +1,117 @@
 {
   "sites": [
-    "shopping"
+    "reddit"
   ],
-  "task_id": 794,
+  "task_id": 724,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "Change the delivery address for my most recent order to {{address}}.",
+  "intent_template": "Like all submissions created by {{user}} in subreddit {{subreddit}}",
   "instantiation_dict": {
-    "address": "4000 Forbes Ave, Pittsburgh, PA"
+    "user": "Hrekires",
+    "subreddit": "news"
   },
-  "intent": "Change the delivery address for my most recent order to 4000 Forbes Ave, Pittsburgh, PA.",
+  "intent": "Like all submissions created by Hrekires in subreddit news",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": "N/A"
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "The shipping address cannot be changed after an order is placed in the website.",
-    "reference_answer_raw_annotation": "N/A"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/news/129816/gov-whitmer-signs-bills-to-repeal-right-to-work-restore",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/news/129808/disney-world-deal-with-union-will-raise-minimum-wage-to-18",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/news/129794/judge-halts-wyoming-abortion-ban-days-after-it-took-effect",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/news/129783/don-t-say-gay-lawmaker-pleads-guilty-to-covid-relief-fraud",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/news/129594/arizona-gov-katie-hobbs-refuses-to-proceed-with-execution",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/news/129508/tennessee-governor-oks-bill-to-cut-nashville-council-in-half",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/news/43839/philadelphia-da-larry-krasner-impeached-by-pa-house",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/news/43781/crypto-giant-ftx-to-file-for-bankruptcy-ceo-sam-bankman",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/news/43572/sec-doj-investigating-crypto-platform-ftx",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/news/43558/kansas-gov-laura-kelly-wins-re-election-defeating-gop",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 191
+  "intent_template_id": 25
 }

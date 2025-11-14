@@ -2,32 +2,29 @@
   "sites": [
     "map"
   ],
-  "task_id": 89,
+  "task_id": 253,
   "require_login": true,
   "storage_state": null,
   "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Which US states border {{state}}?",
+  "intent_template": "What is the {{information}} of {{location}}",
   "instantiation_dict": {
-    "state": "Connecticut"
+    "location": "Carnegie Mellon Caf\u00e9",
+    "information": "phone number"
   },
-  "intent": "Which US states border Connecticut?",
+  "intent": "What is the phone number of Carnegie Mellon Caf\u00e9",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "must_include": [
-        "Rhode Island",
-        "Massachusetts",
-        "New York"
-      ]
+      "fuzzy_match": "N/A"
     },
     "reference_url": "",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Rhode Island, Massachusetts, New York"
+    "string_note": "There is no such information in the map",
+    "reference_answer_raw_annotation": "N/A"
   },
-  "intent_template_id": 67
+  "intent_template_id": 501
 }

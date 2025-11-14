@@ -1,34 +1,40 @@
 {
   "sites": [
+    "reddit",
     "gitlab"
   ],
-  "task_id": 317,
+  "task_id": 688,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/gitlab.reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "List the {{attribute}} of the top 3 contributors to {{repo}} repo, ranked by the number of commits?",
+  "intent_template": "Promote {{repo}} to subreddit {{subreddit}} with the description from the repo itself.",
   "instantiation_dict": {
-    "repo": "metaseq",
-    "attribute": "name and number of commits"
+    "repo": "lahwaacz/arch-wiki-docs",
+    "subreddit": "science"
   },
-  "intent": "List the name and number of commits of the top 3 contributors to metaseq repo, ranked by the number of commits?",
+  "intent": "Promote lahwaacz/arch-wiki-docs to subreddit science with the description from the repo itself.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "Susan Zhang: 70",
-        "Stephen Roller: 51",
-        "Peter Albert: 12"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Susan Zhang: 70, Stephen Roller: 51, Peter Albert: 12"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/science",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('.submission__inner').outerText + [...document.querySelector('.submission__inner').querySelectorAll('[href],[src]')].map(elem => elem.getAttribute('href') || elem.getAttribute('src')).join(' ')",
+        "required_contents": {
+          "must_include": [
+            "A script to download pages from Arch Wiki for offline browsing",
+            "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/lahwaacz/arch-wiki-docs"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 324
+  "intent_template_id": 117
 }

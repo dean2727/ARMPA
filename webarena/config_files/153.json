@@ -1,43 +1,39 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 707,
+  "task_id": 799,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Today is 3/15/2023, generate a {{report}} {{time_span}}",
+  "intent_template": "create a new group \"{{name}}\" with members {{members}}",
   "instantiation_dict": {
-    "report": "sales order report",
-    "time_span": "for last year"
+    "name": "n-lab",
+    "members": "patou, egpast, westurner, jontutcher"
   },
-  "intent": "Today is 3/15/2023, generate a sales order report for last year",
+  "intent": "create a new group \"n-lab\" with members patou, egpast, westurner, jontutcher",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/reports/report_sales/sales",
+    "reference_url": "",
     "program_html": [
       {
-        "url": "last",
-        "locator": "document.querySelector('[id=\"sales_report_from\"').value",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/groups/n-lab/-/group_members",
+        "locator": "",
         "required_contents": {
-          "exact_match": "1/1/2022"
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[id=\"sales_report_to\"').value",
-        "required_contents": {
-          "exact_match": "12/31/2022"
+          "must_include": [
+            "@patou",
+            "@egpast",
+            "@westurner",
+            "@jontutcher"
+          ]
         }
       }
-    ],
-    "url_note": "GOLD in PRED"
+    ]
   },
-  "intent_template_id": 268
+  "intent_template_id": 600
 }

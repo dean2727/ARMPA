@@ -1,49 +1,38 @@
 {
   "sites": [
-    "gitlab"
+    "reddit"
   ],
-  "task_id": 577,
+  "task_id": 606,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "Add the following users to my {{repo}} as {{role}}: {{user_list}}",
+  "intent_template": "Find a subreddit focused on topics related to {{topic}}, and post my question, \"{{question}}\" there",
   "instantiation_dict": {
-    "repo": "GitHub timeline item management extension",
-    "role": "maintainer",
-    "user_list": [
-      "abisubramanya27",
-      "lahwaacz"
-    ]
+    "topic": "NYC",
+    "question": "is car necessary"
   },
-  "intent": "Add the following users to my GitHub timeline item management extension as maintainer: ['abisubramanya27', 'lahwaacz']",
+  "intent": "Find a subreddit focused on topics related to NYC, and post my question, \"is car necessary\" there",
   "require_reset": false,
   "eval": {
     "eval_types": [
+      "url_match",
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "",
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/nyc",
     "program_html": [
       {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/remove-board-movement-events-from-the-github-issue-timeline/-/project_members",
-        "locator": "func:gitlab_get_project_memeber_role(__page__, 'abisubramanya27')",
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
         "required_contents": {
           "must_include": [
-            "Maintainer"
-          ]
-        }
-      },
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/remove-board-movement-events-from-the-github-issue-timeline/-/project_members",
-        "locator": "func:gitlab_get_project_memeber_role(__page__, 'lahwaacz')",
-        "required_contents": {
-          "must_include": [
-            "Maintainer"
+            "is car necessary"
           ]
         }
       }
-    ]
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 351
+  "intent_template_id": 5
 }

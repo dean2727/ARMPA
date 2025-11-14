@@ -1,21 +1,18 @@
 {
   "sites": [
-    "gitlab"
+    "reddit"
   ],
-  "task_id": 579,
+  "task_id": 409,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/books/59421/friendly-reminder-bookshop-org-exists",
   "geolocation": null,
-  "intent_template": "Add the following users to my {{repo}} as {{role}}: {{user_list}}",
+  "intent_template": "Reply to {{position_description}} in this post with \"{{content_description}}\"",
   "instantiation_dict": {
-    "repo": "time tracking tool",
-    "role": "guest",
-    "user_list": [
-      "yjlou"
-    ]
+    "position_description": "the manager of the website",
+    "content_description": "thanks! I am a big fan of your website."
   },
-  "intent": "Add the following users to my time tracking tool as guest: ['yjlou']",
+  "intent": "Reply to the manager of the website in this post with \"thanks! I am a big fan of your website.\"",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -25,15 +22,15 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/timeit/-/project_members",
-        "locator": "func:gitlab_get_project_memeber_role(__page__, 'yjlou')",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/books/59421/-/comment/1235250",
+        "locator": "",
         "required_contents": {
           "must_include": [
-            "Guest"
+            "thanks! I am a big fan of your website."
           ]
         }
       }
     ]
   },
-  "intent_template_id": 351
+  "intent_template_id": 23
 }

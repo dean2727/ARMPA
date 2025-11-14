@@ -2,36 +2,31 @@
   "sites": [
     "gitlab"
   ],
-  "task_id": 568,
+  "task_id": 787,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/dehenne/awesome-visibility/-/graphs/master",
   "geolocation": null,
-  "intent_template": "Invite {{collaborator_account_list}} as collaborator to {{repo}} repo",
+  "intent_template": "Tell me the {{attribute}} of the contributor who has the most commits to branch {{branch_name}}",
   "instantiation_dict": {
-    "collaborator_account_list": "Abishek and Vinta",
-    "repo": "a11yproject.com"
+    "branch_name": "main",
+    "attribute": "number of followers"
   },
-  "intent": "Invite Abishek and Vinta as collaborator to a11yproject.com repo",
+  "intent": "Tell me the number of followers of the contributor who has the most commits to branch main",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "must_include": [
+        "0"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com/-/project_members",
-        "locator": "",
-        "required_contents": {
-          "must_include": [
-            "@abisubramanya27",
-            "@vinta"
-          ]
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "0"
   },
-  "intent_template_id": 293
+  "intent_template_id": 316
 }

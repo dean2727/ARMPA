@@ -1,41 +1,37 @@
 {
   "sites": [
-    "reddit"
+    "shopping_admin"
   ],
-  "task_id": 644,
+  "task_id": 500,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Post a notice on a virtual meetup for {{interest}} enthusiasts on {{date}} in the {{subreddit}} subreddit",
+  "intent_template": "Update order #{{order}} with the {{service}} tracking number {{tracking}}",
   "instantiation_dict": {
-    "interest": "Tears of Kingdom",
-    "date": "Dec 15th",
-    "subreddit": "games"
+    "tracking": "239028439840",
+    "order": "301",
+    "service": "DHL"
   },
-  "intent": "Post a notice on a virtual meetup for Tears of Kingdom enthusiasts on Dec 15th in the games subreddit",
+  "intent": "Update order #301 with the DHL tracking number 239028439840",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/games",
+    "reference_url": "",
     "program_html": [
       {
-        "url": "func:reddit_get_post_url('__last_url__')",
-        "locator": "document.querySelector('.submission__inner').outerText",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/sales/order/commentsHistory/order_id/301/active_tab/order_shipments/",
+        "locator": "",
         "required_contents": {
           "must_include": [
-            "Tears of Kingdom",
-            "Dec 15th",
-            "virtual meetup"
+            "Tracking number 239028439840 for DHL assigned"
           ]
         }
       }
-    ],
-    "url_note": "GOLD in PRED"
+    ]
   },
-  "intent_template_id": 16
+  "intent_template_id": 284
 }

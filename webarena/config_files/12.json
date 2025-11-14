@@ -1,72 +1,56 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 703,
+  "task_id": 751,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Draft a new marketing price rule for {{topic}} that offers {{rule}} for all customers",
+  "intent_template": "Start a private project {{project_name}} with {{template}} template and add {{account_list}} as members",
   "instantiation_dict": {
-    "topic": "Thanks giving sale",
-    "rule": "$40 discount on checkout"
+    "project_name": "AGISite",
+    "template": "JEKYLL",
+    "account_list": "Rohan and Vinta"
   },
-  "intent": "Draft a new marketing price rule for Thanks giving sale that offers $40 discount on checkout for all customers",
+  "intent": "Start a private project AGISite with JEKYLL template and add Rohan and Vinta as members",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/sales_rule/promo_quote",
+    "reference_url": "",
     "program_html": [
       {
-        "url": "last",
-        "locator": "document.querySelector(\"[name='name'\").value",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/AGISite",
+        "locator": "document.querySelector('.visibility-icon').getAttribute('title')",
         "required_contents": {
           "must_include": [
-            "Thanks giving sale"
+            "Private"
           ]
         }
       },
       {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"website_ids\"').selectedIndex",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/AGISite",
+        "locator": "document.querySelector('.home-panel-description-markdown').outerText",
         "required_contents": {
-          "exact_match": "0"
+          "must_include": [
+            "Example Jekyll site using GitLab Pages: https://pages.gitlab.io/jekyll |OR| A Jekyll site that uses Netlify for CI/CD instead of GitLab, but still with all the other great GitLab features."
+          ]
         }
       },
       {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"customer_group_ids\"').selectedIndex",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/AGISite/-/project_members",
+        "locator": "",
         "required_contents": {
-          "exact_match": "1"
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"simple_action\"').value",
-        "prep_actions": [
-          "document.querySelector('[data-index=\"actions\"]').querySelector('.admin__collapsible-title').click()"
-        ],
-        "required_contents": {
-          "exact_match": "cart_fixed"
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"discount_amount\"').value",
-        "prep_actions": [
-          "document.querySelector('[data-index=\"actions\"]').querySelector('.admin__collapsible-title').click()"
-        ],
-        "required_contents": {
-          "exact_match": "40"
+          "must_include": [
+            "@Seirdy",
+            "@vinta"
+          ]
         }
       }
-    ],
-    "url_note": "GOLD in PRED"
+    ]
   },
-  "intent_template_id": 258
+  "intent_template_id": 2100
 }

@@ -1,37 +1,30 @@
 {
   "sites": [
-    "gitlab"
+    "map"
   ],
-  "task_id": 389,
+  "task_id": 254,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Post \"{{content}}\" for the merge request related to {{mr}} in {{repo}} project",
+  "intent_template": "What is the {{information}} of {{location}}",
   "instantiation_dict": {
-    "mr": "octovisuals page",
-    "repo": "primer/design",
-    "content": "Thanks, working on reviews"
+    "location": "Western Pennsylvania Hospital",
+    "information": "phone number"
   },
-  "intent": "Post \"Thanks, working on reviews\" for the merge request related to octovisuals page in primer/design project",
+  "intent": "What is the phone number of Western Pennsylvania Hospital",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "exact_match": "4125785000"
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/primer/design/-/merge_requests/450",
-        "locator": "",
-        "required_contents": {
-          "must_include": [
-            "Thanks, working on reviews"
-          ]
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "4125785000"
   },
-  "intent_template_id": 348
+  "intent_template_id": 501
 }

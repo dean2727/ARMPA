@@ -1,18 +1,17 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 490,
+  "task_id": 465,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Change the page title of \"{{old-heading}}\" page on my site to \"{{heading}}\".",
+  "intent_template": "Add {{product}} to my wish list",
   "instantiation_dict": {
-    "old-heading": "About us",
-    "heading": "Secret"
+    "product": "Tide PODS Spring Meadow Scent HE Turbo Laundry Detergent Pacs, 81 Count"
   },
-  "intent": "Change the page title of \"About us\" page on my site to \"Secret\".",
+  "intent": "Add Tide PODS Spring Meadow Scent HE Turbo Laundry Detergent Pacs, 81 Count to my wish list",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -22,13 +21,15 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/cms/page/edit/page_id/5/",
-        "locator": "document.querySelector('input[name=\"title\"').value",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/wishlist/",
+        "locator": "document.querySelector('.products-grid.wishlist').outerText",
         "required_contents": {
-          "exact_match": "Secret"
+          "must_include": [
+            "Tide PODS Spring Meadow Scent HE Turbo Laundry Detergent Pacs, 81 Count"
+          ]
         }
       }
     ]
   },
-  "intent_template_id": 275
+  "intent_template_id": 186
 }

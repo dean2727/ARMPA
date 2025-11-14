@@ -2,43 +2,30 @@
   "sites": [
     "shopping_admin"
   ],
-  "task_id": 773,
+  "task_id": 215,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
   "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Delete all {{review_type}}",
+  "intent_template": "What are the key aspects that the customers don't like about {{product}}",
   "instantiation_dict": {
-    "review_type": "pending negative reviews"
+    "product": "Circe ice fleece"
   },
-  "intent": "Delete all pending negative reviews",
+  "intent": "What are the key aspects that the customers don't like about Circe ice fleece",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "fuzzy_match": [
+        "Material quality, fit, insufficient warmth, color"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/351",
-        "locator": "",
-        "required_contents": {
-          "must_include": [
-            "Rating isn't Available"
-          ]
-        }
-      },
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/353",
-        "locator": "",
-        "required_contents": {
-          "must_include": [
-            "Rating isn't Available"
-          ]
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Material quality, fit, insufficient warmth, color"
   },
-  "intent_template_id": 246
+  "intent_template_id": 249
 }

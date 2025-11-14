@@ -1,27 +1,30 @@
 {
   "sites": [
-    "gitlab"
+    "shopping_admin"
   ],
-  "task_id": 105,
+  "task_id": 201,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Display the list of issues in the {{repo}} repository that have labels related to {{label}}",
+  "intent_template": "Get the {{attribute}} of the {{status}} order",
   "instantiation_dict": {
-    "label": "OpenAPI Generator CLI",
-    "repo": "OpenAPITools/openapi-generator"
+    "attribute": "customer name",
+    "status": "earliest fraud suspect"
   },
-  "intent": "Display the list of issues in the OpenAPITools/openapi-generator repository that have labels related to OpenAPI Generator CLI",
+  "intent": "Get the customer name of the earliest fraud suspect order",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match"
+      "string_match"
     ],
-    "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/OpenAPITools/openapi-generator/-/issues/?label_name%5B%5D=OpenAPI%20Generator%20CLI",
+    "reference_answers": {
+      "fuzzy_match": "N/A"
+    },
+    "reference_url": "",
     "program_html": [],
-    "url_note": "GOLD in PRED"
+    "string_note": "There is no order of \"fraud suspect\" status",
+    "reference_answer_raw_annotation": "N/A"
   },
-  "intent_template_id": 349
+  "intent_template_id": 366
 }

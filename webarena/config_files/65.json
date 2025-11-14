@@ -1,33 +1,32 @@
 {
   "sites": [
-    "gitlab"
+    "shopping"
   ],
-  "task_id": 420,
+  "task_id": 125,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Set my gitlab status as {{status}}.",
+  "intent_template": "What is the price range of {{product}} in the One Stop Market?",
   "instantiation_dict": {
-    "status": "Playing Badminton"
+    "product": "teeth grinding mouth guard"
   },
-  "intent": "Set my gitlab status as Playing Badminton.",
+  "intent": "What is the price range of teeth grinding mouth guard in the One Stop Market?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "must_include": [
+        "1.46",
+        "85"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze",
-        "locator": "document.querySelector('.cover-status').lastChild.textContent",
-        "required_contents": {
-          "exact_match": "Playing Badminton"
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "$1.46 - $85"
   },
-  "intent_template_id": 361
+  "intent_template_id": 159
 }

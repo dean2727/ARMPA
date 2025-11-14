@@ -1,32 +1,33 @@
 {
   "sites": [
-    "gitlab"
+    "shopping_admin"
   ],
-  "task_id": 786,
+  "task_id": 504,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/vinta/awesome-python",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Tell me the {{attribute}} of the contributor who has the most commits to branch {{branch_name}}",
+  "intent_template": "Make all {{product}} as out of stock",
   "instantiation_dict": {
-    "branch_name": "main",
-    "attribute": "number of commits"
+    "product": "Selene yoga hoodie"
   },
-  "intent": "Tell me the number of commits of the contributor who has the most commits to branch main",
+  "intent": "Make all Selene yoga hoodie as out of stock",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "412"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "412"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/1108/",
+        "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][is_in_stock]\"').value",
+        "required_contents": {
+          "exact_match": "0"
+        }
+      }
+    ]
   },
-  "intent_template_id": 316
+  "intent_template_id": 287
 }

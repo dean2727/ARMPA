@@ -1,36 +1,35 @@
 {
   "sites": [
-    "reddit"
+    "shopping_admin"
   ],
-  "task_id": 651,
+  "task_id": 781,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/pittsburgh/45899/driving-in-pittsburgh-summed-up-by-one-traffic-sign",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Reply to {{position_description}} with my comment \"{{content_description}}\"",
+  "intent_template": "{{action}} the price of {{config}} by {{amount}}",
   "instantiation_dict": {
-    "position_description": "the post",
-    "content_description": "Yeah, pittsburgh traffic, you know..."
+    "amount": "37%",
+    "action": "Increase",
+    "config": "black fitness tshirts from Desiree with size XS"
   },
-  "intent": "Reply to the post with my comment \"Yeah, pittsburgh traffic, you know...\"",
+  "intent": "Increase the price of black fitness tshirts from Desiree with size XS by 37%",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/pittsburgh/45899/driving-in-pittsburgh-summed-up-by-one-traffic-sign",
+    "reference_url": "",
     "program_html": [
       {
-        "url": "last",
-        "locator": "document.querySelector('.comment__body').outerText",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/1573/",
+        "locator": "document.querySelector('[name=\"product[price]\"').value",
         "required_contents": {
-          "exact_match": "Yeah, pittsburgh traffic, you know..."
+          "exact_match": "32.88"
         }
       }
-    ],
-    "url_note": "GOLD in PRED"
+    ]
   },
-  "intent_template_id": 23
+  "intent_template_id": 742
 }

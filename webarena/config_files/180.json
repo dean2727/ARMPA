@@ -1,33 +1,33 @@
 {
   "sites": [
-    "gitlab"
+    "shopping_admin"
   ],
-  "task_id": 418,
+  "task_id": 196,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Set my gitlab status as {{status}}.",
+  "intent_template": "Compare the payment difference of the last {{N}} {{status_1}} orders and {{status_2}} orders",
   "instantiation_dict": {
-    "status": "Busy"
+    "status_1": "cancelled",
+    "status_2": "completed",
+    "N": "4"
   },
-  "intent": "Set my gitlab status as Busy.",
+  "intent": "Compare the payment difference of the last 4 cancelled orders and completed orders",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "must_include": [
+        "194.25"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze",
-        "locator": "document.querySelector('.cover-status').lastChild.textContent",
-        "required_contents": {
-          "exact_match": "Busy"
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "194.25"
   },
-  "intent_template_id": 361
+  "intent_template_id": 367
 }

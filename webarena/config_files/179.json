@@ -1,38 +1,33 @@
 {
   "sites": [
-    "shopping_admin"
+    "map"
   ],
-  "task_id": 549,
+  "task_id": 89,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Add a new {{option}} {{value}} to {{base_setting}} {{product}}",
+  "intent_template": "Which US states border {{state}}?",
   "instantiation_dict": {
-    "option": "size",
-    "value": "XXXL",
-    "base_setting": "green",
-    "product": "Minerva LumaTech V-Tee"
+    "state": "Connecticut"
   },
-  "intent": "Add a new size XXXL to green Minerva LumaTech V-Tee",
+  "intent": "Which US states border Connecticut?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "must_include": [
+        "Rhode Island",
+        "Massachusetts",
+        "New York"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/catalog/product/edit/id/1492/",
-        "locator": "document.querySelector('[data-index=\"configurable\"').outerText",
-        "required_contents": {
-          "must_include": [
-            "V-Tee-XXXL-Green"
-          ]
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Rhode Island, Massachusetts, New York"
   },
-  "intent_template_id": 252
+  "intent_template_id": 67
 }

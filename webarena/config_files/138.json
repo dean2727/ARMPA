@@ -1,31 +1,32 @@
 {
   "sites": [
-    "shopping"
+    "map"
   ],
-  "task_id": 521,
+  "task_id": 40,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Subscribe to the newsletter of OneStopMarket",
-  "instantiation_dict": {},
-  "intent": "Subscribe to the newsletter of OneStopMarket",
+  "intent_template": "Check if the {{place}} in pittsburgh can be reached in one hour by car from {{location}}",
+  "instantiation_dict": {
+    "place": "amc theatre",
+    "location": "hobart street"
+  },
+  "intent": "Check if the amc theatre in pittsburgh can be reached in one hour by car from hobart street",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "must_include": [
+        "Yes"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/newsletter/manage/",
-        "locator": "document.querySelector('[title=\"General Subscription\"').checked.toString()",
-        "required_contents": {
-          "exact_match": "true"
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Yes"
   },
-  "intent_template_id": 199
+  "intent_template_id": 77
 }

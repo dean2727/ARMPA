@@ -1,29 +1,45 @@
 {
   "sites": [
-    "shopping"
+    "shopping_admin"
   ],
-  "task_id": 797,
+  "task_id": 771,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Change the delivery address for my most recent order to {{address}}.",
-  "instantiation_dict": {
-    "address": "3 Oxford St, Cambridge, MA"
-  },
-  "intent": "Change the delivery address for my most recent order to 3 Oxford St, Cambridge, MA.",
+  "intent_template": "Approve the positive reviews to display in our store.",
+  "instantiation_dict": {},
+  "intent": "Approve the positive reviews to display in our store.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": "N/A"
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "The shipping address cannot be changed after an order is placed in the website.",
-    "reference_answer_raw_annotation": "N/A"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/352",
+        "locator": "document.querySelector('[name=\"status_id\"').value",
+        "required_contents": {
+          "exact_match": "1"
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/349",
+        "locator": "document.querySelector('[name=\"status_id\"').value",
+        "required_contents": {
+          "exact_match": "1"
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/347",
+        "locator": "document.querySelector('[name=\"status_id\"').value",
+        "required_contents": {
+          "exact_match": "1"
+        }
+      }
+    ]
   },
-  "intent_template_id": 191
+  "intent_template_id": 243
 }

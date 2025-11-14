@@ -1,34 +1,37 @@
 {
   "sites": [
-    "shopping"
+    "reddit"
   ],
-  "task_id": 165,
+  "task_id": 621,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/sandgrens-swedish-handmade-wooden-clog-sandal-copenhagen.html",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "What are the main criticisms of this product? Please extract the relevant sentences.",
-  "instantiation_dict": {},
-  "intent": "What are the main criticisms of this product? Please extract the relevant sentences.",
+  "intent_template": "Ask for advice about {{issue}} in a subreddit for relations",
+  "instantiation_dict": {
+    "issue": "cheat"
+  },
+  "intent": "Ask for advice about cheat in a subreddit for relations",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "The 39 was too small. I am afraid the 40 will be too big",
-        "I was very sad when the shoe rubbed up against my baby toe",
-        "I had to return them because I knew in time it would tear up my feet",
-        "The problem is that the strap is made of some really stiff leather and is painful to my heel",
-        "The front is also uncomfortably tight",
-        "The Dansko's were similar (not as bad) and loosened up over time"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "The 39 was too small. I am afraid the 40 will be too big. I was very sad when the shoe rubbed up against my baby toe. I had to return them because I knew in time it would tear up my feet. The problem is that the strap is made of some really stiff leather and is painful to my heel. The front is also uncomfortably tight. The Dansko's were similar (not as bad) and loosened up over time."
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/relationship_advice",
+    "program_html": [
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
+        "required_contents": {
+          "must_include": [
+            "cheat"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 136
+  "intent_template_id": 12
 }

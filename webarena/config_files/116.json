@@ -2,35 +2,31 @@
   "sites": [
     "gitlab"
   ],
-  "task_id": 412,
+  "task_id": 307,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com",
   "geolocation": null,
-  "intent_template": "Make the LICENSE of {{repo}} to Apache License",
+  "intent_template": "How many commits did {{user}} make {{period}}?",
   "instantiation_dict": {
-    "repo": "byteblaze/accessible-html-content-patterns"
+    "user": "Nic",
+    "period": "in April 2021"
   },
-  "intent": "Make the LICENSE of byteblaze/accessible-html-content-patterns to Apache License",
+  "intent": "How many commits did Nic make in April 2021?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "must_include": [
+        "16"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/accessible-html-content-patterns/-/blob/main/LICENSE",
-        "locator": "",
-        "required_contents": {
-          "must_include": [
-            "Apache License",
-            "http://www.apache.org/licenses/LICENSE-2.0"
-          ]
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "16"
   },
-  "intent_template_id": 355
+  "intent_template_id": 321
 }

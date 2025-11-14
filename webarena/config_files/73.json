@@ -1,31 +1,39 @@
 {
   "sites": [
-    "shopping"
+    "gitlab"
   ],
-  "task_id": 190,
+  "task_id": 579,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Tell me the total cost of my latest {{status}} order?",
+  "intent_template": "Add the following users to my {{repo}} as {{role}}: {{user_list}}",
   "instantiation_dict": {
-    "status": "complete"
+    "repo": "time tracking tool",
+    "role": "guest",
+    "user_list": [
+      "yjlou"
+    ]
   },
-  "intent": "Tell me the total cost of my latest complete order?",
+  "intent": "Add the following users to my time tracking tool as guest: ['yjlou']",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "65.32"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "65.32"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/timeit/-/project_members",
+        "locator": "func:gitlab_get_project_memeber_role(__page__, 'yjlou')",
+        "required_contents": {
+          "must_include": [
+            "Guest"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 214
+  "intent_template_id": 351
 }

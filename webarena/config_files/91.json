@@ -1,32 +1,31 @@
 {
   "sites": [
-    "map"
+    "shopping"
   ],
-  "task_id": 54,
+  "task_id": 321,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "How long does it take to walk from {{start}} to {{end}}?",
+  "intent_template": "How much refund I should expect from my order canlled in {{time}}, including shipping fee",
   "instantiation_dict": {
-    "start": "Carnegie Mellon University",
-    "end": "Univ of Pittsburgh"
+    "time": "2022"
   },
-  "intent": "How long does it take to walk from Carnegie Mellon University to Univ of Pittsburgh?",
+  "intent": "How much refund I should expect from my order canlled in 2022, including shipping fee",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "25 min"
+      "must_include": [
+        "3053.97"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "25 min"
+    "reference_answer_raw_annotation": "3053.97"
   },
-  "intent_template_id": 68
+  "intent_template_id": 160
 }

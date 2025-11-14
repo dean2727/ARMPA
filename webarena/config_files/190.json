@@ -2,33 +2,30 @@
   "sites": [
     "shopping_admin"
   ],
-  "task_id": 488,
+  "task_id": 129,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
   "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Change the page title of \"{{old-heading}}\" page on my site to \"{{heading}}\".",
+  "intent_template": "What's the total number of items sold in the most recent {{k}} orders?",
   "instantiation_dict": {
-    "old-heading": "Home Page",
-    "heading": "This is the home page!! Leave here!!"
+    "k": "4"
   },
-  "intent": "Change the page title of \"Home Page\" page on my site to \"This is the home page!! Leave here!!\".",
+  "intent": "What's the total number of items sold in the most recent 4 orders?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "must_include": [
+        "16"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/cms/page/edit/page_id/2/",
-        "locator": "document.querySelector('input[name=\"title\"').value",
-        "required_contents": {
-          "exact_match": "This is the home page!! Leave here!!"
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "16"
   },
-  "intent_template_id": 275
+  "intent_template_id": 1002
 }

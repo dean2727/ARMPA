@@ -1,57 +1,32 @@
 {
   "sites": [
-    "wikipedia",
-    "map"
+    "shopping"
   ],
-  "task_id": 741,
+  "task_id": 51,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Show me the way from {{location}} to the home stadium of {{sport_team}} {{time}}",
+  "intent_template": "Today is 6/12/2023. Tell me how many fulfilled orders I have {{period}}, and the total amount of money I spent.",
   "instantiation_dict": {
-    "location": "Carnegie Mellon University",
-    "sport_team": "Boston home NBA team",
-    "time": ""
+    "period": "over the past six month"
   },
-  "intent": "Show me the way from Carnegie Mellon University to the home stadium of Boston home NBA team ",
+  "intent": "Today is 6/12/2023. Tell me how many fulfilled orders I have over the past six month, and the total amount of money I spent.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "fuzzy_match": [
+        "12 orders",
+        "$1603.69 total spend"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"route_from\"').value",
-        "required_contents": {
-          "must_include": [
-            "Carnegie Mellon University",
-            "Pittsburgh"
-          ]
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('[name=\"route_to\"').value",
-        "required_contents": {
-          "must_include": [
-            "TD Garden",
-            "Boston",
-            "Massachusetts"
-          ]
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector(\"div#content select.routing_engines\").selectedIndex",
-        "required_contents": {
-          "exact_match": "1"
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "12 orders, $1603.69 total spend"
   },
-  "intent_template_id": 94
+  "intent_template_id": 197
 }

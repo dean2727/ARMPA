@@ -1,38 +1,33 @@
 {
   "sites": [
-    "reddit"
+    "shopping"
   ],
-  "task_id": 622,
+  "task_id": 518,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/sceptre-e195bd-srr-19-inch-720p-led-tv-true-black-2017.html",
   "geolocation": null,
-  "intent_template": "Ask for advice about {{issue}} in a subreddit for relations",
-  "instantiation_dict": {
-    "issue": "sexual harassment"
-  },
-  "intent": "Ask for advice about sexual harassment in a subreddit for relations",
+  "intent_template": "Add this product to my wishlist",
+  "instantiation_dict": {},
+  "intent": "Add this product to my wishlist",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/relationship_advice",
+    "reference_url": "",
     "program_html": [
       {
-        "url": "func:reddit_get_post_url('__last_url__')",
-        "locator": "document.querySelector('.submission__inner').outerText",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/wishlist/",
+        "locator": "document.querySelector('.products-grid.wishlist').outerText",
         "required_contents": {
           "must_include": [
-            "sexual",
-            "harassment"
+            "Sceptre E195BD-SRR 19-Inch 720P LED TV, True Black (2017)"
           ]
         }
       }
-    ],
-    "url_note": "GOLD in PRED"
+    ]
   },
-  "intent_template_id": 12
+  "intent_template_id": 196
 }

@@ -1,27 +1,44 @@
 {
   "sites": [
-    "shopping"
+    "shopping_admin"
   ],
-  "task_id": 353,
+  "task_id": 713,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "List products from {{product_category}} category by {{order}} price",
+  "intent_template": "Create a {{type}} report from {{start_date}} to {{end_date}}",
   "instantiation_dict": {
-    "product_category": "competitive swimwear",
-    "order": "ascending"
+    "type": "best sellers",
+    "start_date": "05/01/2022",
+    "end_date": "05/31/2023"
   },
-  "intent": "List products from competitive swimwear category by ascending price",
+  "intent": "Create a best sellers report from 05/01/2022 to 05/31/2023",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match"
+      "url_match",
+      "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/clothing-shoes-jewelry/sport-specific-clothing/competitive-swimwear.html?product_list_order=price",
-    "program_html": [],
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/reports/report_sales/bestsellers/",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('[id=\"sales_report_from\"').value",
+        "required_contents": {
+          "exact_match": "5/1/22"
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector('[id=\"sales_report_to\"').value",
+        "required_contents": {
+          "exact_match": "5/31/23"
+        }
+      }
+    ],
     "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 137
+  "intent_template_id": 271
 }

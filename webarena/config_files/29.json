@@ -2,16 +2,17 @@
   "sites": [
     "shopping"
   ],
-  "task_id": 232,
+  "task_id": 142,
   "require_login": true,
   "storage_state": "./.auth/shopping_state.json",
   "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Get the order number of my most recent {{status}} order ",
+  "intent_template": "How much I spent on {{category}} shopping during {{time}}",
   "instantiation_dict": {
-    "status": "pending"
+    "category": "hair care and hair style",
+    "time": "Jan 2023"
   },
-  "intent": "Get the order number of my most recent pending order ",
+  "intent": "How much I spent on hair care and hair style shopping during Jan 2023",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,13 +20,13 @@
     ],
     "reference_answers": {
       "must_include": [
-        "189"
+        "95.23"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "000000189"
+    "reference_answer_raw_annotation": "$95.23"
   },
-  "intent_template_id": 213
+  "intent_template_id": 162
 }

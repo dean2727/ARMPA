@@ -2,17 +2,18 @@
   "sites": [
     "gitlab"
   ],
-  "task_id": 799,
+  "task_id": 747,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
   "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "create a new group \"{{name}}\" with members {{members}}",
+  "intent_template": "Start a private project {{project_name}} with {{template}} template and add {{account_list}} as members",
   "instantiation_dict": {
-    "name": "n-lab",
-    "members": "patou, egpast, westurner, jontutcher"
+    "project_name": "awesome_web_agents",
+    "template": "blank",
+    "account_list": "Abishek, Vinta"
   },
-  "intent": "create a new group \"n-lab\" with members patou, egpast, westurner, jontutcher",
+  "intent": "Start a private project awesome_web_agents with blank template and add Abishek, Vinta as members",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -22,18 +23,34 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/groups/n-lab/-/group_members",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/awesome_web_agents",
+        "locator": "document.querySelector('.visibility-icon').getAttribute('title')",
+        "required_contents": {
+          "must_include": [
+            "Private"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/awesome_web_agents/-/commits",
         "locator": "",
         "required_contents": {
           "must_include": [
-            "@patou",
-            "@egpast",
-            "@westurner",
-            "@jontutcher"
+            "Initial commit"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/awesome_web_agents/-/project_members",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "@abisubramanya27",
+            "@vinta"
           ]
         }
       }
     ]
   },
-  "intent_template_id": 600
+  "intent_template_id": 2100
 }

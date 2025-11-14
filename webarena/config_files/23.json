@@ -1,42 +1,39 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 109,
+  "task_id": 570,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Presents the monthly count of successful orders {{period}} in MM:COUNT format",
+  "intent_template": "Invite {{collaborator_account_list}} as collaborator to {{repo}} repo",
   "instantiation_dict": {
-    "period": "from Jan to December 2022"
+    "collaborator_account_list": "Jakub K, Alex Dills, Alex Hutnik and Beno\u00eet Blanchon",
+    "repo": "my time tracking tool project"
   },
-  "intent": "Presents the monthly count of successful orders from Jan to December 2022 in MM:COUNT format",
+  "intent": "Invite Jakub K, Alex Dills, Alex Hutnik and Beno\u00eet Blanchon as collaborator to my time tracking tool project repo",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "January: 11 orders",
-        "Feburary: 16 orders",
-        "March: 14 orders",
-        "April: 7 orders",
-        "May: 8 orders",
-        "June: 13 orders",
-        "July: 9 orders",
-        "August: 8 orders",
-        "Sepetember: 10 orders",
-        "Octorbor: 4 orders",
-        "November: 5 orders",
-        "December: 10 orders"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "January: 11 orders Feburary: 16 orders March: 14 orders April: 7 orders May: 8 orders June: 13 orders July: 9 orders August: 8 orders Sepetember: 10 orders Octorbor: 4 orders November: 5 orders December: 10 orders  "
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/timeit/-/project_members",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "@lahwaacz",
+            "@V13Axel",
+            "@alexhutnik",
+            "@bblanchon"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 270
+  "intent_template_id": 293
 }

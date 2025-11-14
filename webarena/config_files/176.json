@@ -1,38 +1,32 @@
 {
   "sites": [
-    "gitlab"
+    "map"
   ],
-  "task_id": 663,
+  "task_id": 152,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Open an issue to {{issue}} in {{repo}}.",
+  "intent_template": "What is the minimum travel time by car from {{location1}} to {{location2}}?",
   "instantiation_dict": {
-    "repo": "metaseq",
-    "issue": "ask their plan on supporting Llama and other llama family models"
+    "location1": "Schenley park",
+    "location2": "Upitt"
   },
-  "intent": "Open an issue to ask their plan on supporting Llama and other llama family models in metaseq.",
+  "intent": "What is the minimum travel time by car from Schenley park to Upitt?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/root/metaseq/-/issues",
-    "program_html": [
-      {
-        "url": "last",
-        "locator": "document.querySelector('.detail-page-description').outerText",
-        "required_contents": {
-          "must_include": [
-            "llama"
-          ]
-        }
-      }
-    ],
-    "url_note": "GOLD in PRED"
+    "reference_answers": {
+      "fuzzy_match": [
+        "4min"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "4min"
   },
-  "intent_template_id": 328
+  "intent_template_id": 36
 }

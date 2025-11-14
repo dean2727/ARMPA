@@ -1,38 +1,37 @@
 {
   "sites": [
-    "shopping"
+    "map"
   ],
-  "task_id": 693,
+  "task_id": 236,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Draft an email to the shop owner via their contact us function for a coupon as {{reason}}",
+  "intent_template": "Where is the nearest {{location}} from {{location2}} {{condition}}",
   "instantiation_dict": {
-    "reason": "my refund is suppoed to be replaced by a coupon"
+    "location": "pharmacy",
+    "location2": "Carnegie Mellon",
+    "condition": "I can walk within 20mins"
   },
-  "intent": "Draft an email to the shop owner via their contact us function for a coupon as my refund is suppoed to be replaced by a coupon",
+  "intent": "Where is the nearest pharmacy from Carnegie Mellon I can walk within 20mins",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/contact",
-    "program_html": [
-      {
-        "url": "last",
-        "locator": "document.querySelector('[title=\"What\u2019s on your mind?\"').value",
-        "required_contents": {
-          "must_include": [
-            "coupon",
-            "refund"
-          ]
-        }
-      }
-    ],
-    "url_note": "GOLD in PRED"
+    "reference_answers": {
+      "must_include": [
+        "Schiller's Pharmacy",
+        "811",
+        "South Aiken Avenue",
+        "Shadyside",
+        "Pittsburgh"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Schiller's Pharmacy, 811, South Aiken Avenue, Shadyside, Pittsburgh, Allegheny County, 15232, United States"
   },
-  "intent_template_id": 163
+  "intent_template_id": 39
 }

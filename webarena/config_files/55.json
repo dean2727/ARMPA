@@ -1,31 +1,38 @@
 {
   "sites": [
-    "map"
+    "reddit"
   ],
-  "task_id": 383,
+  "task_id": 646,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "I am arriving at Pittsburgh Airport. Show me the name of a Hyatt hotel if there is any nearby. Tell me the names of supermarkets that are within 15mins driving from the hotel",
-  "instantiation_dict": {},
-  "intent": "I am arriving at Pittsburgh Airport. Show me the name of a Hyatt hotel if there is any nearby. Tell me the names of supermarkets that are within 15mins driving from the hotel",
+  "intent_template": "Post in {{subreddit}} subreddit about what could midjourney help the correpong field.",
+  "instantiation_dict": {
+    "subreddit": "DIY"
+  },
+  "intent": "Post in DIY subreddit about what could midjourney help the correpong field.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "Hyatt Regency Pittsburgh International Airport",
-        "Giant Eagle",
-        "ALDI"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Hyatt Regency Pittsburgh International Airport Giant Eagle, ALDI"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/diy",
+    "program_html": [
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
+        "required_contents": {
+          "must_include": [
+            "midjourney",
+            "help"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 782
+  "intent_template_id": 19
 }

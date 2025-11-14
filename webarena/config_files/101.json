@@ -1,38 +1,36 @@
 {
   "sites": [
-    "reddit"
+    "shopping"
   ],
-  "task_id": 628,
+  "task_id": 437,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Create a discussion post about \"{{topic}}\" in a relevant subreddit and ask users for their opinions with the simple prompt, \"your opinion\"",
+  "intent_template": "I previously ordered some {{product}} {{time}} and later cancelled. Can you reorder it for me?",
   "instantiation_dict": {
-    "topic": "long distance relationship"
+    "product": "a table lamp",
+    "time": "in May 2023"
   },
-  "intent": "Create a discussion post about \"long distance relationship\" in a relevant subreddit and ask users for their opinions with the simple prompt, \"your opinion\"",
+  "intent": "I previously ordered some a table lamp in May 2023 and later cancelled. Can you reorder it for me?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/relationship_advice",
+    "reference_url": "",
     "program_html": [
       {
-        "url": "func:reddit_get_post_url('__last_url__')",
-        "locator": "document.querySelector('.submission__inner').outerText",
+        "url": "func:shopping_get_latest_order_url()",
+        "locator": "document.querySelector(\".order-details-items.ordered\").outerText",
         "required_contents": {
           "must_include": [
-            "your opinion",
-            "long distance relationship"
+            "B072XS3F6W"
           ]
         }
       }
-    ],
-    "url_note": "GOLD in PRED"
+    ]
   },
-  "intent_template_id": 13
+  "intent_template_id": 156
 }

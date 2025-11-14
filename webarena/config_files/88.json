@@ -1,57 +1,31 @@
 {
   "sites": [
-    "gitlab"
+    "shopping_admin"
   ],
-  "task_id": 593,
+  "task_id": 62,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/dotfiles",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Create a milestone for the upcoming {{event}} starting on {{start_date}} and ending on {{end_date}}",
+  "intent_template": "Which customer has completed the {{quantifier}} number of orders in the entire history?",
   "instantiation_dict": {
-    "event": "task of merging all branches to main",
-    "start_date": "March 15, 2044",
-    "end_date": "March 30, 2044"
+    "quantifier": "most"
   },
-  "intent": "Create a milestone for the upcoming task of merging all branches to main starting on March 15, 2044 and ending on March 30, 2044",
+  "intent": "Which customer has completed the most number of orders in the entire history?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match",
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/dotfiles/-/milestones",
-    "program_html": [
-      {
-        "url": "last",
-        "locator": "document.querySelector(\"#content-body\").outerText",
-        "required_contents": {
-          "must_include": [
-            "all branches to main"
-          ]
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('.block.start_date').outerText",
-        "required_contents": {
-          "must_include": [
-            "Mar 15, 2044"
-          ]
-        }
-      },
-      {
-        "url": "last",
-        "locator": "document.querySelector('.block.due_date').outerText",
-        "required_contents": {
-          "must_include": [
-            "Mar 30, 2044"
-          ]
-        }
-      }
-    ],
-    "url_note": "GOLD in PRED"
+    "reference_answers": {
+      "must_include": [
+        "Jane Smith"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Jane Smith"
   },
-  "intent_template_id": 339
+  "intent_template_id": 276
 }

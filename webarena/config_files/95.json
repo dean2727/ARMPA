@@ -2,35 +2,28 @@
   "sites": [
     "shopping"
   ],
-  "task_id": 514,
+  "task_id": 117,
   "require_login": true,
   "storage_state": "./.auth/shopping_state.json",
   "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Add a {{product}} to my wish list.",
-  "instantiation_dict": {
-    "product": "white desk"
-  },
-  "intent": "Add a white desk to my wish list.",
+  "intent_template": "What is the date when I made my first purchase on this site?",
+  "instantiation_dict": {},
+  "intent": "What is the date when I made my first purchase on this site?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "program_html"
+      "string_match"
     ],
-    "reference_answers": null,
+    "reference_answers": {
+      "fuzzy_match": [
+        "3/2/22"
+      ]
+    },
     "reference_url": "",
-    "program_html": [
-      {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/wishlist/",
-        "locator": "document.querySelector('.products-grid.wishlist').outerText",
-        "required_contents": {
-          "must_include": [
-            "white",
-            "desk"
-          ]
-        }
-      }
-    ]
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "3/2/22"
   },
-  "intent_template_id": 189
+  "intent_template_id": 161
 }

@@ -1,19 +1,18 @@
 {
   "sites": [
-    "shopping_admin"
+    "reddit"
   ],
-  "task_id": 499,
+  "task_id": 727,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "Update order #{{order}} with the {{service}} tracking number {{tracking}}",
+  "intent_template": "DisLike all submissions created by {{user}} in subreddit {{subreddit}}",
   "instantiation_dict": {
-    "tracking": "13849373987",
-    "order": "304",
-    "service": "USPS"
+    "user": "PatientBuilder499",
+    "subreddit": "videos"
   },
-  "intent": "Update order #304 with the USPS tracking number 13849373987",
+  "intent": "DisLike all submissions created by PatientBuilder499 in subreddit videos",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -23,15 +22,15 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/sales/order/commentsHistory/order_id/304/active_tab/order_shipments/",
-        "locator": "",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/videos/115139/hundreds-of-civilian-turkish-volunteers-waiting-to-be-sent",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
         "required_contents": {
           "must_include": [
-            "Tracking number 13849373987 for United States Postal Service assigned"
+            "vote vote--user-downvoted"
           ]
         }
       }
     ]
   },
-  "intent_template_id": 284
+  "intent_template_id": 1510
 }

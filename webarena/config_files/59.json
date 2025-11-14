@@ -1,18 +1,17 @@
 {
   "sites": [
-    "gitlab"
+    "reddit"
   ],
-  "task_id": 570,
+  "task_id": 400,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "Invite {{collaborator_account_list}} as collaborator to {{repo}} repo",
+  "intent_template": "Change my reddit bio to \"{{content}}\"",
   "instantiation_dict": {
-    "collaborator_account_list": "Jakub K, Alex Dills, Alex Hutnik and Beno\u00eet Blanchon",
-    "repo": "my time tracking tool project"
+    "content": "Pro Python Developer with 20 years of Experience"
   },
-  "intent": "Invite Jakub K, Alex Dills, Alex Hutnik and Beno\u00eet Blanchon as collaborator to my time tracking tool project repo",
+  "intent": "Change my reddit bio to \"Pro Python Developer with 20 years of Experience\"",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -22,18 +21,13 @@
     "reference_url": "",
     "program_html": [
       {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/timeit/-/project_members",
-        "locator": "",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/user/MarvelsGrantMan136",
+        "locator": "document.querySelector(\".user-bio__biography\").outerText",
         "required_contents": {
-          "must_include": [
-            "@lahwaacz",
-            "@V13Axel",
-            "@alexhutnik",
-            "@bblanchon"
-          ]
+          "exact_match": "Pro Python Developer with 20 years of Experience"
         }
       }
     ]
   },
-  "intent_template_id": 293
+  "intent_template_id": 6
 }

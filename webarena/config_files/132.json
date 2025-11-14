@@ -1,32 +1,38 @@
 {
   "sites": [
-    "map"
+    "reddit"
   ],
-  "task_id": 153,
+  "task_id": 649,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "What is the minimum travel time by car from {{location1}} to {{location2}}?",
+  "intent_template": "Post in {{subreddit}} subreddit about what could diffusion model help the correpong field.",
   "instantiation_dict": {
-    "location1": "REI",
-    "location2": "CMU"
+    "subreddit": "history"
   },
-  "intent": "What is the minimum travel time by car from REI to CMU?",
+  "intent": "Post in history subreddit about what could diffusion model help the correpong field.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "7min"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "7min"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/history",
+    "program_html": [
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
+        "required_contents": {
+          "must_include": [
+            "diffusion model",
+            "help"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 36
+  "intent_template_id": 19
 }

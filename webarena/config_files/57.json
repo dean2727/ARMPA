@@ -1,26 +1,35 @@
 {
   "sites": [
-    "gitlab"
+    "shopping"
   ],
-  "task_id": 340,
+  "task_id": 467,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/primer/design",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "List all opened issues {{description}}",
+  "intent_template": "Add {{product}} to my wish list",
   "instantiation_dict": {
-    "description": "that report bugs"
+    "product": "HONGJ Hawaiian Beach Outfits Set for Mens, Summer Tropical Tree Printed Relaxed-fit Hawaii Shirts Shorts 2 Piece Suits"
   },
-  "intent": "List all opened issues that report bugs",
+  "intent": "Add HONGJ Hawaiian Beach Outfits Set for Mens, Summer Tropical Tree Printed Relaxed-fit Hawaii Shirts Shorts 2 Piece Suits to my wish list",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match"
+      "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/primer/design/-/issues/?label_name%5B%5D=type%3A%20bug%20%F0%9F%90%9E",
-    "program_html": [],
-    "url_note": "GOLD in PRED"
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/wishlist/",
+        "locator": "document.querySelector('.products-grid.wishlist').outerText",
+        "required_contents": {
+          "must_include": [
+            "HONGJ Hawaiian Beach Outfits Set for Mens, Summer Tropical Tree Printed Relaxed-fit Hawaii Shirts Shorts 2 Piece Suits"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 299
+  "intent_template_id": 186
 }

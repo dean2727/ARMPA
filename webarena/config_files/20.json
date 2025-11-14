@@ -1,35 +1,39 @@
 {
   "sites": [
-    "gitlab"
+    "reddit"
   ],
-  "task_id": 481,
+  "task_id": 613,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "{{name}} wants to check my dotfile configurations. Please invite him to the repo as a guest.",
+  "intent_template": "Post a review of my recent reading \"{{book}}\" in the r/books with my comment \"{{content}}\".",
   "instantiation_dict": {
-    "name": "Abishek"
+    "book": "Love story",
+    "content": "I cried"
   },
-  "intent": "Abishek wants to check my dotfile configurations. Please invite him to the repo as a guest.",
+  "intent": "Post a review of my recent reading \"Love story\" in the r/books with my comment \"I cried\".",
   "require_reset": false,
   "eval": {
     "eval_types": [
+      "url_match",
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "",
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/books",
     "program_html": [
       {
-        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/dotfiles/-/project_members",
-        "locator": "func:gitlab_get_project_memeber_role(__page__, 'abisubramanya27')",
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
         "required_contents": {
           "must_include": [
-            "Guest"
+            "Love story",
+            "I cried"
           ]
         }
       }
-    ]
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 294
+  "intent_template_id": 9
 }
