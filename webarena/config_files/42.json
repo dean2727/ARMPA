@@ -1,32 +1,41 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 42,
+  "task_id": 534,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "List the top {{n}} search terms in my store",
+  "intent_template": "Follow {{account_list}} on Gitlab",
   "instantiation_dict": {
-    "n": "2"
+    "account_list": [
+      "Jakub Klinkovsk\u00fd",
+      "Koushik",
+      "Vinta Chen"
+    ]
   },
-  "intent": "List the top 2 search terms in my store",
+  "intent": "Follow ['Jakub Klinkovsk\u00fd', 'Koushik', 'Vinta Chen'] on Gitlab",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "hollister",
-        "Joust Bag"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "hollister, Joust Bag"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/users/byteblaze/following",
+        "locator": "document.querySelector('.user-profile').outerText",
+        "required_contents": {
+          "must_include": [
+            "@lahwaacz",
+            "@koush",
+            "@vinta"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 285
+  "intent_template_id": 330
 }

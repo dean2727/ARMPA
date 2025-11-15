@@ -1,30 +1,35 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 0,
+  "task_id": 788,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/amwhalen/archive-my-tweets/-/tree/github/fork/chtitux/addRssFeed",
   "geolocation": null,
-  "intent_template": "What is the top-{{n}} best-selling product in {{year}}",
+  "intent_template": "Tell me the {{attribute}} of the contributor who has the most commits to branch {{branch_name}}",
   "instantiation_dict": {
-    "n": 1,
-    "year": 2022
+    "branch_name": "php52",
+    "attribute": "full name, gitlab account name, location and email address"
   },
-  "intent": "What is the top-1 best-selling product in 2022",
+  "intent": "Tell me the full name, gitlab account name, location and email address of the contributor who has the most commits to branch php52",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "exact_match": "Quest Lumaflex\u2122 Band"
+      "must_include": [
+        "Andrew M. Whalen",
+        "amwhalen",
+        "Massachusetts",
+        "github@amwhalen.com"
+      ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Quest Lumaflex\u2122 Band"
+    "reference_answer_raw_annotation": "Andrew M. Whalen, amwhalen, Massachusetts, github@amwhalen.com"
   },
-  "intent_template_id": 279
+  "intent_template_id": 316
 }

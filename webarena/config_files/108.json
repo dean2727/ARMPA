@@ -2,34 +2,31 @@
   "sites": [
     "shopping_admin"
   ],
-  "task_id": 108,
+  "task_id": 208,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Presents the monthly count of successful orders {{period}} in MM:COUNT format",
+  "intent_template": "Find the customer name and email with phone number {{PhoneNum}}",
   "instantiation_dict": {
-    "period": "01/2023-05/2023"
+    "PhoneNum": "+1 2058812302"
   },
-  "intent": "Presents the monthly count of successful orders 01/2023-05/2023 in MM:COUNT format",
+  "intent": "Find the customer name and email with phone number +1 2058812302",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "January: 12 orders",
-        "Feburary: 7 orders",
-        "March: 5 orders",
-        "April: 9 orders",
-        "May: 5 orders"
+      "must_include": [
+        "John Smith",
+        "john.smith.xyz@gmail.com"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "January: 12 orders Febulary: 7 orders March: 5 orders Apirl: 9 orders May: 5 orders"
+    "reference_answer_raw_annotation": "John Smith, john.smith.xyz@gmail.com"
   },
-  "intent_template_id": 270
+  "intent_template_id": 364
 }

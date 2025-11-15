@@ -1,30 +1,47 @@
 {
   "sites": [
-    "shopping_admin"
+    "reddit"
   ],
-  "task_id": 184,
+  "task_id": 616,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/pics",
   "geolocation": null,
-  "intent_template": "Give me the {{Attribute}} of the products that have {{N}} units left",
+  "intent_template": "Re-post the image of {{content}} in this page to {{subreddit}} subreddit and note \"from /f/pics\"",
   "instantiation_dict": {
-    "Attribute": "name",
-    "N": "0"
+    "content": "Thanksgiving turkey",
+    "subreddit": "funny"
   },
-  "intent": "Give me the name of the products that have 0 units left",
+  "intent": "Re-post the image of Thanksgiving turkey in this page to funny subreddit and note \"from /f/pics\"",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "exact_match": "Sinbad Fitness Tank"
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Sinbad Fitness Tank"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/funny",
+    "program_html": [
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
+        "required_contents": {
+          "must_include": [
+            "from /f/pics"
+          ]
+        }
+      },
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "[...document.querySelector('.submission__inner').querySelectorAll('[href],[src]')].map(elem => elem.getAttribute('href') || elem.getAttribute('src')).join(' ')",
+        "required_contents": {
+          "must_include": [
+            "2e4fa0a328e653a97a7d07046291c298ef5b4e0d0c73a287f317ca86a8e8685f.jpg"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 368
+  "intent_template_id": 11
 }

@@ -1,34 +1,36 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 4,
+  "task_id": 508,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "What are the top-{{n}} best-selling product in {{period}}",
+  "intent_template": "Buy the highest rated product from the {{product_category}} category within a budget {{dollar_value}}.",
   "instantiation_dict": {
-    "n": 3,
-    "period": "Jan 2023"
+    "product_category": "NS switch pouch",
+    "dollar_value": "under 60"
   },
-  "intent": "What are the top-3 best-selling product in Jan 2023",
+  "intent": "Buy the highest rated product from the NS switch pouch category within a budget under 60.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "Impulse Duffle",
-        "Overnight Duffle",
-        "Hawkeye Yoga Short-32-Blue"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Impulse Duffle, Overnight Duffle, Hawkeye Yoga Short-32-Blue"
+    "program_html": [
+      {
+        "url": "func:shopping_get_latest_order_url()",
+        "locator": "document.querySelector(\".order-details-items.ordered\").outerText",
+        "required_contents": {
+          "must_include": [
+            "B07116LGP6"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 279
+  "intent_template_id": 172
 }

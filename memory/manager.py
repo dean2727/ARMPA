@@ -25,7 +25,7 @@ class MemoryManager:
     def __init__(self, collection_name: str = "test"):
         # Use BGE-large for embeddings (1024 dims, 512 token limit)
         self.embed_model = "together_ai/BAAI/bge-large-en-v1.5"
-        self.summarize_model = "together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct"
+        self.summarize_model = "together_ai/OpenAI/gpt-oss-120B"
 
         self.client = QdrantClient(
             os.getenv("QDRANT_URL"),
@@ -307,7 +307,7 @@ class MemoryManager:
         {obs_text}
         """
 
-        response = completion(model="together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct", 
+        response = completion(model="together_ai/OpenAI/gpt-oss-120B", 
                             system=summarize_observation_prompt, 
                             messages=[{"role": "user", "content": query}],
                             temperature=0.8,

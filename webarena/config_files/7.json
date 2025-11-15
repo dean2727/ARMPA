@@ -1,31 +1,53 @@
 {
   "sites": [
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 7,
+  "task_id": 774,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Tell me the full address of all {{airport_type}} that are within a driving distance of {{radius}} to {{start}}",
+  "intent_template": "Delete all {{review_type}}",
   "instantiation_dict": {
-    "airport_type": "international airports",
-    "start": "Carnegie Mellon University",
-    "radius": "50 km"
+    "review_type": "pending reviews with less than 4 stars"
   },
-  "intent": "Tell me the full address of all international airports that are within a driving distance of 50 km to Carnegie Mellon University",
+  "intent": "Delete all pending reviews with less than 4 stars",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "exact_match": "Pittsburgh International Airport, Southern Beltway, Findlay Township, Allegheny County, 15231, United States"
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Pittsburgh International Airport People Movers, Airport Boulevard, Findlay Township, Allegheny County, Pennsylvania, 15231, United States"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/351",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "Rating isn't Available"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/353",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "Rating isn't Available"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/349",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "Rating isn't Available"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 79
+  "intent_template_id": 246
 }

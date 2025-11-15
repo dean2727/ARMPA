@@ -1,32 +1,30 @@
 {
   "sites": [
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 36,
+  "task_id": 201,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Check if the {{place}} in pittsburgh can be reached in one hour by car from {{location}}",
+  "intent_template": "Get the {{attribute}} of the {{status}} order",
   "instantiation_dict": {
-    "place": "social security administration",
-    "location": "Carnegie Mellon University"
+    "attribute": "customer name",
+    "status": "earliest fraud suspect"
   },
-  "intent": "Check if the social security administration in pittsburgh can be reached in one hour by car from Carnegie Mellon University",
+  "intent": "Get the customer name of the earliest fraud suspect order",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "must_include": [
-        "Yes"
-      ]
+      "fuzzy_match": "N/A"
     },
     "reference_url": "",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Yes"
+    "string_note": "There is no order of \"fraud suspect\" status",
+    "reference_answer_raw_annotation": "N/A"
   },
-  "intent_template_id": 77
+  "intent_template_id": 366
 }

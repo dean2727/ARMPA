@@ -2,26 +2,28 @@
   "sites": [
     "gitlab"
   ],
-  "task_id": 106,
+  "task_id": 168,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Display the list of issues in the {{repo}} repository that have labels related to {{label}}",
+  "intent_template": "Tell me the full names of the repositories where I made contributions and they got {{description}} stars?",
   "instantiation_dict": {
-    "label": "BUG",
-    "repo": "umano/AndroidSlidingUpPanel"
+    "description": "more than 100"
   },
-  "intent": "Display the list of issues in the umano/AndroidSlidingUpPanel repository that have labels related to BUG",
+  "intent": "Tell me the full names of the repositories where I made contributions and they got more than 100 stars?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match"
+      "string_match"
     ],
-    "reference_answers": null,
-    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/umano/AndroidSlidingUpPanel/-/issues/?label_name%5B%5D=BUG",
+    "reference_answers": {
+      "fuzzy_match": "N/A"
+    },
+    "reference_url": "",
     "program_html": [],
-    "url_note": "GOLD in PRED"
+    "string_note": "No repo found",
+    "reference_answer_raw_annotation": "No repo found"
   },
-  "intent_template_id": 349
+  "intent_template_id": 289
 }

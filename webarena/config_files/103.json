@@ -1,27 +1,35 @@
 {
   "sites": [
-    "gitlab"
+    "map"
   ],
-  "task_id": 103,
+  "task_id": 75,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Display the list of issues in the {{repo}} repository that have labels related to {{label}}",
+  "intent_template": "Given the following locations, {{place_list}}, what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
   "instantiation_dict": {
-    "label": "questions",
-    "repo": "kkroening/ffmpeg-python"
+    "place_list": [
+      "Massachusetts Institute of Technology",
+      "Harvard University",
+      "Boston Logan International Airport"
+    ]
   },
-  "intent": "Display the list of issues in the kkroening/ffmpeg-python repository that have labels related to questions",
+  "intent": "Given the following locations, ['Massachusetts Institute of Technology', 'Harvard University', 'Boston Logan International Airport'], what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match"
+      "string_match"
     ],
-    "reference_answers": null,
-    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/kkroening/ffmpeg-python/-/issues/?label_name%5B%5D=question",
+    "reference_answers": {
+      "fuzzy_match": [
+        "The order is Massachusetts Institute of Technology, Harvard University, Boston Logan International Airport"
+      ]
+    },
+    "reference_url": "",
     "program_html": [],
-    "url_note": "GOLD in PRED"
+    "string_note": "",
+    "reference_answer_raw_annotation": "Massachusetts Institute of Technology, Harvard University, Boston Logan International Airport"
   },
-  "intent_template_id": 349
+  "intent_template_id": 65
 }

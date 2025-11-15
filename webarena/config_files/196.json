@@ -1,33 +1,38 @@
 {
   "sites": [
-    "shopping_admin"
+    "reddit"
   ],
-  "task_id": 196,
+  "task_id": 624,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "Compare the payment difference of the last {{N}} {{status_1}} orders and {{status_2}} orders",
+  "intent_template": "Ask for advice about {{issue}} in a subreddit for relations",
   "instantiation_dict": {
-    "status_1": "cancelled",
-    "status_2": "completed",
-    "N": "4"
+    "issue": "break-up remedy"
   },
-  "intent": "Compare the payment difference of the last 4 cancelled orders and completed orders",
+  "intent": "Ask for advice about break-up remedy in a subreddit for relations",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "194.25"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "194.25"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/relationship_advice",
+    "program_html": [
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
+        "required_contents": {
+          "must_include": [
+            "break",
+            "remedy"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 367
+  "intent_template_id": 12
 }

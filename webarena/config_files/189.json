@@ -1,17 +1,21 @@
 {
   "sites": [
-    "shopping"
+    "map"
   ],
-  "task_id": 189,
+  "task_id": 76,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Tell me the total cost of my latest {{status}} order?",
+  "intent_template": "Given the following locations, {{place_list}}, what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
   "instantiation_dict": {
-    "status": "pending"
+    "place_list": [
+      "Princeton University",
+      "Yale University",
+      "Harvard University"
+    ]
   },
-  "intent": "Tell me the total cost of my latest pending order?",
+  "intent": "Given the following locations, ['Princeton University', 'Yale University', 'Harvard University'], what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,13 +23,13 @@
     ],
     "reference_answers": {
       "must_include": [
-        "754.99"
+        "The order is Princeton University, Yale University, Harvard University"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "754.99"
+    "reference_answer_raw_annotation": "Princeton University, Yale University, Harvard University"
   },
-  "intent_template_id": 214
+  "intent_template_id": 65
 }

@@ -1,31 +1,32 @@
 {
   "sites": [
-    "shopping"
+    "gitlab"
   ],
-  "task_id": 192,
+  "task_id": 174,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Tell me the total cost of my latest {{status}} order?",
+  "intent_template": "Open my latest updated issue that has keyword \"{{keyword}}\" in its title to check if it is closed",
   "instantiation_dict": {
-    "status": "non-cancelled"
+    "keyword": "feature"
   },
-  "intent": "Tell me the total cost of my latest non-cancelled order?",
+  "intent": "Open my latest updated issue that has keyword \"feature\" in its title to check if it is closed",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "string_match",
+      "url_match"
     ],
     "reference_answers": {
-      "must_include": [
-        "754.99"
+      "fuzzy_match": [
+        "No, it is open"
       ]
     },
-    "reference_url": "",
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/a11y-webring.club/-/issues/71",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "754.99"
+    "reference_answer_raw_annotation": "Not closed",
+    "string_note": ""
   },
-  "intent_template_id": 214
+  "intent_template_id": 310
 }

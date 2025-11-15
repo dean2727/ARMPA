@@ -2,32 +2,34 @@
   "sites": [
     "shopping"
   ],
-  "task_id": 150,
+  "task_id": 512,
   "require_login": true,
   "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "What is the {{option}} configuration of the {{product}} I bought {{time}}",
+  "intent_template": "Add a {{product}} to my wish list.",
   "instantiation_dict": {
-    "option": "price",
-    "product": "fake tree",
-    "time": "Jan 2023"
+    "product": "toothpaste"
   },
-  "intent": "What is the price configuration of the fake tree I bought Jan 2023",
+  "intent": "Add a toothpaste to my wish list.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "260.69"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "260.69"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/wishlist/",
+        "locator": "document.querySelector('.products-grid.wishlist').outerText",
+        "required_contents": {
+          "must_include": [
+            "toothpaste"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 155
+  "intent_template_id": 189
 }

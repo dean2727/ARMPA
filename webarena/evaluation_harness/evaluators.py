@@ -10,8 +10,15 @@ from pathlib import Path
 from typing import Any, Tuple, Union
 
 from beartype import beartype
+import nltk
 from nltk.tokenize import word_tokenize
 from playwright.sync_api import CDPSession, Page
+
+# Download required NLTK data if not already present
+try:
+    nltk.data.find('tokenizers/punkt_tab')
+except LookupError:
+    nltk.download('punkt_tab', quiet=True)
 
 from browser_env.actions import Action
 from browser_env.utils import StateInfo

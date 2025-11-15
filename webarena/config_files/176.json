@@ -1,32 +1,32 @@
 {
   "sites": [
-    "gitlab"
+    "map"
   ],
-  "task_id": 176,
+  "task_id": 152,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Open my latest updated issue that has keyword \"{{keyword}}\" in its title to check if it is closed",
+  "intent_template": "What is the minimum travel time by car from {{location1}} to {{location2}}?",
   "instantiation_dict": {
-    "keyword": "theme editor"
+    "location1": "Schenley park",
+    "location2": "Upitt"
   },
-  "intent": "Open my latest updated issue that has keyword \"theme editor\" in its title to check if it is closed",
+  "intent": "What is the minimum travel time by car from Schenley park to Upitt?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match",
-      "url_match"
+      "string_match"
     ],
     "reference_answers": {
       "fuzzy_match": [
-        "No, it is open"
+        "4min"
       ]
     },
-    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze/a11y-syntax-highlighting/-/issues/1",
+    "reference_url": "",
     "program_html": [],
-    "reference_answer_raw_annotation": "Not closed",
-    "string_note": ""
+    "string_note": "",
+    "reference_answer_raw_annotation": "4min"
   },
-  "intent_template_id": 310
+  "intent_template_id": 36
 }

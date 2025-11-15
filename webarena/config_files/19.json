@@ -1,33 +1,32 @@
 {
   "sites": [
-    "map"
+    "shopping"
   ],
-  "task_id": 19,
+  "task_id": 358,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Compare the time for walking and driving route from {{start}} to {{end}}",
+  "intent_template": "Show me the {{info}} for order number {{order_number}}.",
   "instantiation_dict": {
-    "start": "Carnegie Science Center",
-    "end": "Carnegie Mellon University"
+    "info": "shipping method",
+    "order_number": 187
   },
-  "intent": "Compare the time for walking and driving route from Carnegie Science Center to Carnegie Mellon University",
+  "intent": "Show me the shipping method for order number 187.",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "driving: 12min",
-        "walking: 1h 44min."
+      "must_include": [
+        "Flat Rate - Fixed"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "driving: 12min, walking: 1h 44min."
+    "reference_answer_raw_annotation": "Flat Rate - Fixed"
   },
-  "intent_template_id": 73
+  "intent_template_id": 206
 }

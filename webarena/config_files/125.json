@@ -1,17 +1,18 @@
 {
   "sites": [
-    "shopping"
+    "gitlab"
   ],
-  "task_id": 125,
+  "task_id": 784,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/CellularPrivacy/Android-IMSI-Catcher-Detector",
   "geolocation": null,
-  "intent_template": "What is the price range of {{product}} in the One Stop Market?",
+  "intent_template": "Tell me the {{attribute}} of the contributor who has the most commits to branch {{branch_name}}",
   "instantiation_dict": {
-    "product": "teeth grinding mouth guard"
+    "branch_name": "main",
+    "attribute": "email address"
   },
-  "intent": "What is the price range of teeth grinding mouth guard in the One Stop Market?",
+  "intent": "Tell me the email address of the contributor who has the most commits to branch main",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,14 +20,13 @@
     ],
     "reference_answers": {
       "must_include": [
-        "1.46",
-        "85"
+        "secupwn@users.noreply.github.com"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "$1.46 - $85"
+    "reference_answer_raw_annotation": "secupwn@users.noreply.github.com"
   },
-  "intent_template_id": 159
+  "intent_template_id": 316
 }

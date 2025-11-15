@@ -1,17 +1,18 @@
 {
   "sites": [
-    "shopping_admin"
+    "map"
   ],
-  "task_id": 14,
+  "task_id": 98,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Tell me the the number of reviews that our store received by far that mention term \"{{term}}\"",
+  "intent_template": "Where is the nearest {{places}} to {{start}}, and what is the walking distance to it?",
   "instantiation_dict": {
-    "term": "not useful"
+    "places": "tea cafe",
+    "start": "University of Pittsburgh"
   },
-  "intent": "Tell me the the number of reviews that our store received by far that mention term \"not useful\"",
+  "intent": "Where is the nearest tea cafe to University of Pittsburgh, and what is the walking distance to it?",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,13 +20,18 @@
     ],
     "reference_answers": {
       "must_include": [
-        "0"
+        "Fuku Tea",
+        "3716",
+        "Forbes Avenue",
+        "Central Oakland",
+        "Pittsburgh",
+        "653m"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "0"
+    "reference_answer_raw_annotation": "Fuku Tea, 3716, Forbes Avenue, Oakland, Central Oakland, Pittsburgh, Allegheny County, Pennsylvania, 15213, United States\n653m"
   },
-  "intent_template_id": 288
+  "intent_template_id": 66
 }

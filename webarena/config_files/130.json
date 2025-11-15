@@ -1,31 +1,36 @@
 {
   "sites": [
-    "shopping_admin"
+    "reddit"
   ],
-  "task_id": 130,
+  "task_id": 727,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "What's the total number of items sold in the most recent {{k}} orders?",
+  "intent_template": "DisLike all submissions created by {{user}} in subreddit {{subreddit}}",
   "instantiation_dict": {
-    "k": "5"
+    "user": "PatientBuilder499",
+    "subreddit": "videos"
   },
-  "intent": "What's the total number of items sold in the most recent 5 orders?",
+  "intent": "DisLike all submissions created by PatientBuilder499 in subreddit videos",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "18"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "18"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/videos/115139/hundreds-of-civilian-turkish-volunteers-waiting-to-be-sent",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-downvoted"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 1002
+  "intent_template_id": 1510
 }

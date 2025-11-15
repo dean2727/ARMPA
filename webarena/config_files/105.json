@@ -1,27 +1,36 @@
 {
   "sites": [
-    "gitlab"
+    "wikipedia",
+    "map"
   ],
-  "task_id": 105,
+  "task_id": 425,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Display the list of issues in the {{repo}} repository that have labels related to {{label}}",
+  "intent_template": "Find the page of {{description}} on the map.",
   "instantiation_dict": {
-    "label": "OpenAPI Generator CLI",
-    "repo": "OpenAPITools/openapi-generator"
+    "description": "the longest bridge in the Western hemisphere"
   },
-  "intent": "Display the list of issues in the OpenAPITools/openapi-generator repository that have labels related to OpenAPI Generator CLI",
+  "intent": "Find the page of the longest bridge in the Western hemisphere on the map.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match"
+      "program_html"
     ],
     "reference_answers": null,
-    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/OpenAPITools/openapi-generator/-/issues/?label_name%5B%5D=OpenAPI%20Generator%20CLI",
-    "program_html": [],
-    "url_note": "GOLD in PRED"
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('[id=\"sidebar_content\"').outerText",
+        "required_contents": {
+          "must_include": [
+            "Mackinac Bridge"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 349
+  "intent_template_id": 371
 }

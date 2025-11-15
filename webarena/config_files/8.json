@@ -1,33 +1,54 @@
 {
   "sites": [
-    "map"
+    "map",
+    "shopping_admin"
   ],
-  "task_id": 8,
+  "task_id": 760,
   "require_login": true,
   "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Tell me the full address of all {{airport_type}} that are within a driving distance of {{radius}} to {{start}}",
+  "intent_template": "Show me the route and driving time from {{city1}} to {{city2}}",
   "instantiation_dict": {
-    "airport_type": "international airports",
-    "start": "Carnegie Mellon University",
-    "radius": "5 km"
+    "city1": "Allentown, PA",
+    "city2": "the city where my E-commerce customer Amanda Kim lives"
   },
-  "intent": "Tell me the full address of all international airports that are within a driving distance of 5 km to Carnegie Mellon University",
+  "intent": "Show me the route and driving time from Allentown, PA to the city where my E-commerce customer Amanda Kim lives",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "There is no airport within 5 km of Carnegie Mellon University"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "There is no airport within 5 km of Carnegie Mellon University"
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector(\"div#content select.routing_engines\").selectedIndex",
+        "required_contents": {
+          "exact_match": "1"
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector('[name=\"route_from\"').value",
+        "required_contents": {
+          "must_include": [
+            "Allentown"
+          ]
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector('[name=\"route_to\"').value",
+        "required_contents": {
+          "must_include": [
+            "Hoboken",
+            "New Jersey"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 79
+  "intent_template_id": 42
 }

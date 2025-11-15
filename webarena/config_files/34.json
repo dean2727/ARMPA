@@ -1,20 +1,17 @@
 {
   "sites": [
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 34,
+  "task_id": 291,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "I will arrive {{place}} soon. Provide the name of a {{target1}} in the vicinity, if available. Then, tell me the {{information}} to {{target2}} from the hotel.",
+  "intent_template": "Tell me the {{attribute}} of the customer who has the most cancellations in the history",
   "instantiation_dict": {
-    "place": "Pittsburgh Airport",
-    "target1": "Hyatt hotel",
-    "information": "the shortest walking time",
-    "target2": "a supermarket"
+    "attribute": "total spend on products in the most recent cancelled orders"
   },
-  "intent": "I will arrive Pittsburgh Airport soon. Provide the name of a Hyatt hotel in the vicinity, if available. Then, tell me the the shortest walking time to a supermarket from the hotel.",
+  "intent": "Tell me the total spend on products in the most recent cancelled orders of the customer who has the most cancellations in the history",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -22,16 +19,13 @@
     ],
     "reference_answers": {
       "must_include": [
-        "Hyatt Regency Pittsburgh International Airport"
-      ],
-      "fuzzy_match": [
-        "Time: 3h 30min"
+        "148"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Hyatt Regency Pittsburgh International Airport\n3:30"
+    "reference_answer_raw_annotation": "$148"
   },
-  "intent_template_id": 78
+  "intent_template_id": 234
 }

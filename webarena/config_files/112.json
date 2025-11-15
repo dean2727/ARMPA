@@ -2,28 +2,44 @@
   "sites": [
     "shopping_admin"
   ],
-  "task_id": 112,
+  "task_id": 771,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Show me the customers who have expressed dissatisfaction with {{product}}?",
-  "instantiation_dict": {
-    "product": "Circe fleece"
-  },
-  "intent": "Show me the customers who have expressed dissatisfaction with Circe fleece?",
+  "intent_template": "Approve the positive reviews to display in our store.",
+  "instantiation_dict": {},
+  "intent": "Approve the positive reviews to display in our store.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "exact_match": "Hannah Lim"
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Hannah Lim"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/352",
+        "locator": "document.querySelector('[name=\"status_id\"').value",
+        "required_contents": {
+          "exact_match": "1"
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/349",
+        "locator": "document.querySelector('[name=\"status_id\"').value",
+        "required_contents": {
+          "exact_match": "1"
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/review/product/edit/id/347",
+        "locator": "document.querySelector('[name=\"status_id\"').value",
+        "required_contents": {
+          "exact_match": "1"
+        }
+      }
+    ]
   },
-  "intent_template_id": 245
+  "intent_template_id": 243
 }

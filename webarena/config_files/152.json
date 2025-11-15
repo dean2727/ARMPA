@@ -1,18 +1,17 @@
 {
   "sites": [
-    "map"
+    "shopping"
   ],
-  "task_id": 152,
+  "task_id": 50,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "What is the minimum travel time by car from {{location1}} to {{location2}}?",
+  "intent_template": "Today is 6/12/2023. Tell me how many fulfilled orders I have {{period}}, and the total amount of money I spent.",
   "instantiation_dict": {
-    "location1": "Schenley park",
-    "location2": "Upitt"
+    "period": "over the past year"
   },
-  "intent": "What is the minimum travel time by car from Schenley park to Upitt?",
+  "intent": "Today is 6/12/2023. Tell me how many fulfilled orders I have over the past year, and the total amount of money I spent.",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -20,13 +19,14 @@
     ],
     "reference_answers": {
       "fuzzy_match": [
-        "4min"
+        "24 orders",
+        "$6560.69 total spend"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "4min"
+    "reference_answer_raw_annotation": "24 orders, $6560.69 total spend"
   },
-  "intent_template_id": 36
+  "intent_template_id": 197
 }

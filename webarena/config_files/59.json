@@ -1,32 +1,33 @@
 {
   "sites": [
-    "map"
+    "reddit"
   ],
-  "task_id": 59,
+  "task_id": 400,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "Tell me the closest {{place1}}(s) to {{place2}}",
+  "intent_template": "Change my reddit bio to \"{{content}}\"",
   "instantiation_dict": {
-    "place1": "restaurant",
-    "place2": "CMU Hunt library"
+    "content": "Pro Python Developer with 20 years of Experience"
   },
-  "intent": "Tell me the closest restaurant(s) to CMU Hunt library",
+  "intent": "Change my reddit bio to \"Pro Python Developer with 20 years of Experience\"",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "The exchange"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "The exchange"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/user/MarvelsGrantMan136",
+        "locator": "document.querySelector(\".user-bio__biography\").outerText",
+        "required_contents": {
+          "exact_match": "Pro Python Developer with 20 years of Experience"
+        }
+      }
+    ]
   },
-  "intent_template_id": 69
+  "intent_template_id": 6
 }

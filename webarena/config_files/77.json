@@ -1,17 +1,19 @@
 {
   "sites": [
-    "shopping_admin"
+    "map"
   ],
-  "task_id": 77,
+  "task_id": 236,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "What is the total count of {{status}} reviews amongst all the reviews?",
+  "intent_template": "Where is the nearest {{location}} from {{location2}} {{condition}}",
   "instantiation_dict": {
-    "status": "Pending"
+    "location": "pharmacy",
+    "location2": "Carnegie Mellon",
+    "condition": "I can walk within 20mins"
   },
-  "intent": "What is the total count of Pending reviews amongst all the reviews?",
+  "intent": "Where is the nearest pharmacy from Carnegie Mellon I can walk within 20mins",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,13 +21,17 @@
     ],
     "reference_answers": {
       "must_include": [
-        "5"
+        "Schiller's Pharmacy",
+        "811",
+        "South Aiken Avenue",
+        "Shadyside",
+        "Pittsburgh"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "5"
+    "reference_answer_raw_annotation": "Schiller's Pharmacy, 811, South Aiken Avenue, Shadyside, Pittsburgh, Allegheny County, 15232, United States"
   },
-  "intent_template_id": 277
+  "intent_template_id": 39
 }

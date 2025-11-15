@@ -1,32 +1,36 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 114,
+  "task_id": 414,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Show me the customers who have expressed dissatisfaction with {{product}}?",
+  "intent_template": "Make the LICENSE of {{repo}} to MIT license.",
   "instantiation_dict": {
-    "product": "Antonia racer tank"
+    "repo": "byteblaze/dotfiles"
   },
-  "intent": "Show me the customers who have expressed dissatisfaction with Antonia racer tank?",
+  "intent": "Make the LICENSE of byteblaze/dotfiles to MIT license.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "Shaunte",
-        "Merrie"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Shaunte, Merrie"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/dotfiles/-/blob/main/LICENSE",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "MIT license",
+            "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software."
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 245
+  "intent_template_id": 355
 }

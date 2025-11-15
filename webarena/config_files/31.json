@@ -1,31 +1,58 @@
 {
   "sites": [
-    "reddit"
+    "wikipedia",
+    "map"
   ],
-  "task_id": 31,
+  "task_id": 740,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:9999",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Tell me the count of comments that have received more downvotes than upvotes for the user who made the latest post on the {{forum}} forum.",
+  "intent_template": "Show me the way from {{location}} to the home stadium of {{sport_team}} {{time}}",
   "instantiation_dict": {
-    "forum": "photoshopbattles"
+    "location": "Carnegie Mellon University",
+    "sport_team": "NYC NBA team",
+    "time": ""
   },
-  "intent": "Tell me the count of comments that have received more downvotes than upvotes for the user who made the latest post on the photoshopbattles forum.",
+  "intent": "Show me the way from Carnegie Mellon University to the home stadium of NYC NBA team ",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "0"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "0"
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('[name=\"route_from\"').value",
+        "required_contents": {
+          "must_include": [
+            "Carnegie Mellon University",
+            "Pittsburgh"
+          ]
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector('[name=\"route_to\"').value",
+        "required_contents": {
+          "must_include": [
+            "Madison Square Garden",
+            "Pennsylvania Plaza",
+            "Manhattan",
+            "New York"
+          ]
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector(\"div#content select.routing_engines\").selectedIndex",
+        "required_contents": {
+          "exact_match": "1"
+        }
+      }
+    ]
   },
-  "intent_template_id": 33
+  "intent_template_id": 94
 }

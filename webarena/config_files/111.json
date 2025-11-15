@@ -2,39 +2,32 @@
   "sites": [
     "shopping_admin"
   ],
-  "task_id": 111,
+  "task_id": 472,
   "require_login": true,
   "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Presents the monthly count of successful orders {{period}} in MM:COUNT format",
+  "intent_template": "Cancel order {{id}}",
   "instantiation_dict": {
-    "period": "from Feb to Nov 2022"
+    "id": "299"
   },
-  "intent": "Presents the monthly count of successful orders from Feb to Nov 2022 in MM:COUNT format",
+  "intent": "Cancel order 299",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "Feburary: 16 orders",
-        "March: 14 orders",
-        "April: 7 orders",
-        "May: 8 orders",
-        "June: 13 orders",
-        "July: 9 orders",
-        "August: 8 orders",
-        "Sepetember: 10 orders",
-        "Octorbor: 4 orders",
-        "November: 5 orders"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Feburary: 16 orders March: 14 orders April: 7 orders May: 8 orders June: 13 orders July: 9 orders August: 8 orders Sepetember: 10 orders Octorbor: 4 orders November: 5 orders  "
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/sales/order/view/order_id/299/",
+        "locator": "document.querySelector(\"#order_status\").outerText",
+        "required_contents": {
+          "exact_match": "Canceled"
+        }
+      }
+    ]
   },
-  "intent_template_id": 270
+  "intent_template_id": 257
 }

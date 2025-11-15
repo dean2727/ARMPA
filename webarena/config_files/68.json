@@ -2,35 +2,34 @@
   "sites": [
     "reddit"
   ],
-  "task_id": 68,
+  "task_id": 406,
   "require_login": true,
   "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:9999",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "Among the top {{number}} post in \"{{subreddit}}\" forum, {{description}}",
+  "intent_template": "Upvote the newest post in {{subreddit}} subreddit",
   "instantiation_dict": {
-    "number": 10,
-    "subreddit": "books",
-    "description": "show me the author name and the book name from posts that recommand a single book"
+    "subreddit": "future technology"
   },
-  "intent": "Among the top 10 post in \"books\" forum, show me the author name and the book name from posts that recommand a single book",
+  "intent": "Upvote the newest post in future technology subreddit",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "A Christmas Carol",
-        "Levar Burton",
-        "The Hobbit",
-        "J. R. R. Tolkien"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "A Christmas Carol by Levar Burton: , The Hobbit by J. R. R. Tolkien"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/Futurology/119517/openai-ceo-it-s-not-funny-that-i-m-afraid-of-the-ai-we-re",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 17
+  "intent_template_id": 22
 }

@@ -483,34 +483,12 @@ def test(
                     goal=intent,
                     success=score == 1,
                 )
-            # TODO: in RL training, use the LLM judge to give per-step trajectory rewards, in conjunction with number of steps and success or failure
-            
-            # Save RL training data if collection is enabled
-            if args.collect_rl_data and rl_training_data is not None and len(rl_training_data) > 0:
-                rl_data_dir = run_dir / "rl_training_data"
-                rl_data_dir.mkdir(parents=True, exist_ok=True)
-                
-                episode_data = {
-                    'task_id': task_id,
-                    'config_file': config_file,
-                    'intent': intent,
-                    'success': score == 1,
-                    'num_steps': len(rl_training_data),
-                    'steps': rl_training_data.copy(),  # Copy to avoid mutation
-                }
-                
-                with open(rl_data_dir / f"task_{task_id}.pkl", "wb") as f:
-                    pickle.dump(episode_data, f)
-                
-                logger.info(f"[RL Data] Saved {len(rl_training_data)} steps to {rl_data_dir}/task_{task_id}.pkl")
-                # Clear for next task
-                rl_training_data.clear()
 
             # store the array in runs/<timestamp>/trajectories/
             run_dir = Path(getattr(args, "run_dir", "runs"))
             if args.store_memory:
-                (run_dir / "trajectories").mkdir(parents=True, exist_ok=True)
-                with open(run_dir / "trajectories" / f"{task_id}.pkl", "wb") as f:
+                (run_dir / "observations_actions_reasonings").mkdir(parents=True, exist_ok=True)
+                with open(run_dir / "observations_actions_reasonings" / f"{task_id}.pkl", "wb") as f:
                     pickle.dump(observations_actions_reasonings, f)
 
             # append results to runs/<timestamp>/results.csv with columns: success,steps
@@ -523,6 +501,11 @@ def test(
             with open(results_csv, "a") as rf:
                 rf.write(f"{intent},{1 if score == 1 else 0},{steps}\n")
 
+            # save trajectory
+            (run_dir / "trajectories").mkdir(parents=True, exist_ok=True)
+            with open(run_dir / "trajectories" / f"{task_id}.pkl", "wb") as f:
+                pickle.dump(trajectory, f)
+            
             if args.save_trace_enabled:
                 env.save_trace(
                     Path(args.result_dir) / "traces" / f"{task_id}.zip"

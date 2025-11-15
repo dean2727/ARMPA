@@ -1,30 +1,33 @@
 {
   "sites": [
-    "gitlab"
+    "shopping_admin"
   ],
-  "task_id": 180,
+  "task_id": 196,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Open my latest created issue that has {{keyword}} in its title to check if it is closed",
+  "intent_template": "Compare the payment difference of the last {{N}} {{status_1}} orders and {{status_2}} orders",
   "instantiation_dict": {
-    "keyword": "dependency"
+    "status_1": "cancelled",
+    "status_2": "completed",
+    "N": "4"
   },
-  "intent": "Open my latest created issue that has dependency in its title to check if it is closed",
+  "intent": "Compare the payment difference of the last 4 cancelled orders and completed orders",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match",
-      "url_match"
+      "string_match"
     ],
     "reference_answers": {
-      "exact_match": "No"
+      "must_include": [
+        "194.25"
+      ]
     },
-    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/byteblaze/empathy-prompts/-/issues/18",
+    "reference_url": "",
     "program_html": [],
-    "reference_answer_raw_annotation": "Not closed",
-    "string_note": ""
+    "string_note": "",
+    "reference_answer_raw_annotation": "194.25"
   },
-  "intent_template_id": 500
+  "intent_template_id": 367
 }

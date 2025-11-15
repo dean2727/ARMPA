@@ -1,31 +1,29 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 123,
+  "task_id": 22,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/fujifilm-finepix-z200fd-10mp-digital-camera-with-5x-optical-dual-image-stabilized-zoom-black.html",
   "geolocation": null,
-  "intent_template": "Tell me the reasons why customers like {{product}}",
+  "intent_template": "List out reviewers, if exist, who mention about {{description}}",
   "instantiation_dict": {
-    "product": "Circe's products"
+    "description": "under water photo"
   },
-  "intent": "Tell me the reasons why customers like Circe's products",
+  "intent": "List out reviewers, if exist, who mention about under water photo",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "Warm and comfortable. True to size."
-      ]
+      "fuzzy_match": "N/A"
     },
     "reference_url": "",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Warm and comfortable. True to size."
+    "string_note": "There is no review about under water photo",
+    "reference_answer_raw_annotation": "N/A"
   },
-  "intent_template_id": 250
+  "intent_template_id": 222
 }

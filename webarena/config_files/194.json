@@ -1,18 +1,15 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 194,
+  "task_id": 384,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Get the total payment amount of the last {{N}} {{status}} orders",
-  "instantiation_dict": {
-    "status": "completed",
-    "N": "5"
-  },
-  "intent": "Get the total payment amount of the last 5 completed orders",
+  "intent_template": "List the customer names who complain about the quality of EYZUTAK phone cases",
+  "instantiation_dict": {},
+  "intent": "List the customer names who complain about the quality of EYZUTAK phone cases",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -20,13 +17,16 @@
     ],
     "reference_answers": {
       "must_include": [
-        "555.2"
+        "Lisa Lee",
+        "Evelyn Kurver",
+        "Amanda",
+        "N Randall"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "555.2"
+    "reference_answer_raw_annotation": "Lisa Lee, Evelyn Kurver, Amanda, N Randall"
   },
-  "intent_template_id": 367
+  "intent_template_id": 666
 }

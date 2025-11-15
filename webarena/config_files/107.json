@@ -1,38 +1,53 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 107,
+  "task_id": 668,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Presents the monthly count of successful orders {{period}} in MM:COUNT format",
+  "intent_template": "Submit a merge request for {{source_branch}} branch to be merged into {{target_branch}} branch, assign {{reviewer}} as the reviewer",
   "instantiation_dict": {
-    "period": "from May to December 2022"
+    "source_branch": "a11yproject.com/redesign",
+    "target_branch": "master",
+    "reviewer": "Justin Armstrong"
   },
-  "intent": "Presents the monthly count of successful orders from May to December 2022 in MM:COUNT format",
+  "intent": "Submit a merge request for a11yproject.com/redesign branch to be merged into master branch, assign Justin Armstrong as the reviewer",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "May: 8 orders",
-        "June: 13 orders",
-        "July: 9 orders",
-        "August: 8 orders",
-        "Sepetember: 10 orders",
-        "October: 4 orders",
-        "November: 5 orders",
-        "December: 10 orders"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "May: 8 orders June: 13 orders July: 9 orders August: 8 orders Sepetember: 10 orders Octorbor: 4 orders November: 5 orders December: 10 orders  "
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com/-/merge_requests",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelectorAll(\".detail-page-description > a.gl-font-monospace\")[0].outerText",
+        "required_contents": {
+          "exact_match": "redesign"
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelectorAll(\".detail-page-description > a.gl-font-monospace\")[1].outerText",
+        "required_contents": {
+          "exact_match": "main"
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector('.block.reviewer').outerText",
+        "required_contents": {
+          "must_include": [
+            "Justin Armstrong"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 270
+  "intent_template_id": 335
 }

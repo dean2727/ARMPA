@@ -2,34 +2,30 @@
   "sites": [
     "map"
   ],
-  "task_id": 33,
+  "task_id": 222,
   "require_login": true,
   "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "I will arrive {{place}} soon. Provide the name of a {{target1}} in the vicinity, if available. Then, tell me the {{information}} to {{target2}} from the hotel.",
+  "intent_template": "I am at CMU Pittsburgh, how long it takes to drive to the nearest {{location}}",
   "instantiation_dict": {
-    "place": "Pittsburgh Airport",
-    "target1": "Hilton hotel",
-    "information": "the shortest walking distance",
-    "target2": "a supermarket"
+    "location": "cold stone ice cream"
   },
-  "intent": "I will arrive Pittsburgh Airport soon. Provide the name of a Hilton hotel in the vicinity, if available. Then, tell me the the shortest walking distance to a supermarket from the hotel.",
+  "intent": "I am at CMU Pittsburgh, how long it takes to drive to the nearest cold stone ice cream",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "must_include": [
-        "DoubleTree by Hilton Hotel Pittsburgh Airport",
-        "1.4km"
+      "fuzzy_match": [
+        "3min"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "DoubleTree by Hilton Hotel Pittsburgh Airport Distance: 1.4km"
+    "reference_answer_raw_annotation": "3min"
   },
-  "intent_template_id": 78
+  "intent_template_id": 35
 }

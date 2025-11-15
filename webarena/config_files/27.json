@@ -1,17 +1,17 @@
 {
   "sites": [
-    "reddit"
+    "shopping_admin"
   ],
-  "task_id": 27,
+  "task_id": 15,
   "require_login": true,
-  "storage_state": "./.auth/reddit_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:9999",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Tell me the count of comments that have received more downvotes than upvotes for the user who made the latest post on the {{forum}} forum.",
+  "intent_template": "Tell me the the number of reviews that our store received by far that mention term \"{{term}}\"",
   "instantiation_dict": {
-    "forum": "Showerthoughts"
+    "term": "best"
   },
-  "intent": "Tell me the count of comments that have received more downvotes than upvotes for the user who made the latest post on the Showerthoughts forum.",
+  "intent": "Tell me the the number of reviews that our store received by far that mention term \"best\"",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,13 +19,13 @@
     ],
     "reference_answers": {
       "must_include": [
-        "0"
+        "2"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "0"
+    "reference_answer_raw_annotation": "2"
   },
-  "intent_template_id": 33
+  "intent_template_id": 288
 }

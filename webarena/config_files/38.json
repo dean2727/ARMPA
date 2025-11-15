@@ -1,32 +1,27 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 38,
+  "task_id": 104,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Check if the {{place}} in pittsburgh can be reached in one hour by car from {{location}}",
+  "intent_template": "Display the list of issues in the {{repo}} repository that have labels related to {{label}}",
   "instantiation_dict": {
-    "place": "duquesne university",
-    "location": "pittsburgh airport"
+    "label": "flaky-test",
+    "repo": "keycloak/keycloak"
   },
-  "intent": "Check if the duquesne university in pittsburgh can be reached in one hour by car from pittsburgh airport",
+  "intent": "Display the list of issues in the keycloak/keycloak repository that have labels related to flaky-test",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match"
     ],
-    "reference_answers": {
-      "must_include": [
-        "Yes"
-      ]
-    },
-    "reference_url": "",
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/keycloak/keycloak/-/issues/?label_name%5B%5D=flaky-test",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Yes"
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 77
+  "intent_template_id": 349
 }

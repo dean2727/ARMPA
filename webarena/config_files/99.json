@@ -1,37 +1,51 @@
 {
   "sites": [
-    "map"
+    "shopping",
+    "reddit"
   ],
-  "task_id": 99,
+  "task_id": 672,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Where is the nearest {{places}} to {{start}}, and what is the walking distance to it?",
+  "intent_template": "Gather the titles of {{product}} reviews with {{rating}} rating from OneStopShop, and post them in the games subreddit under the title \"real user feedback on {{product}}\"",
   "instantiation_dict": {
-    "places": "Five Guys",
-    "start": "5700 Penn Ave"
+    "product": "Nintendo Switch Fortnite Wildcat Console EU",
+    "rating": "3 stars and less"
   },
-  "intent": "Where is the nearest Five Guys to 5700 Penn Ave, and what is the walking distance to it?",
+  "intent": "Gather the titles of Nintendo Switch Fortnite Wildcat Console EU reviews with 3 stars and less rating from OneStopShop, and post them in the games subreddit under the title \"real user feedback on Nintendo Switch Fortnite Wildcat Console EU\"",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match",
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "Five Guys",
-        "117",
-        "South Bouquet Street",
-        "North Oakland",
-        "Pittsburgh",
-        "4.0km"
-      ]
-    },
-    "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Five Guys, 117, South Bouquet Street, Oakland, North Oakland, Pittsburgh, Allegheny County, Pennsylvania, 15213, United States\n4.0km"
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999/f/gaming",
+    "program_html": [
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__title').outerText",
+        "required_contents": {
+          "exact_match": "real user feedback on Nintendo Switch Fortnite Wildcat Console EU"
+        }
+      },
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__body').outerText",
+        "required_contents": {
+          "must_include": [
+            "EU charger and wild cat card doesn\u2019t even work!",
+            "REFUND REJECTED",
+            "Charging port not compatible",
+            "not compatible in the US",
+            "Wildcard Bonus Credits Not Redeemable!",
+            "Code not available!!"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 66
+  "intent_template_id": 101
 }

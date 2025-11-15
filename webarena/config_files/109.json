@@ -1,42 +1,33 @@
 {
   "sites": [
-    "shopping_admin"
+    "reddit"
   ],
-  "task_id": 109,
+  "task_id": 69,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999",
   "geolocation": null,
-  "intent_template": "Presents the monthly count of successful orders {{period}} in MM:COUNT format",
+  "intent_template": "Among the top {{number}} post in \"{{subreddit}}\" forum, {{description}}",
   "instantiation_dict": {
-    "period": "from Jan to December 2022"
+    "number": 10,
+    "subreddit": "books",
+    "description": "is there any post talks about supporting local book stores? If so, tell me the organizations involved"
   },
-  "intent": "Presents the monthly count of successful orders from Jan to December 2022 in MM:COUNT format",
+  "intent": "Among the top 10 post in \"books\" forum, is there any post talks about supporting local book stores? If so, tell me the organizations involved",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "January: 11 orders",
-        "Feburary: 16 orders",
-        "March: 14 orders",
-        "April: 7 orders",
-        "May: 8 orders",
-        "June: 13 orders",
-        "July: 9 orders",
-        "August: 8 orders",
-        "Sepetember: 10 orders",
-        "Octorbor: 4 orders",
-        "November: 5 orders",
-        "December: 10 orders"
+      "must_include": [
+        "bookshop.org"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "January: 11 orders Feburary: 16 orders March: 14 orders April: 7 orders May: 8 orders June: 13 orders July: 9 orders August: 8 orders Sepetember: 10 orders Octorbor: 4 orders November: 5 orders December: 10 orders  "
+    "reference_answer_raw_annotation": "bookshop.org"
   },
-  "intent_template_id": 270
+  "intent_template_id": 17
 }

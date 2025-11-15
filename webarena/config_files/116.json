@@ -1,17 +1,18 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 116,
+  "task_id": 307,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/a11yproject/a11yproject.com",
   "geolocation": null,
-  "intent_template": "Show me the name of the customers who have expressed dissatisfaction with {{product}}?",
+  "intent_template": "How many commits did {{user}} make {{period}}?",
   "instantiation_dict": {
-    "product": "tanks products"
+    "user": "Nic",
+    "period": "in April 2021"
   },
-  "intent": "Show me the name of the customers who have expressed dissatisfaction with tanks products?",
+  "intent": "How many commits did Nic make in April 2021?",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,21 +20,13 @@
     ],
     "reference_answers": {
       "must_include": [
-        "Alexander",
-        "Carma",
-        "Dominic",
-        "Merrie",
-        "Monroe",
-        "Scotty",
-        "Shaunte",
-        "Teofila",
-        "Valorie"
+        "16"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Alexander, Carma, Dominic, Merrie, Monroe, Scotty, Shaunte, Teofila, Valorie"
+    "reference_answer_raw_annotation": "16"
   },
-  "intent_template_id": 245
+  "intent_template_id": 321
 }

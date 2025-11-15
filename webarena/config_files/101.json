@@ -1,30 +1,36 @@
 {
   "sites": [
-    "map"
+    "shopping"
   ],
-  "task_id": 101,
+  "task_id": 437,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "Where is the nearest {{places}} to {{start}}, and what is the walking distance to it?",
+  "intent_template": "I previously ordered some {{product}} {{time}} and later cancelled. Can you reorder it for me?",
   "instantiation_dict": {
-    "places": "In-N-Out",
-    "start": "Upitts"
+    "product": "a table lamp",
+    "time": "in May 2023"
   },
-  "intent": "Where is the nearest In-N-Out to Upitts, and what is the walking distance to it?",
+  "intent": "I previously ordered some a table lamp in May 2023 and later cancelled. Can you reorder it for me?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": "N/A"
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "There is no In-N-Out near University of Pittsburgh",
-    "reference_answer_raw_annotation": "N/A"
+    "program_html": [
+      {
+        "url": "func:shopping_get_latest_order_url()",
+        "locator": "document.querySelector(\".order-details-items.ordered\").outerText",
+        "required_contents": {
+          "must_include": [
+            "B072XS3F6W"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 66
+  "intent_template_id": 156
 }

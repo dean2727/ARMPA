@@ -1,30 +1,48 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 5,
+  "task_id": 571,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "What is the top-{{n}} best-selling product type in {{period}}",
+  "intent_template": "I recently moved, my address is {{address}}, update my information on OneStopShopping accordingly",
   "instantiation_dict": {
-    "n": 1,
-    "period": "Jan 2023"
+    "address": "231 Willow Way, Suite 100, Chicago, IL, 60601"
   },
-  "intent": "What is the top-1 best-selling product type in Jan 2023",
+  "intent": "I recently moved, my address is 231 Willow Way, Suite 100, Chicago, IL, 60601, update my information on OneStopShopping accordingly",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "exact_match": "Duffle"
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Duffle"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/customer/address",
+        "locator": "document.querySelector(\".box.box-address-billing > .box-content\").outerText",
+        "required_contents": {
+          "must_include": [
+            "231 Willow Way",
+            "Suite 100",
+            "Chicago, Illinois, 60601"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/customer/address",
+        "locator": "document.querySelector(\".box.box-address-shipping > .box-content\").outerText",
+        "required_contents": {
+          "must_include": [
+            "231 Willow Way",
+            "Suite 100",
+            "Chicago, Illinois, 60601"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 279
+  "intent_template_id": 165
 }

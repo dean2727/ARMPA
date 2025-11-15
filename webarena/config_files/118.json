@@ -1,34 +1,37 @@
 {
   "sites": [
-    "shopping"
+    "shopping_admin"
   ],
-  "task_id": 118,
+  "task_id": 497,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "I have jaw bruxism problem, show me something that could alleviate the problem.",
-  "instantiation_dict": {},
-  "intent": "I have jaw bruxism problem, show me something that could alleviate the problem.",
+  "intent_template": "Update order #{{order}} with the {{service}} tracking number {{tracking}}",
+  "instantiation_dict": {
+    "tracking": "24353446464",
+    "order": "307",
+    "service": "DHL"
+  },
+  "intent": "Update order #307 with the DHL tracking number 24353446464",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "program_html"
     ],
     "reference_answers": null,
-    "reference_url": null,
+    "reference_url": "",
     "program_html": [
       {
-        "url": "last",
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin/sales/order/commentsHistory/order_id/307/active_tab/order_shipments/",
         "locator": "",
         "required_contents": {
           "must_include": [
-            "jaw bruxism",
-            "mouth guard"
+            "Tracking number 24353446464 for DHL assigned"
           ]
         }
       }
     ]
   },
-  "intent_template_id": 151
+  "intent_template_id": 284
 }

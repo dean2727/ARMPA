@@ -1,33 +1,56 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 92,
+  "task_id": 747,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Which US states border {{state}}?",
+  "intent_template": "Start a private project {{project_name}} with {{template}} template and add {{account_list}} as members",
   "instantiation_dict": {
-    "state": "Vermont"
+    "project_name": "awesome_web_agents",
+    "template": "blank",
+    "account_list": "Abishek, Vinta"
   },
-  "intent": "Which US states border Vermont?",
+  "intent": "Start a private project awesome_web_agents with blank template and add Abishek, Vinta as members",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "New York",
-        "New Hampshire",
-        "Massachusetts"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "New York, New Hampshire, Massachusetts"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/awesome_web_agents",
+        "locator": "document.querySelector('.visibility-icon').getAttribute('title')",
+        "required_contents": {
+          "must_include": [
+            "Private"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/awesome_web_agents/-/commits",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "Initial commit"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/awesome_web_agents/-/project_members",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "@abisubramanya27",
+            "@vinta"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 67
+  "intent_template_id": 2100
 }

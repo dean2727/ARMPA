@@ -2,16 +2,17 @@
   "sites": [
     "gitlab"
   ],
-  "task_id": 169,
+  "task_id": 314,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Tell me the full names of the repositories where I made contributions and they got {{description}} stars?",
+  "intent_template": "List the {{attribute}} of the top 3 contributors to {{repo}} repo, ranked by the number of commits?",
   "instantiation_dict": {
-    "description": "the most"
+    "repo": "prime/design",
+    "attribute": "name"
   },
-  "intent": "Tell me the full names of the repositories where I made contributions and they got the most stars?",
+  "intent": "List the name of the top 3 contributors to prime/design repo, ranked by the number of commits?",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -19,14 +20,15 @@
     ],
     "reference_answers": {
       "must_include": [
-        "a11yproject.com",
-        "design"
+        "Shawn Allen",
+        "Inayaili Le\u00f3n",
+        "Aurora Pleguezuelo"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "a11yproject.com, Primer/design"
+    "reference_answer_raw_annotation": "Shawn Allen, Inayaili Le\u00f3n, Aurora Pleguezuelo"
   },
-  "intent_template_id": 289
+  "intent_template_id": 324
 }

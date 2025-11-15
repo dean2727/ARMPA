@@ -1,29 +1,46 @@
 {
   "sites": [
-    "map"
+    "shopping"
   ],
-  "task_id": 72,
+  "task_id": 573,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "What is the zip code of {{place}}?",
+  "intent_template": "I recently moved, my address is {{address}}, update my information on OneStopShopping accordingly",
   "instantiation_dict": {
-    "place": "Yale University"
+    "address": "987 Sycamore Circle, Philadelphia, PA, 19102"
   },
-  "intent": "What is the zip code of Yale University?",
+  "intent": "I recently moved, my address is 987 Sycamore Circle, Philadelphia, PA, 19102, update my information on OneStopShopping accordingly",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "exact_match": "06516"
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "06516"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/customer/address",
+        "locator": "document.querySelector(\".box.box-address-shipping > .box-content\").outerText",
+        "required_contents": {
+          "must_include": [
+            "987 Sycamore Circle",
+            "Philadelphia, Pennsylvania, 19102"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/customer/address",
+        "locator": "document.querySelector(\".box.box-address-billing > .box-content\").outerText",
+        "required_contents": {
+          "must_include": [
+            "987 Sycamore Circle",
+            "Philadelphia, Pennsylvania, 19102"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 70
+  "intent_template_id": 165
 }

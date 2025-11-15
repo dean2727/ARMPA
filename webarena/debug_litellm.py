@@ -32,11 +32,11 @@ def test_litellm():
         # Test the original wrapper function to see if the upgrade fixed the bug
         response = generate_from_litellm_completion(
             prompt=test_prompt,
-            model="together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct",
+            model="together_ai/OpenAI/gpt-oss-120B",
             temperature=0.0,
         )
         # model = LiteLLMModel(
-        #     model="together_ai/Qwen/Qwen3-Next-80B-A3B-Instruct",
+        #     model="together_ai/OpenAI/gpt-oss-120B",
         #     temperature=0.0,
         # )
         

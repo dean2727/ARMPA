@@ -2,35 +2,34 @@
   "sites": [
     "gitlab"
   ],
-  "task_id": 170,
+  "task_id": 394,
   "require_login": true,
   "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Tell me the full names of the repositories where I made contributions and they got {{description}} stars?",
+  "intent_template": "Fork {{repo}}.",
   "instantiation_dict": {
-    "description": "the least"
+    "repo": "2019-nCov"
   },
-  "intent": "Tell me the full names of the repositories where I made contributions and they got the least stars?",
+  "intent": "Fork 2019-nCov.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "cloud-to-butt",
-        "dotfiles",
-        "timeit",
-        "solarized-prism-theme",
-        "gimmiethat.space",
-        "remove-board-movement-events-from-the-github-issue-timeline"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "cloud-to-butt, dotfiles, timeit, solarized-prism-theme,  gimmiethat.space, remove-board-movement-events-from-the-github-issue-timeline"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/2019-nCov",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "2019-nCov"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 289
+  "intent_template_id": 352
 }

@@ -1,21 +1,18 @@
 {
   "sites": [
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 74,
+  "task_id": 204,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Given the following locations, {{place_list}}, what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
+  "intent_template": "Get the {{attribute}} of the {{status}} order",
   "instantiation_dict": {
-    "place_list": [
-      "Carnegie Mellon University",
-      "apple store shadyside",
-      "starbucks on craig street"
-    ]
+    "attribute": "product name and discounted price (low to high)",
+    "status": "most recent completed"
   },
-  "intent": "Given the following locations, ['Carnegie Mellon University', 'apple store shadyside', 'starbucks on craig street'], what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
+  "intent": "Get the product name and discounted price (low to high) of the most recent completed order",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -23,13 +20,15 @@
     ],
     "reference_answers": {
       "fuzzy_match": [
-        "The order is Carnegie Mellon University, starbucks on forbes ave, apple store shadyside"
+        "Rapha Sports Short: $35",
+        "Thorpe Track Pant: $54.4",
+        "Mach Street Sweatshirt: $62"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "Carnegie Mellon University, starbucks on forbes ave, apple store shadyside"
+    "reference_answer_raw_annotation": "Rapha Sports Short: $35 Thorpe Track Pant: $54.4 Mach Street Sweatshirt: $62"
   },
-  "intent_template_id": 65
+  "intent_template_id": 366
 }

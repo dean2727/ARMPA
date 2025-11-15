@@ -1,32 +1,45 @@
 {
   "sites": [
-    "shopping"
+    "gitlab"
   ],
-  "task_id": 50,
+  "task_id": 753,
   "require_login": true,
-  "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Today is 6/12/2023. Tell me how many fulfilled orders I have {{period}}, and the total amount of money I spent.",
+  "intent_template": "Create a private {{template}} repository called \"{{project_name}}\" using the right template to speed up development.",
   "instantiation_dict": {
-    "period": "over the past year"
+    "project_name": "web_agent_android_xs",
+    "template": "Android"
   },
-  "intent": "Today is 6/12/2023. Tell me how many fulfilled orders I have over the past year, and the total amount of money I spent.",
+  "intent": "Create a private Android repository called \"web_agent_android_xs\" using the right template to speed up development.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "24 orders",
-        "$6560.69 total spend"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "24 orders, $6560.69 total spend"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/web_agent_android_xs",
+        "locator": "document.querySelector('.visibility-icon').getAttribute('title')",
+        "required_contents": {
+          "must_include": [
+            "Private"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/web_agent_android_xs/-/commits",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "Initialized from 'Android' project template"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 197
+  "intent_template_id": 332
 }

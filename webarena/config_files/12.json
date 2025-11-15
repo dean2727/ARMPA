@@ -1,31 +1,56 @@
 {
   "sites": [
-    "shopping_admin"
+    "gitlab"
   ],
-  "task_id": 12,
+  "task_id": 751,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Tell me the the number of reviews that our store received by far that mention term \"{{term}}\"",
+  "intent_template": "Start a private project {{project_name}} with {{template}} template and add {{account_list}} as members",
   "instantiation_dict": {
-    "term": "satisfied"
+    "project_name": "AGISite",
+    "template": "JEKYLL",
+    "account_list": "Rohan and Vinta"
   },
-  "intent": "Tell me the the number of reviews that our store received by far that mention term \"satisfied\"",
+  "intent": "Start a private project AGISite with JEKYLL template and add Rohan and Vinta as members",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "2"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "2"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/AGISite",
+        "locator": "document.querySelector('.visibility-icon').getAttribute('title')",
+        "required_contents": {
+          "must_include": [
+            "Private"
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/AGISite",
+        "locator": "document.querySelector('.home-panel-description-markdown').outerText",
+        "required_contents": {
+          "must_include": [
+            "Example Jekyll site using GitLab Pages: https://pages.gitlab.io/jekyll |OR| A Jekyll site that uses Netlify for CI/CD instead of GitLab, but still with all the other great GitLab features."
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/AGISite/-/project_members",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "@Seirdy",
+            "@vinta"
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 288
+  "intent_template_id": 2100
 }

@@ -1,24 +1,33 @@
 {
   "sites": [
-    "gitlab"
+    "shopping_admin"
   ],
-  "task_id": 46,
+  "task_id": 63,
   "require_login": true,
-  "storage_state": "./.auth/gitlab_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/primer/design",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "Check out the most recent open issues",
-  "instantiation_dict": {},
-  "intent": "Check out the most recent open issues",
+  "intent_template": "Which customer(s) has completed the {{quantifier}} number of orders in the entire history?",
+  "instantiation_dict": {
+    "quantifier": "second most"
+  },
+  "intent": "Which customer(s) has completed the second most number of orders in the entire history?",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "url_match"
+      "string_match"
     ],
-    "reference_answers": null,
-    "reference_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023/primer/design/-/issues/?sort=created_date&state=opened",
+    "reference_answers": {
+      "must_include": [
+        "Adam Garcia",
+        "Michael Nguyen",
+        "Sarah Miller"
+      ]
+    },
+    "reference_url": "",
     "program_html": [],
-    "url_note": "GOLD in PRED"
+    "string_note": "",
+    "reference_answer_raw_annotation": "Adam Garcia, Michael Nguyen, Sarah Miller"
   },
-  "intent_template_id": 300
+  "intent_template_id": 276
 }

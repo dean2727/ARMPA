@@ -1,31 +1,30 @@
 {
   "sites": [
-    "shopping_admin"
+    "map"
   ],
-  "task_id": 13,
+  "task_id": 366,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "Tell me the the number of reviews that our store received by far that mention term \"{{term}}\"",
+  "intent_template": "Measure distance between {{location/address_1}} and {{location/address_2}} by walking",
   "instantiation_dict": {
-    "term": "decent"
+    "location/address_1": "CVS (closet one)",
+    "location/address_2": "UPMC Shadyside"
   },
-  "intent": "Tell me the the number of reviews that our store received by far that mention term \"decent\"",
+  "intent": "Measure distance between CVS (closet one) and UPMC Shadyside by walking",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "must_include": [
-        "2"
-      ]
+      "exact_match": "1.2km"
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "2"
+    "reference_answer_raw_annotation": "1.2km"
   },
-  "intent_template_id": 288
+  "intent_template_id": 58
 }

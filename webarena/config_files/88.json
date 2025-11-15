@@ -1,32 +1,31 @@
 {
   "sites": [
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 88,
+  "task_id": 62,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "From my stay at {{hotel}}, what's the estimated driving time to reach {{place}}?",
+  "intent_template": "Which customer has completed the {{quantifier}} number of orders in the entire history?",
   "instantiation_dict": {
-    "hotel": "Homewood Suites Southpointe",
-    "place": "PPG Paints Arena"
+    "quantifier": "most"
   },
-  "intent": "From my stay at Homewood Suites Southpointe, what's the estimated driving time to reach PPG Paints Arena?",
+  "intent": "Which customer has completed the most number of orders in the entire history?",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "34 minutes"
+      "must_include": [
+        "Jane Smith"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "34 minutes"
+    "reference_answer_raw_annotation": "Jane Smith"
   },
-  "intent_template_id": 64
+  "intent_template_id": 276
 }

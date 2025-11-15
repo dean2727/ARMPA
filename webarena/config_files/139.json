@@ -2,31 +2,26 @@
   "sites": [
     "map"
   ],
-  "task_id": 139,
+  "task_id": 378,
   "require_login": true,
   "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "What is the estimated driving time between {{city1}} and {{city2}}?",
+  "intent_template": "Find the {{space}} around {{location}}",
   "instantiation_dict": {
-    "city1": "the hometown of Joe Biden",
-    "city2": "Bridgeport"
+    "location": "CMU main campus",
+    "space": "parking"
   },
-  "intent": "What is the estimated driving time between the hometown of Joe Biden and Bridgeport?",
+  "intent": "Find the parking around CMU main campus",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "url_match"
     ],
-    "reference_answers": {
-      "fuzzy_match": [
-        "3h 20min"
-      ]
-    },
-    "reference_url": "",
+    "reference_answers": null,
+    "reference_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000/search?query=parking%20near%20carnegie%20mellon%20university",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "3h 20min"
+    "url_note": "GOLD in PRED"
   },
-  "intent_template_id": 51
+  "intent_template_id": 59
 }

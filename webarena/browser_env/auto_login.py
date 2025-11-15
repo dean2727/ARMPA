@@ -69,8 +69,9 @@ def renew_comb(comb: list[str], auth_folder: str = "./.auth") -> None:
     browser = playwright.chromium.launch(headless=HEADLESS)
     context = browser.new_context()
     page = context.new_page()
-
+    # print statemnts
     if "shopping" in comb:
+        print("Logging in to shopping", os.getenv('SHOPPING'))
         username = ACCOUNTS["shopping"]["username"]
         password = ACCOUNTS["shopping"]["password"]
         page.goto(f"{SHOPPING}/customer/account/login/")
@@ -79,6 +80,7 @@ def renew_comb(comb: list[str], auth_folder: str = "./.auth") -> None:
         page.get_by_role("button", name="Sign In").click()
 
     if "reddit" in comb:
+        print("Logging in to reddit")
         username = ACCOUNTS["reddit"]["username"]
         password = ACCOUNTS["reddit"]["password"]
         page.goto(f"{REDDIT}/login")
@@ -87,6 +89,7 @@ def renew_comb(comb: list[str], auth_folder: str = "./.auth") -> None:
         page.get_by_role("button", name="Log in").click()
 
     if "shopping_admin" in comb:
+        print("Logging in to shopping admin")
         username = ACCOUNTS["shopping_admin"]["username"]
         password = ACCOUNTS["shopping_admin"]["password"]
         page.goto(f"{SHOPPING_ADMIN}")
@@ -95,6 +98,7 @@ def renew_comb(comb: list[str], auth_folder: str = "./.auth") -> None:
         page.get_by_role("button", name="Sign in").click()
 
     if "gitlab" in comb:
+        print("Logging in to gitlab")
         username = ACCOUNTS["gitlab"]["username"]
         password = ACCOUNTS["gitlab"]["password"]
         page.goto(f"{GITLAB}/users/sign_in")

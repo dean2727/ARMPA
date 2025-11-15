@@ -6,7 +6,11 @@ from tenacity import (
     stop_after_attempt,
     wait_random_exponential,
 )
+
 import numpy as np
+
+# import litellm
+# litellm._turn_on_debug()
 
 def entropy_from_top_logprobs(top_logprobs):
     """
@@ -97,7 +101,6 @@ def generate_from_litellm_completion(
     except Exception as e:
         print(f"Error: {e}")
         return None
-
     answer = response["choices"][0]["message"]["content"]
     logprobs_data = response["choices"][0]["logprobs"]["content"]
     mean_entropy, action_decision_entropy = get_mean_and_action_entropies(logprobs_data)

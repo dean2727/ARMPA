@@ -1,18 +1,17 @@
 {
   "sites": [
-    "map"
+    "shopping_admin"
   ],
-  "task_id": 56,
+  "task_id": 215,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin",
   "geolocation": null,
-  "intent_template": "How long does it take to walk from {{start}} to {{end}}?",
+  "intent_template": "What are the key aspects that the customers don't like about {{product}}",
   "instantiation_dict": {
-    "start": "Carnegie Museum of Art",
-    "end": "a library at CMU"
+    "product": "Circe ice fleece"
   },
-  "intent": "How long does it take to walk from Carnegie Museum of Art to a library at CMU?",
+  "intent": "What are the key aspects that the customers don't like about Circe ice fleece",
   "require_reset": false,
   "eval": {
     "eval_types": [
@@ -20,13 +19,13 @@
     ],
     "reference_answers": {
       "fuzzy_match": [
-        "11 min"
+        "Material quality, fit, insufficient warmth, color"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "11 min"
+    "reference_answer_raw_annotation": "Material quality, fit, insufficient warmth, color"
   },
-  "intent_template_id": 68
+  "intent_template_id": 249
 }

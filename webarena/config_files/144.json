@@ -2,31 +2,28 @@
   "sites": [
     "shopping"
   ],
-  "task_id": 144,
+  "task_id": 797,
   "require_login": true,
   "storage_state": "./.auth/shopping_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770",
   "geolocation": null,
-  "intent_template": "How much I spent on {{category}} shopping during {{time}}",
+  "intent_template": "Change the delivery address for my most recent order to {{address}}.",
   "instantiation_dict": {
-    "category": "food",
-    "time": "from mid Jan to the end Jan 2023"
+    "address": "3 Oxford St, Cambridge, MA"
   },
-  "intent": "How much I spent on food shopping during from mid Jan to the end Jan 2023",
+  "intent": "Change the delivery address for my most recent order to 3 Oxford St, Cambridge, MA.",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "must_include": [
-        "0"
-      ]
+      "fuzzy_match": "N/A"
     },
     "reference_url": "",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "0"
+    "string_note": "The shipping address cannot be changed after an order is placed in the website.",
+    "reference_answer_raw_annotation": "N/A"
   },
-  "intent_template_id": 162
+  "intent_template_id": 191
 }

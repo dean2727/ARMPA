@@ -1,41 +1,34 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 110,
+  "task_id": 165,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/sandgrens-swedish-handmade-wooden-clog-sandal-copenhagen.html",
   "geolocation": null,
-  "intent_template": "Presents the monthly count of successful orders {{period}} in MM:COUNT format",
-  "instantiation_dict": {
-    "period": "from Jan to Nov 2022"
-  },
-  "intent": "Presents the monthly count of successful orders from Jan to Nov 2022 in MM:COUNT format",
+  "intent_template": "What are the main criticisms of this product? Please extract the relevant sentences.",
+  "instantiation_dict": {},
+  "intent": "What are the main criticisms of this product? Please extract the relevant sentences.",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "fuzzy_match": [
-        "January: 11 orders",
-        "Feburary: 16 orders",
-        "March: 14 orders",
-        "April: 7 orders",
-        "May: 8 orders",
-        "June: 13 orders",
-        "July: 9 orders",
-        "August: 8 orders",
-        "Sepetember: 10 orders",
-        "Octorbor: 4 orders",
-        "November: 5 orders"
+      "must_include": [
+        "The 39 was too small. I am afraid the 40 will be too big",
+        "I was very sad when the shoe rubbed up against my baby toe",
+        "I had to return them because I knew in time it would tear up my feet",
+        "The problem is that the strap is made of some really stiff leather and is painful to my heel",
+        "The front is also uncomfortably tight",
+        "The Dansko's were similar (not as bad) and loosened up over time"
       ]
     },
     "reference_url": "",
     "program_html": [],
     "string_note": "",
-    "reference_answer_raw_annotation": "January: 11 orders Feburary: 16 orders March: 14 orders April: 7 orders May: 8 orders June: 13 orders July: 9 orders August: 8 orders Sepetember: 10 orders Octorbor: 4 orders November: 5 orders  "
+    "reference_answer_raw_annotation": "The 39 was too small. I am afraid the 40 will be too big. I was very sad when the shoe rubbed up against my baby toe. I had to return them because I knew in time it would tear up my feet. The problem is that the strap is made of some really stiff leather and is painful to my heel. The front is also uncomfortably tight. The Dansko's were similar (not as bad) and loosened up over time."
   },
-  "intent_template_id": 270
+  "intent_template_id": 136
 }

@@ -1,31 +1,27 @@
 {
   "sites": [
-    "shopping_admin"
+    "map"
   ],
-  "task_id": 127,
+  "task_id": 382,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": null,
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000",
   "geolocation": null,
-  "intent_template": "What brands appear most frequently among the top search terms?",
+  "intent_template": "I am arriving at Carnegie Mellon University. Find the nearby US Citizenship and Immigration Services and the walking distance to the nearest Social Security Administration from US Citizenship and Immigration Services",
   "instantiation_dict": {},
-  "intent": "What brands appear most frequently among the top search terms?",
+  "intent": "I am arriving at Carnegie Mellon University. Find the nearby US Citizenship and Immigration Services and the walking distance to the nearest Social Security Administration from US Citizenship and Immigration Services",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "must_include": [
-        "Hollister",
-        "Joust",
-        "Antonia"
-      ]
+      "fuzzy_match": "N/A"
     },
     "reference_url": "",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Hollister, Joust, Antonia"
+    "string_note": "There is no USCIS nearby",
+    "reference_answer_raw_annotation": "N/A"
   },
-  "intent_template_id": 1001
+  "intent_template_id": 781
 }

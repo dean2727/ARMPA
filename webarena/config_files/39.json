@@ -1,32 +1,46 @@
 {
   "sites": [
-    "map"
+    "gitlab"
   ],
-  "task_id": 39,
+  "task_id": 736,
   "require_login": true,
-  "storage_state": null,
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000",
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023",
   "geolocation": null,
-  "intent_template": "Check if the {{place}} in pittsburgh can be reached in one hour by car from {{location}}",
+  "intent_template": "Make the LICENSE of {{repo}} to MIT license.",
   "instantiation_dict": {
-    "place": "walmart",
-    "location": "5600 fifth avenue"
+    "repo": "gimmiethat.space and dotfiles"
   },
-  "intent": "Check if the walmart in pittsburgh can be reached in one hour by car from 5600 fifth avenue",
+  "intent": "Make the LICENSE of gimmiethat.space and dotfiles to MIT license.",
   "require_reset": false,
   "eval": {
     "eval_types": [
-      "string_match"
+      "program_html"
     ],
-    "reference_answers": {
-      "must_include": [
-        "Yes"
-      ]
-    },
+    "reference_answers": null,
     "reference_url": "",
-    "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "Yes"
+    "program_html": [
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/gimmiethat.space/-/blob/main/LICENSE",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "MIT license",
+            "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software."
+          ]
+        }
+      },
+      {
+        "url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023/byteblaze/dotfiles/-/blob/main/LICENSE",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "MIT license",
+            "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software."
+          ]
+        }
+      }
+    ]
   },
-  "intent_template_id": 77
+  "intent_template_id": 355
 }

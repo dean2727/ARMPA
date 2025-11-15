@@ -1,31 +1,29 @@
 {
   "sites": [
-    "shopping_admin"
+    "shopping"
   ],
-  "task_id": 11,
+  "task_id": 24,
   "require_login": true,
-  "storage_state": "./.auth/shopping_admin_state.json",
-  "start_url": "http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin",
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770/haflinger-men-s-wool-felt-open-back-slippers-beige-550-peat-us-7.html",
   "geolocation": null,
-  "intent_template": "Tell me the the number of reviews that our store received by far that mention term \"{{term}}\"",
+  "intent_template": "List out reviewers, if exist, who mention about {{description}}",
   "instantiation_dict": {
-    "term": "disappointed"
+    "description": "price being unfair"
   },
-  "intent": "Tell me the the number of reviews that our store received by far that mention term \"disappointed\"",
+  "intent": "List out reviewers, if exist, who mention about price being unfair",
   "require_reset": false,
   "eval": {
     "eval_types": [
       "string_match"
     ],
     "reference_answers": {
-      "must_include": [
-        "6"
-      ]
+      "fuzzy_match": "N/A"
     },
     "reference_url": "",
     "program_html": [],
-    "string_note": "",
-    "reference_answer_raw_annotation": "6"
+    "string_note": "There is no reivew about price being unfair",
+    "reference_answer_raw_annotation": "N/A"
   },
-  "intent_template_id": 288
+  "intent_template_id": 222
 }
