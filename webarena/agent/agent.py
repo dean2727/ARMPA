@@ -223,8 +223,8 @@ class PromptAgent(Agent):
                 temperature=self.temperature,
             )
             answer = response["answer"]
-            mean_entropy = response["mean_entropy"]
-            action_decision_entropy = response["action_decision_entropy"]
+            # mean_entropy = response["mean_entropy"]
+            # action_decision_entropy = response["action_decision_entropy"]
             
             # Extract the action
             action_str = self._extract_action(answer)
@@ -250,8 +250,8 @@ class PromptAgent(Agent):
                 
                 return {
                     "action": action,
-                    "mean_entropy": mean_entropy,
-                    "action_decision_entropy": action_decision_entropy
+                    # "mean_entropy": mean_entropy,
+                    # "action_decision_entropy": action_decision_entropy
                 }
                 
             except ActionParsingError as e:
@@ -262,8 +262,8 @@ class PromptAgent(Agent):
                     action["llm_reasoning"] = answer
                     return {
                         "action": action,
-                        "mean_entropy": None,
-                        "action_decision_entropy": None
+                        # "mean_entropy": None,
+                        # "action_decision_entropy": None
                     }
                 else:
                     print(f"Action parsing error (attempt {n}): {e}")

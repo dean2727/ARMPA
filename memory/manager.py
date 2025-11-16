@@ -35,6 +35,9 @@ class MemoryManager:
                 print(f"Collection '{self.collection_name}' already exists, using existing collection.")
             else:
                 raise e
+        
+        # Create payload index on "goal" field for filtering
+        self._ensure_goal_index()
 
     # ---------- STORE ---------- #
     def store_trajectory(self, observations_actions_reasonings: List[Tuple[str, str, str]], goal: str, success: bool):
@@ -147,6 +150,51 @@ class MemoryManager:
             )
 
         return recalls
+
+    def get_memories_by_goal(self, goal: str, limit: int = None) -> List[Dict[str, Any]]:
+        """Retrieve cue-based memories by searching the 'goal' metadata field"""
+        try:
+            # Use scroll with a filter to find memories matching the goal
+            points, _ = self.client.scroll(
+                collection_name=self.collection_name,
+                scroll_filter=rest.Filter(
+                    must=[
+                        rest.FieldCondition(
+                            key="goal",
+                            match=rest.MatchValue(value=goal)
+                        )
+                    ]
+                ),
+                limit=limit,
+                with_payload=True,
+                with_vectors=False
+            )
+            
+            recalls = []
+            for point in points:
+                payload = point.payload
+                recalls.append(
+                    {
+                        "memory_id": payload.get("memory_id"),
+                        "step_id": payload.get("step_id"),
+                        "goal": payload.get("goal"),
+                        "obs_summary": payload.get("obs_summary"),
+                        "action_taken": payload.get("action_taken"),
+                        "reason_for_action": payload.get("reason_for_action"),
+                        "success": payload.get("success"),
+                        "strength": payload.get("strength"),
+                        "timestamp": payload.get("timestamp"),
+                    }
+                )
+            
+            # Sort by step_id before returning
+            recalls.sort(key=lambda x: x.get("step_id", 0))
+            
+            return recalls
+            
+        except Exception as e:
+            print(f"❌ Error retrieving memories by goal: {e}")
+            return []
 
     def get_formatted_memories_for_prompt(self, mems: List[Dict[str, Any]]):
         formatted_mems = []
@@ -269,6 +317,8 @@ class MemoryManager:
                 vectors_config=rest.VectorParams(size=1024, distance=rest.Distance.COSINE),
             )
             print(f"✅ Recreated empty collection '{self.collection_name}'")
+            # Recreate the index
+            self._ensure_goal_index()
             
         except Exception as e:
             if "doesn't exist" in str(e).lower():
@@ -278,10 +328,28 @@ class MemoryManager:
                     vectors_config=rest.VectorParams(size=1024, distance=rest.Distance.COSINE),
                 )
                 print(f"✅ Created new collection '{self.collection_name}'")
+                # Create the index
+                self._ensure_goal_index()
             else:
                 raise e
 
     # ---------- UTILITIES ---------- #
+    def _ensure_goal_index(self):
+        """Ensure that a payload index exists on the 'goal' field for filtering"""
+        try:
+            self.client.create_payload_index(
+                collection_name=self.collection_name,
+                field_name="goal",
+                field_schema=rest.PayloadSchemaType.KEYWORD,
+            )
+            print(f"✅ Created payload index on 'goal' field for collection '{self.collection_name}'")
+        except Exception as e:
+            if "already exists" in str(e).lower() or "index" in str(e).lower():
+                # Index already exists, which is fine
+                pass
+            else:
+                print(f"⚠️  Warning: Could not create index on 'goal' field: {e}")
+
     def summarize_webarena_observation(self, obs_text: str) -> str:
         query = f"""Summarize the following web observation according to the instructions:
         {obs_text}

@@ -95,20 +95,20 @@ def generate_from_litellm_completion(
             temperature=temperature,
             max_tokens=max_tokens,
             stop=stop_sequences,
-            logprobs=True,
-			top_logprobs=5
+            # logprobs=True,
+			# top_logprobs=5
         )
     except Exception as e:
         print(f"Error: {e}")
         return None
     answer = response["choices"][0]["message"]["content"]
-    logprobs_data = response["choices"][0]["logprobs"]["content"]
-    mean_entropy, action_decision_entropy = get_mean_and_action_entropies(logprobs_data)
+    #logprobs_data = response["choices"][0]["logprobs"]["content"]
+    #mean_entropy, action_decision_entropy = get_mean_and_action_entropies(logprobs_data)
 
     return {
         "answer": answer,
-        "mean_entropy": mean_entropy,
-        "action_decision_entropy": action_decision_entropy
+        # "mean_entropy": mean_entropy,
+        # "action_decision_entropy": action_decision_entropy
     }
 
 

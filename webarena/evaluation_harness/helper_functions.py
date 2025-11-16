@@ -15,8 +15,8 @@ from browser_env.env_config import (
     SHOPPING_ADMIN,
     WIKIPEDIA,
 )
-from llms.providers.openai_utils import (
-    generate_from_openai_chat_completion,
+from llms.providers.litellm_utils import (
+    generate_from_litellm_completion,
 )
 
 
@@ -145,7 +145,6 @@ def gitlab_get_project_memeber_role(page: Page, account_name: str) -> str:
 
 def llm_fuzzy_match(pred: str, reference: str, question: str) -> float:
     """Check whether the prediction matches the reference with GPT4-turbo"""
-    messages: list[dict[str, Any]] = []
     # construct the question to ask
     message = "Help a teacher to grade the answer of a student given a question. Keep in mind that the student may use different phrasing or wording to answer the question. The goal is to evaluate whether the answer is semantically equivalent to the reference answer.\n"
     message += f"question: {question}\n"
@@ -153,19 +152,16 @@ def llm_fuzzy_match(pred: str, reference: str, question: str) -> float:
     message += "all the string 'N/A' that you see is a special sequence that means 'not achievable'\n"
     message += f"student answer: {pred}\n"
     message += "Conclude the judgement by correct/incorrect/partially correct."
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant"},
-        {"role": "user", "content": message},
-    ]
+    system_prompt = "You are a helpful assistant"
+    user_prompt = message
 
-    response = generate_from_openai_chat_completion(
-        model="gpt-4-1106-preview",
-        messages=messages,
+    response = generate_from_litellm_completion(
+        prompt=user_prompt,
+        model="together_ai/OpenAI/gpt-oss-120B",
         temperature=0,
         max_tokens=768,
-        top_p=1.0,
-        context_length=0,
-    ).lower()
+        system_prompt=system_prompt,
+    )["answer"].lower()
     if "partially correct" in response or "incorrect" in response:
         return 0.0
     else:
@@ -175,7 +171,6 @@ def llm_fuzzy_match(pred: str, reference: str, question: str) -> float:
 
 def llm_ua_match(pred: str, reference: str, question: str) -> float:
     """Check whether the prediction matches the reference with GPT-turbo"""
-    messages: list[dict[str, Any]] = []
     # construct the question to ask
     message = ""
     message += f"task: {question}\n"
@@ -188,19 +183,16 @@ def llm_ua_match(pred: str, reference: str, question: str) -> float:
         "Determine if the reported reason aligns with the actual reason, even if implicitly. "
         "If the stated reason is in line with the actual reason, respond with 'same'. Otherwise, respond with 'different'."
     )
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant"},
-        {"role": "user", "content": message},
-    ]
+    system_prompt = "You are a helpful assistant"
+    user_prompt = message
 
-    response = generate_from_openai_chat_completion(
-        model="gpt-4-1106-preview",
-        messages=messages,
+    response = generate_from_litellm_completion(
+        prompt=user_prompt,
+        model="together_ai/OpenAI/gpt-oss-120B",
         temperature=0,
         max_tokens=768,
-        top_p=1.0,
-        context_length=0,
-    ).lower()
+        system_prompt=system_prompt,
+    )["answer"].lower()
     if "different" in response:
         return 0.0
     else:
