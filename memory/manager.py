@@ -129,31 +129,48 @@ class MemoryManager:
         return rest.PointStruct(id=metadata["memory_id"], vector=cue_emb, payload=metadata)
 
     # ---------- RETRIEVE ---------- #
-    def cue_based_recall(self, summarized_obs: str, goal: str, top_k: int = 3):
+    def cue_based_recall(self, summarized_obs: str, goal: str, top_k: int = 3, return_embeddings: bool = True):
+        """
+        Retrieve top-K memories based on cue similarity.
+        
+        Args:
+            summarized_obs: Summarized current observation
+            goal: Task goal/intent
+            top_k: Number of memories to retrieve
+            return_embeddings: If True, include memory embeddings in output (needed for RL filter)
+        
+        Returns:
+            recalls: List of memory dicts with metadata and optionally embeddings
+        """
         cue_emb = self._create_cue_embedding(goal, summarized_obs, last_action=None)
 
         results = self.client.search(
             collection_name=self.collection_name,
             query_vector=cue_emb,
             limit=top_k,
+            with_vectors=return_embeddings,  # Request vectors from Qdrant if needed
         )
 
         recalls = []
         for r in results:
             m = r.payload
-            recalls.append(
-                {
-                    "score": r.score,  # Score from the search result
-                    "memory_id": m["memory_id"],
-                    "step_id": m["step_id"],
-                    "goal": m["goal"],
-                    "obs_summary": m["obs_summary"],
-                    "action_taken": m["action_taken"],  # Corrected key from "action"
-                    "success": m["success"],
-                    "strength": m["strength"],
-                    "timestamp": m["timestamp"],
-                }
-            )
+            memory_dict = {
+                "score": r.score,  # Score from the search result
+                "memory_id": m["memory_id"],
+                "step_id": m["step_id"],
+                "goal": m["goal"],
+                "obs_summary": m["obs_summary"],
+                "action_taken": m["action_taken"],  # Corrected key from "action"
+                "success": m["success"],
+                "strength": m["strength"],
+                "timestamp": m["timestamp"],
+            }
+            
+            # Add embedding if requested (for RL filter)
+            if return_embeddings and r.vector is not None:
+                memory_dict["embedding"] = r.vector
+            
+            recalls.append(memory_dict)
 
         return recalls
 
@@ -177,10 +194,38 @@ class MemoryManager:
         
         return formatted_mems
 
+    def _get_embedding(self, text: str):
+        """
+        Get embedding for a single text string.
+        
+        This is a helper method for RL filter integration, allowing
+        embeddings to be generated for task goals and observations separately.
+        
+        Args:
+            text: Input text to embed
+        
+        Returns:
+            embedding: 1024-dim numpy array or list
+        """
+        emb = embedding(model=self.embed_model, input=[text])
+        return emb["data"][0]["embedding"]
+    
     def _create_cue_embedding(self, goal: str, current_obs: str, last_action: str = None):
-        # A cue consists of <goal> | <what I last did> | <what I now see (summarized)>
-        # BGE-large has 512 token limit. Empirically: ~4 chars per token.
-        # Strategy: Truncate each field to ensure total stays under 512 tokens (~2000 chars total)
+        """
+        Create cue embedding for memory retrieval.
+        
+        A cue consists of <goal> | <what I last did> | <what I now see (summarized)>
+        BGE-large has 512 token limit. Empirically: ~4 chars per token.
+        Strategy: Truncate each field to ensure total stays under 512 tokens (~2000 chars total)
+        
+        Args:
+            goal: Task goal/intent
+            current_obs: Current observation (summarized)
+            last_action: Optional previous action taken
+        
+        Returns:
+            cue_emb: 1024-dim embedding vector
+        """
         max_goal_chars = 400
         max_obs_chars = 1200  # Observations are most important
         max_action_chars = 300
