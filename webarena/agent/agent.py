@@ -223,8 +223,7 @@ class PromptAgent(Agent):
                 temperature=self.temperature,
             )
             answer = response["answer"]
-            # mean_entropy = response["mean_entropy"]
-            # action_decision_entropy = response["action_decision_entropy"]
+            reasoning = response["reasoning"]
             
             # Extract the action
             action_str = self._extract_action(answer)
@@ -243,15 +242,16 @@ class PromptAgent(Agent):
                     raise ValueError(f"Unknown action type {self.action_set_tag}")
                 
                 action["raw_prediction"] = answer
-                
-                # Extract reasoning by removing the parsed action from the raw prediction
-                llm_reasoning = answer.replace(action_str, "").strip()
-                action["llm_reasoning"] = llm_reasoning
+
+                # If reasoning model like GPT OSS
+                if reasoning:
+                    action["llm_reasoning"] = reasoning
+                else:
+                    llm_reasoning = answer.replace(action_str, "").strip()
+                    action["llm_reasoning"] = llm_reasoning
                 
                 return {
                     "action": action,
-                    # "mean_entropy": mean_entropy,
-                    # "action_decision_entropy": action_decision_entropy
                 }
                 
             except ActionParsingError as e:
@@ -262,8 +262,6 @@ class PromptAgent(Agent):
                     action["llm_reasoning"] = answer
                     return {
                         "action": action,
-                        # "mean_entropy": None,
-                        # "action_decision_entropy": None
                     }
                 else:
                     print(f"Action parsing error (attempt {n}): {e}")
