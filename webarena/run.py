@@ -6,6 +6,7 @@ warnings.filterwarnings("ignore", message=".*PEP 484 type hint.*deprecated by PE
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="beartype")
 
 import argparse
+import csv
 import glob
 import json
 import logging
@@ -45,7 +46,7 @@ from browser_env.helper_functions import (
 )
 from evaluation_harness import evaluator_router
 
-from memory.manager import MemoryManager
+# MemoryManager will be imported lazily only when memory features are enabled
 
 # RL Filter Agent (optional, only loaded if used)
 try:
@@ -167,6 +168,8 @@ def config() -> argparse.Namespace:
     parser.add_argument("--test_end_idx", type=int, default=1000)
     parser.add_argument("--num_tasks", type=int, default=None, 
                        help="Number of config files to randomly sample and run. If specified, overrides test_start_idx and test_end_idx")
+    parser.add_argument("--skip_tasks_csv", type=str, default=None,
+                       help="Path to a CSV file from a previous run. Tasks (intents) already in this CSV will be skipped.")
 
     # NEW: memories
     parser.add_argument("--store_memory", action="store_true", help="Store memories (from Qdrant)post-trajectory and store them per-step")
@@ -261,6 +264,25 @@ def early_stop(
     return False, ""
 
 
+def load_skip_tasks(csv_path: str) -> set[str]:
+    """Load tasks (intents) from a previous run's CSV file."""
+    skip_tasks = set()
+    if not csv_path or not Path(csv_path).exists():
+        return skip_tasks
+    
+    try:
+        with open(csv_path, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                task = row.get('task', '').strip()
+                if task:
+                    skip_tasks.add(task)
+        logger.info(f"Loaded {len(skip_tasks)} tasks from {csv_path} to skip")
+    except Exception as e:
+        logger.warning(f"Failed to load skip tasks from {csv_path}: {e}")
+    
+    return skip_tasks
+
 def test(
     args: argparse.Namespace,
     agent: Agent | PromptAgent | TeacherForcingAgent,
@@ -269,7 +291,17 @@ def test(
     scores = []
     max_steps = args.max_steps
 
-    memory_manager = MemoryManager(collection_name=MEMORY_COLLECTION_NAME)
+    # Only initialize MemoryManager if memory features are enabled
+    # Import lazily to avoid importing litellm when not needed
+    memory_manager = None
+    if args.get_memory or args.store_memory:
+        from memory.manager import MemoryManager
+        memory_manager = MemoryManager(collection_name=MEMORY_COLLECTION_NAME)
+    
+    # Load tasks to skip from previous run CSV if provided
+    skip_tasks = set()
+    if args.skip_tasks_csv:
+        skip_tasks = load_skip_tasks(args.skip_tasks_csv)
     
     # Initialize RL Filter Agent if requested
     rl_filter = None
@@ -320,11 +352,6 @@ def test(
     )
 
     for config_file in tqdm(config_file_list, desc="Processing config files"):
-        # temp
-        # with open(config_file) as f:
-        #     _c = json.load(f)
-        #     if _c["task_id"] not in [524, 717, 800]:
-        #         continue
         try:
             render_helper = RenderHelper(
                 config_file, args.result_dir, args.action_set_tag
@@ -335,6 +362,11 @@ def test(
                 _c = json.load(f)
                 intent = _c["intent"]
                 task_id = _c["task_id"]
+                
+                # Skip if this task is already in the skip set
+                if intent in skip_tasks:
+                    logger.info(f"[SKIP] Task already completed: {intent} (from {config_file})")
+                    continue
                 # automatically login
                 if _c["storage_state"]:
                     cookie_file_name = os.path.basename(_c["storage_state"])
@@ -382,7 +414,10 @@ def test(
             state_info: StateInfo = {"observation": obs, "info": info}
             trajectory.append(state_info)
 
-            observation_summary = memory_manager.summarize_webarena_observation(obs["text"])
+            # Initialize observation_summary if memory features are enabled
+            observation_summary = None
+            if memory_manager is not None:
+                observation_summary = memory_manager.summarize_webarena_observation(obs["text"])
 
             meta_data = {"action_history": ["None"]}
             while True:
@@ -397,7 +432,7 @@ def test(
                     memories = None  # Initialize for RL data collection
                     mean_entropy = 0.0  # Default if not available
                     
-                    if args.get_memory:
+                    if args.get_memory and memory_manager is not None and observation_summary is not None:
                         # Check uncertainty threshold for recall trigger
                         should_recall = (args.recall_threshold == 0.0)  # Always recall if threshold is 0
                         
@@ -455,8 +490,9 @@ def test(
                             trajectory, intent, meta_data=meta_data, past_memories=formatted_memories
                         )
                         action = response["action"]
-                        mean_entropy = response["mean_entropy"]
-                        action_decision_entropy = response["action_decision_entropy"]
+                        # Extract entropy for RL filter (if available)
+                        mean_entropy = response.get("mean_entropy", 0.0)
+                        action_decision_entropy = response.get("action_decision_entropy", None)
                         
                         # Update entropy in the last recall event if it exists
                         if episode_buffer is not None and len(episode_buffer['recall_events']) > 0:
@@ -490,7 +526,9 @@ def test(
 
                 obs, _, terminated, _, info = env.step(action)
                 state_info = {"observation": obs, "info": info}
-                observation_summary = memory_manager.summarize_webarena_observation(obs["text"])
+                # Only summarize observation if memory features are enabled
+                if memory_manager is not None:
+                    observation_summary = memory_manager.summarize_webarena_observation(obs["text"])
                 trajectory.append(state_info)
                 
                 logger.info(f"Step completed - Action: {action_str}, Terminated: {terminated}, Obs length: {len(obs) if obs else 0}")
@@ -537,7 +575,7 @@ def test(
                 logger.info(f"[Episode] Reward={final_reward:.4f}, Steps={num_steps}, Success={score==1}")
 
             # If memory enabled, store the trajectory
-            if args.store_memory:
+            if args.store_memory and memory_manager is not None:
                 logger.info(f"[Storing trajectory to memory...]")
                 memory_manager.store_trajectory(
                     observations_actions_reasonings=observations_actions_reasonings,
@@ -565,9 +603,9 @@ def test(
             results_csv = run_dir / "results.csv"
             if not results_csv.exists():
                 with open(results_csv, "w") as rf:
-                    rf.write("task,success,steps\n")
+                    rf.write("task_id,task,success,steps\n")
             with open(results_csv, "a") as rf:
-                rf.write(f"{intent},{1 if score == 1 else 0},{steps}\n")
+                rf.write(f"{task_id},{intent},{1 if score == 1 else 0},{steps}\n")
 
             # save trajectory
             (run_dir / "trajectories").mkdir(parents=True, exist_ok=True)

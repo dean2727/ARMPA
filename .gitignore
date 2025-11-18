@@ -9,3 +9,5 @@ dist/
 *.pem
 *.pdf
 *.log
+
+runs/*
