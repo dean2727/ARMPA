@@ -152,8 +152,6 @@ def config() -> argparse.Namespace:
     parser.add_argument("--test_end_idx", type=int, default=1000)
     parser.add_argument("--num_tasks", type=int, default=None, 
                        help="Number of config files to randomly sample and run. If specified, overrides test_start_idx and test_end_idx")
-    parser.add_argument("--skip_tasks_csv", type=str, default=None,
-                       help="Path to a CSV file from a previous run. Tasks (intents) already in this CSV will be skipped.")
 
     # NEW: memories
     parser.add_argument("--store_memory", action="store_true", help="Store memories (from Qdrant)post-trajectory and store them per-step")
@@ -234,25 +232,6 @@ def early_stop(
     return False, ""
 
 
-def load_skip_tasks(csv_path: str) -> set[str]:
-    """Load tasks (intents) from a previous run's CSV file."""
-    skip_tasks = set()
-    if not csv_path or not Path(csv_path).exists():
-        return skip_tasks
-    
-    try:
-        with open(csv_path, 'r', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                task = row.get('task', '').strip()
-                if task:
-                    skip_tasks.add(task)
-        logger.info(f"Loaded {len(skip_tasks)} tasks from {csv_path} to skip")
-    except Exception as e:
-        logger.warning(f"Failed to load skip tasks from {csv_path}: {e}")
-    
-    return skip_tasks
-
 def test(
     args: argparse.Namespace,
     agent: Agent | PromptAgent | TeacherForcingAgent,
@@ -267,11 +246,6 @@ def test(
     if args.get_memory or args.store_memory:
         from memory.manager import MemoryManager
         memory_manager = MemoryManager(collection_name=MEMORY_COLLECTION_NAME)
-    
-    # Load tasks to skip from previous run CSV if provided
-    skip_tasks = set()
-    if args.skip_tasks_csv:
-        skip_tasks = load_skip_tasks(args.skip_tasks_csv)
     
     early_stop_thresholds = {
         "parsing_failure": args.parsing_failure_th,
@@ -302,11 +276,7 @@ def test(
                 _c = json.load(f)
                 intent = _c["intent"]
                 task_id = _c["task_id"]
-                
-                # Skip if this task is already in the skip set
-                if intent in skip_tasks:
-                    logger.info(f"[SKIP] Task already completed: {intent} (from {config_file})")
-                    continue
+
                 # automatically login
                 if _c["storage_state"]:
                     cookie_file_name = os.path.basename(_c["storage_state"])
