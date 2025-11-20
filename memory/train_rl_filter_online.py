@@ -249,6 +249,7 @@ def train_online_rl(
     model_dir: Path,
     convergence_threshold: float = 0.01,
     patience: int = 3,
+    disable_early_stopping: bool = False,
 ) -> None:
     """
     Train RL filter using online, on-policy learning.
@@ -265,6 +266,7 @@ def train_online_rl(
         model_dir: Directory to save model checkpoints
         convergence_threshold: Stop if reward improvement < this
         patience: Number of cycles without improvement before stopping
+        disable_early_stopping: If True, train for all num_cycles regardless of convergence
     """
     model_dir.mkdir(parents=True, exist_ok=True)
     
@@ -366,8 +368,8 @@ def train_online_rl(
             no_improvement_count += 1
             logger.info(f"   No improvement (best: {best_reward:.4f}, patience: {no_improvement_count}/{patience})")
         
-        # Check convergence
-        if no_improvement_count >= patience:
+        # Check convergence (only if early stopping is enabled)
+        if not disable_early_stopping and no_improvement_count >= patience:
             logger.info(f"\n⚠️  Early stopping: No improvement for {patience} cycles")
             cycle_pbar.close()
             break
@@ -403,6 +405,8 @@ def main():
                        help="Stop if reward improvement < this")
     parser.add_argument("--patience", type=int, default=3,
                        help="Cycles without improvement before stopping")
+    parser.add_argument("--disable_early_stopping", action="store_true",
+                       help="If set, train for all num_cycles regardless of convergence")
     
     # WebArena task arguments
     parser.add_argument("--model", type=str, 
@@ -475,6 +479,7 @@ def main():
         model_dir=model_dir,
         convergence_threshold=args.convergence_threshold,
         patience=args.patience,
+        disable_early_stopping=args.disable_early_stopping,
     )
 
 
