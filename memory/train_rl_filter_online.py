@@ -10,7 +10,6 @@ The process repeats until convergence or max cycles reached.
 Usage:
     python memory/train_rl_filter_online.py \
         --model_dir models/rl_filter \
-        --batch_size 8 \
         --num_cycles 20 \
         --tasks_per_cycle 10 \
         --model "together_ai/Qwen/Qwen2.5-72B-Instruct-Turbo"
@@ -398,9 +397,7 @@ def main():
     parser.add_argument("--num_cycles", type=int, default=20,
                        help="Number of rollout-update cycles")
     parser.add_argument("--tasks_per_cycle", type=int, default=10,
-                       help="Number of tasks to collect per cycle")
-    parser.add_argument("--batch_size", type=int, default=8,
-                       help="Batch size for GRPO (groups episodes)")
+                       help="Number of tasks to collect per cycle (processed sequentially)")
     parser.add_argument("--convergence_threshold", type=float, default=0.01,
                        help="Stop if reward improvement < this")
     parser.add_argument("--patience", type=int, default=3,
