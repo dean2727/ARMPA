@@ -11,3 +11,5 @@ dist/
 *.log
 
 runs/*
+models/
+QUICKSTART.md

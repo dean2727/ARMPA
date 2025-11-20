@@ -1,25 +1,30 @@
 """
-Training Script for RL Memory Filter Agent
+Online RL Training Script for Memory Filter Agent
 
-This script trains the memory filter using episode buffers collected from
-WebArena runs with memory retrieval enabled. It implements the GRPO algorithm
-with group-relative advantage computation.
+This script trains the memory filter using online, on-policy RL. It collects
+episodes using the current filter policy, immediately updates the policy using
+GRPO, and repeats in alternating cycles until convergence.
 
 Usage:
-    python train_rl_filter.py --data_dir runs/20251117_123456/episode_buffers \
-                               --model_dir models/rl_filter \
-                               --batch_size 8 \
-                               --epochs 50
+    python train_rl_filter.py \
+        --model_dir models/rl_filter \
+        --batch_size 8 \
+        --num_cycles 20 \
+        --tasks_per_cycle 10 \
+        --model "together_ai/Qwen/Qwen2.5-72B-Instruct-Turbo"
 
 Author: ARMPA Research Team
-Date: 2025-11-17
+Date: 2025-11-19
 """
 
 import argparse
 import pickle
 import logging
+import subprocess
+import sys
+import time
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import numpy as np
 import torch
 from tqdm import tqdm
