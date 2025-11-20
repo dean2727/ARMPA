@@ -1,17 +1,19 @@
 """
 Online RL Training Script for Memory Filter Agent
 
-This script trains the memory filter using online, on-policy RL. It alternates between:
-1. Collecting episodes using the current filter policy
-2. Updating the policy using GRPO on the collected episodes
+This script trains the memory filter using online, on-policy RL with GRPO.
 
-The process repeats until convergence or max cycles reached.
+GRPO (Group Relative Policy Optimization):
+- For each task, collects multiple samples with different stochastic filter outputs
+- Computes advantages relative to the group: A^n = (r^n - r_mean_group) / r_std_group
+- Updates policy to increase probability of high-advantage actions
 
 Usage:
     python memory/train_rl_filter_online.py \
         --model_dir models/rl_filter \
         --num_cycles 20 \
         --tasks_per_cycle 10 \
+        --num_samples_per_task 5 \
         --model "together_ai/Qwen/Qwen2.5-72B-Instruct-Turbo"
 
 Author: ARMPA Research Team
@@ -44,6 +46,7 @@ logger = logging.getLogger(__name__)
 def collect_episodes_with_filter(
     rl_filter: Optional[RLMemoryFilter],
     num_tasks: int,
+    num_samples_per_task: int,
     model: str,
     instruction_path: str,
     temperature: float = 0.7,
@@ -54,9 +57,13 @@ def collect_episodes_with_filter(
     """
     Collect episodes using the current filter policy.
     
+    For proper GRPO, we collect num_samples_per_task samples for each task,
+    where each sample uses the same task but different stochastic filter outputs.
+    
     Args:
         rl_filter: Current RL filter agent (None for first cycle)
-        num_tasks: Number of tasks to run
+        num_tasks: Number of unique tasks to run
+        num_samples_per_task: Number of samples per task (for GRPO group)
         model: LLM model to use
         instruction_path: Path to prompt template
         temperature: Sampling temperature
@@ -66,6 +73,7 @@ def collect_episodes_with_filter(
     
     Returns:
         episodes: List of episode dictionaries with recall events and rewards
+                  Episodes are grouped by task_id for GRPO advantage computation
     """
     if temp_dir is None:
         temp_dir = Path(f"runs/online_rl_{int(time.time())}")
@@ -80,116 +88,118 @@ def collect_episodes_with_filter(
         filter_model_path = temp_dir / "current_filter.pt"
         rl_filter.save_model(str(filter_model_path))
     
-    # Build command to run WebArena tasks (will run from webarena directory)
-    cmd = [
-        sys.executable,
-        "run.py",  # Changed from webarena/run.py since we'll run from webarena dir
-        "--agent_type", "litellm",
-        "--instruction_path", f"agent/prompts/raw/{Path(instruction_path).name}",
-        "--model", model,
-        "--temperature", str(temperature),
-        "--get_memory",
-        "--num_memories", str(num_memories),
-        "--collect_rl_data",
-        "--num_tasks", str(num_tasks),
-        "--result_dir", str(temp_dir / "results"),
-    ]
-    
-    # Add filter arguments if we have a trained filter
-    if filter_model_path is not None:
-        cmd.extend([
-            "--use_rl_filter",
-            "--rl_filter_model", str(filter_model_path),
-            "--rl_filter_threshold", str(rl_filter_threshold),
-        ])
-    
-    # Set environment variable for PYTHONPATH
-    env = os.environ.copy()
-    env["PYTHONPATH"] = str(Path.cwd()) + ":" + env.get("PYTHONPATH", "")
+    # For GRPO, we need to collect multiple samples per task
+    # We'll run each task num_samples_per_task times with different filter stochasticity
+    all_episodes = []
+    total_runs = num_tasks * num_samples_per_task
     
     logger.info(f"\n{'='*70}")
-    logger.info(f"📊 Collecting {num_tasks} episodes with current policy...")
+    logger.info(f"📊 Collecting {num_tasks} tasks × {num_samples_per_task} samples = {total_runs} episodes")
     logger.info(f"{'='*70}")
     
-    # Run the command from webarena directory (needed for config_files path)
-    webarena_dir = Path.cwd() / "webarena"
+    # Create overall progress bar
+    overall_pbar = tqdm(total=total_runs, desc="GRPO sampling", unit="episode",
+                       bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]')
     
-    # Create a progress bar for episode collection
-    pbar = tqdm(total=num_tasks, desc="Collecting episodes", unit="task", 
-                bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]')
-    
-    try:
-        process = subprocess.Popen(
-            cmd,
-            cwd=webarena_dir,
-            env=env,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            bufsize=1,
-        )
+    # Collect samples for each task
+    for task_idx in range(num_tasks):
+        task_episodes = []
         
-        # Stream output and update progress bar
-        for line in process.stdout:
-            if "Task" in line and "completed" in line:
-                pbar.update(1)
-        
-        # Wait for completion
-        process.wait(timeout=3600)
-        pbar.close()
-        
-        if process.returncode != 0:
-            stderr = process.stderr.read() if process.stderr else ""
-            logger.error(f"❌ Episode collection failed with return code {process.returncode}")
-            logger.error(f"STDERR: {stderr}")
-            raise RuntimeError("Episode collection failed")
-        
-        logger.info("✅ Episode collection completed successfully")
-        
-    except subprocess.TimeoutExpired:
-        logger.error("Episode collection timed out after 1 hour")
-        raise
-    
-    # Load collected episodes from webarena/runs/<timestamp>/episode_buffers/
-    # (run.py saves to runs/ directory, not result_dir)
-    webarena_runs_dir = Path.cwd() / "webarena" / "runs"
-    
-    # Find the most recent run directory
-    run_dirs = sorted([d for d in webarena_runs_dir.iterdir() if d.is_dir()], 
-                      key=lambda x: x.stat().st_mtime, reverse=True)
-    
-    episode_dir = None
-    for run_dir in run_dirs:
-        potential_dir = run_dir / "episode_buffers"
-        if potential_dir.exists():
-            episode_dir = potential_dir
-            break
-    
-    if episode_dir is None or not episode_dir.exists():
-        logger.error(f"Episode buffer directory not found in {webarena_runs_dir}")
-        logger.error(f"Checked directories: {[str(d) for d in run_dirs[:3]]}")
-        raise FileNotFoundError(f"No episode buffers found")
-    
-    logger.info(f"Loading episodes from: {episode_dir}")
-    episode_files = list(episode_dir.glob("*.pkl"))
-    logger.info(f"Found {len(episode_files)} episode files")
-    
-    episodes = []
-    for ep_file in episode_files:
-        try:
-            with open(ep_file, 'rb') as f:
-                episode = pickle.load(f)
+        for sample_idx in range(num_samples_per_task):
+            # Build command to run WebArena tasks (will run from webarena directory)
+            cmd = [
+                sys.executable,
+                "run.py",
+                "--agent_type", "litellm",
+                "--instruction_path", f"agent/prompts/raw/{Path(instruction_path).name}",
+                "--model", model,
+                "--temperature", str(temperature),
+                "--get_memory",
+                "--num_memories", str(num_memories),
+                "--collect_rl_data",
+                "--num_tasks", "1",  # Run one task at a time
+                "--result_dir", str(temp_dir / f"task_{task_idx}_sample_{sample_idx}"),
+            ]
             
-            # Validate episode structure
-            if 'recall_events' in episode and 'final_reward' in episode:
-                episodes.append(episode)
-            else:
-                logger.warning(f"Skipping invalid episode: {ep_file.name}")
-        except Exception as e:
-            logger.warning(f"Error loading {ep_file.name}: {e}")
+            # Add filter arguments if we have a trained filter
+            if filter_model_path is not None:
+                cmd.extend([
+                    "--use_rl_filter",
+                    "--rl_filter_model", str(filter_model_path),
+                    "--rl_filter_threshold", str(rl_filter_threshold),
+                ])
+            
+            # Set environment variable for PYTHONPATH
+            env = os.environ.copy()
+            env["PYTHONPATH"] = str(Path.cwd()) + ":" + env.get("PYTHONPATH", "")
+            
+            # Run the command from webarena directory
+            webarena_dir = Path.cwd() / "webarena"
+            
+            try:
+                process = subprocess.Popen(
+                    cmd,
+                    cwd=webarena_dir,
+                    env=env,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                    bufsize=1,
+                )
+                
+                # Wait for completion
+                process.wait(timeout=3600)
+                
+                if process.returncode != 0:
+                    stderr = process.stderr.read() if process.stderr else ""
+                    logger.error(f"❌ Episode collection failed: {stderr[:200]}")
+                    continue
+                
+                # Load the episode from this run
+                webarena_runs_dir = Path.cwd() / "webarena" / "runs"
+                run_dirs = sorted([d for d in webarena_runs_dir.iterdir() if d.is_dir()], 
+                                  key=lambda x: x.stat().st_mtime, reverse=True)
+                
+                episode_dir = None
+                for run_dir in run_dirs:
+                    potential_dir = run_dir / "episode_buffers"
+                    if potential_dir.exists():
+                        episode_dir = potential_dir
+                        break
+                
+                if episode_dir:
+                    episode_files = list(episode_dir.glob("*.pkl"))
+                    if episode_files:
+                        with open(episode_files[0], 'rb') as f:
+                            episode = pickle.load(f)
+                        
+                        # Tag episode with task group ID
+                        episode['task_group_id'] = task_idx
+                        episode['sample_id'] = sample_idx
+                        task_episodes.append(episode)
+                
+                overall_pbar.update(1)
+                
+            except subprocess.TimeoutExpired:
+                logger.error(f"⏱️ Task {task_idx} sample {sample_idx} timed out")
+                overall_pbar.update(1)
+                continue
+            except Exception as e:
+                logger.error(f"❌ Error collecting task {task_idx} sample {sample_idx}: {e}")
+                overall_pbar.update(1)
+                continue
+        
+        # Add all samples for this task to the global list
+        if task_episodes:
+            all_episodes.extend(task_episodes)
+            logger.info(f"✅ Task {task_idx}: collected {len(task_episodes)}/{num_samples_per_task} samples")
+        else:
+            logger.warning(f"⚠️  Task {task_idx}: no valid samples collected")
     
-    logger.info(f"Loaded {len(episodes)} valid episodes")
-    return episodes
+    overall_pbar.close()
+    logger.info(f"✅ Total episodes collected: {len(all_episodes)}")
+    
+    return all_episodes
 
 
 def evaluate_policy(episodes: List[Dict[str, Any]]) -> Dict[str, float]:
@@ -240,6 +250,7 @@ def train_online_rl(
     rl_filter: RLMemoryFilter,
     num_cycles: int,
     tasks_per_cycle: int,
+    num_samples_per_task: int,
     model: str,
     instruction_path: str,
     temperature: float,
@@ -251,12 +262,13 @@ def train_online_rl(
     disable_early_stopping: bool = False,
 ) -> None:
     """
-    Train RL filter using online, on-policy learning.
+    Train RL filter using online, on-policy learning with GRPO.
     
     Args:
         rl_filter: RL filter agent to train
         num_cycles: Maximum number of rollout-update cycles
-        tasks_per_cycle: Number of tasks to collect per cycle
+        tasks_per_cycle: Number of unique tasks to collect per cycle
+        num_samples_per_task: Number of samples per task (GRPO group size)
         model: LLM model name
         instruction_path: Path to prompt template
         temperature: Sampling temperature
@@ -278,9 +290,11 @@ def train_online_rl(
     best_reward = -float('inf')
     no_improvement_count = 0
     
-    logger.info(f"\n🚀 Starting online RL training for {num_cycles} cycles")
+    logger.info(f"\n🚀 Starting online RL training with GRPO")
+    logger.info(f"   Cycles: {num_cycles}")
     logger.info(f"   Tasks per cycle: {tasks_per_cycle}")
-    logger.info(f"   Total episodes: ~{num_cycles * tasks_per_cycle}")
+    logger.info(f"   Samples per task: {num_samples_per_task}")
+    logger.info(f"   Total episodes per cycle: {tasks_per_cycle * num_samples_per_task}")
     
     # Create progress bar for cycles
     cycle_pbar = tqdm(range(num_cycles), desc="Training Progress", 
@@ -293,6 +307,7 @@ def train_online_rl(
         episodes = collect_episodes_with_filter(
             rl_filter=rl_filter if cycle > 0 else None,  # Use random for first cycle
             num_tasks=tasks_per_cycle,
+            num_samples_per_task=num_samples_per_task,
             model=model,
             instruction_path=instruction_path,
             temperature=temperature,
@@ -331,21 +346,6 @@ def train_online_rl(
         logger.info(f"   Loss: {update_metrics.get('loss', 0):.4f}")
         logger.info(f"   KL Div: {update_metrics.get('kl_div', 0):.4f}")
         
-        # Step 4: Save checkpoint
-        checkpoint_path = model_dir / f"checkpoint_cycle_{cycle + 1}.pt"
-        rl_filter.save_model(str(checkpoint_path))
-        logger.info(f"Saved checkpoint: {checkpoint_path}")
-        
-        # Step 5: Check for improvement and convergence
-        current_reward = metrics['avg_reward']
-        improvement = current_reward - best_reward
-        
-        if improvement > convergence_threshold:
-            best_reward = current_reward
-            no_improvement_count = 0
-            best_model_path = model_dir / "best_model.pt"
-            rl_filter.save_model(str(best_model_path))
-            logger.info(f"✓ New best model saved (reward: {best_reward:.4f}, improvement: {improvement:.4f})")
         # Step 4: Save checkpoint
         checkpoint_path = model_dir / f"checkpoint_cycle_{cycle + 1}.pt"
         rl_filter.save_model(str(checkpoint_path))
@@ -397,7 +397,9 @@ def main():
     parser.add_argument("--num_cycles", type=int, default=20,
                        help="Number of rollout-update cycles")
     parser.add_argument("--tasks_per_cycle", type=int, default=10,
-                       help="Number of tasks to collect per cycle (processed sequentially)")
+                       help="Number of unique tasks per cycle")
+    parser.add_argument("--num_samples_per_task", type=int, default=5,
+                       help="Number of samples per task for GRPO (group size)")
     parser.add_argument("--convergence_threshold", type=float, default=0.01,
                        help="Stop if reward improvement < this")
     parser.add_argument("--patience", type=int, default=3,
@@ -468,6 +470,7 @@ def main():
         rl_filter=rl_filter,
         num_cycles=args.num_cycles,
         tasks_per_cycle=args.tasks_per_cycle,
+        num_samples_per_task=args.num_samples_per_task,
         model=args.model,
         instruction_path=args.instruction_path,
         temperature=args.temperature,

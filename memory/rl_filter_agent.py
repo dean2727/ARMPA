@@ -376,13 +376,14 @@ class RLMemoryFilter:
         Update policy using Group Relative Policy Optimization (GRPO).
         
         GRPO Procedure:
-        1. For each trajectory n, compute advantage: A^n = (r^n - r_mean) / (r_std + δ)
-        2. Aggregate objective across all (T recall events × K candidates)
-        3. Use PPO-style clipped objective with KL penalty
-        4. Update policy parameters
+        1. Group episodes by task_group_id (multiple samples per task)
+        2. For each group, compute advantage: A^n = (r^n - r_mean_group) / (r_std_group + δ)
+        3. Aggregate objective across all (T recall events × K candidates)
+        4. Use PPO-style clipped objective with KL penalty
+        5. Update policy parameters
         
         Args:
-            episodes: List of episode dicts (if None, use self.episode_buffer)
+            episodes: List of episode dicts with task_group_id field
             normalize_advantages: If True, normalize advantages with mean/std
         
         Returns:
@@ -395,21 +396,42 @@ class RLMemoryFilter:
             logger.warning("[RL Filter] No episodes in buffer, skipping update")
             return {}
         
-        # Extract rewards and compute group-relative advantages
-        rewards = np.array([ep['final_reward'] for ep in episodes])
-        mean_reward = rewards.mean()
-        std_reward = rewards.std() + 1e-8
+        # Group episodes by task_group_id for proper GRPO
+        from collections import defaultdict
+        task_groups = defaultdict(list)
+        for episode in episodes:
+            task_group_id = episode.get('task_group_id', 0)  # Default to 0 if not set
+            task_groups[task_group_id].append(episode)
         
-        advantages = (rewards - mean_reward) / std_reward
+        logger.info(f"[RL Filter] GRPO: {len(task_groups)} task groups, "
+                   f"avg {len(episodes)/len(task_groups):.1f} samples per group")
         
-        # Optionally normalize advantages again (helps with stability)
-        if normalize_advantages and len(advantages) > 1:
-            advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-8)
+        # Compute group-relative advantages (per formulation)
+        episode_advantages = {}
+        for task_group_id, group_episodes in task_groups.items():
+            # Compute mean and std within this group (N samples per task)
+            group_rewards = np.array([ep['final_reward'] for ep in group_episodes])
+            mean_reward = group_rewards.mean()
+            std_reward = group_rewards.std() + 1e-8  # δ in formulation
+            
+            # Compute advantages: A^n = (r^n - r_mean) / (r_std + δ)
+            for episode in group_episodes:
+                advantage = (episode['final_reward'] - mean_reward) / std_reward
+                episode_advantages[id(episode)] = advantage
         
-        # Collect all (context, memory, advantage) tuples across episodes
+        # Note: The formulation doesn't include a second normalization step,
+        # but we keep it optional for training stability
+        if normalize_advantages and len(episode_advantages) > 1:
+            all_advantages = np.array(list(episode_advantages.values()))
+            adv_mean = all_advantages.mean()
+            adv_std = all_advantages.std() + 1e-8
+            episode_advantages = {k: (v - adv_mean) / adv_std 
+                                 for k, v in episode_advantages.items()}
+        
+        # Collect all (context, memory, advantage, old_gate_prob) tuples across episodes
         batch_data = []
-        for ep_idx, episode in enumerate(episodes):
-            advantage = advantages[ep_idx]
+        for episode in episodes:
+            advantage = episode_advantages[id(episode)]
             
             for recall_event in episode['recall_events']:
                 task_emb = recall_event['task_embedding']
@@ -418,17 +440,16 @@ class RLMemoryFilter:
                 
                 for candidate in recall_event['candidates']:
                     mem_emb = candidate['embedding']
+                    # Use the gate score from collection time (old policy)
+                    old_gate_prob = candidate.get('gate_score', 0.5)  # Default if not present
                     
-                    # For GRPO, we need to sample gate decisions
-                    # During training, we treat ALL gates as having been "executed"
-                    # Gate decision is binary: 1 = accept, 0 = reject
-                    # We'll sample from current policy for each candidate
                     batch_data.append({
                         'task_emb': task_emb,
                         'obs_emb': obs_emb,
                         'memory_emb': mem_emb,
                         'entropy': entropy,
                         'advantage': advantage,
+                        'old_gate_prob': old_gate_prob,
                     })
         
         if len(batch_data) == 0:
@@ -451,15 +472,13 @@ class RLMemoryFilter:
         advantages_tensor = torch.tensor(
             [[d['advantage']] for d in batch_data], dtype=torch.float32
         ).to(self.device)
+        old_gate_probs = torch.tensor(
+            [[d['old_gate_prob']] for d in batch_data], dtype=torch.float32
+        ).to(self.device)
+        old_gate_probs = torch.clamp(old_gate_probs, min=1e-8, max=1-1e-8)
         
-        # Compute old policy probabilities (for KL divergence)
-        self.policy_net.eval()
-        with torch.no_grad():
-            old_gate_probs = self.policy_net(task_embs, obs_embs, memory_embs, entropies)
-            old_gate_probs = torch.clamp(old_gate_probs, min=1e-8, max=1-1e-8)
-        
-        # Sample gate actions from old policy (for GRPO)
-        # In GRPO, we sample actions and use them for gradient estimation
+        # Sample gate actions from old policy (from collection time)
+        # These are the actions that were actually executed during collection
         gate_actions = (torch.rand_like(old_gate_probs) < old_gate_probs).float()
         
         # Policy update
