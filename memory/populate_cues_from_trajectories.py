@@ -160,10 +160,36 @@ def store_cues_from_summarized_trajectories(
     return True
 
 
+def get_already_processed_tasks(memory_manager: MemoryManager) -> set:
+    """
+    Get set of tasks that have already been processed and stored in Qdrant.
+    
+    Args:
+        memory_manager: MemoryManager instance
+    
+    Returns:
+        Set of task goals (strings) that have been processed
+    """
+    try:
+        # Scroll through all trajectory history to find processed tasks
+        points, _ = memory_manager.client.scroll(
+            collection_name=memory_manager.collection_trajectory_history,
+            limit=10000,  # Get all (should be ~600 max)
+            with_payload=True
+        )
+        
+        processed_goals = {p.payload['goal'] for p in points}
+        return processed_goals
+    except Exception as e:
+        print(f"⚠️  Could not check processed tasks: {e}")
+        return set()
+
+
 def store_cues_from_raw_trajectories(
     memory_manager: MemoryManager,
     run_path: str,
-    task_id_to_task: Dict[int, str]
+    task_id_to_task: Dict[int, str],
+    skip_existing: bool = True
 ):
     """
     Store cue-based memories from raw trajectory files.
@@ -175,6 +201,7 @@ def store_cues_from_raw_trajectories(
         memory_manager: MemoryManager instance
         run_path: Path to run directory
         task_id_to_task: Mapping from task_id to task description
+        skip_existing: If True, skip tasks already in Qdrant (avoid duplicates)
     """
     trajectories_dir = Path(run_path) / "trajectories"
     
@@ -191,11 +218,20 @@ def store_cues_from_raw_trajectories(
     # Filter out duplicate header rows
     df_results = df_results[df_results['success'] != 'success'].copy()
     
+    # Get already processed tasks to skip
+    already_processed = get_already_processed_tasks(memory_manager) if skip_existing else set()
+    if already_processed:
+        print(f"📊 Found {len(already_processed)} already processed tasks - will skip them")
+    
     pickle_files = sorted([f for f in os.listdir(trajectories_dir) if f.endswith('.pkl')])
     
     print(f"\n📦 Processing raw trajectories from {run_path}...")
     print(f"   Found {len(pickle_files)} pickle files")
     print(f"   ⚠️  This may take a while (need to summarize observations)...")
+    
+    skipped_count = 0
+    processed_count = 0
+    error_count = 0
     
     for pickle_file in tqdm(pickle_files, desc="Summarizing & storing"):
         try:
@@ -203,6 +239,7 @@ def store_cues_from_raw_trajectories(
                 trajectory = pickle.load(f)
         except Exception as e:
             print(f"\n⚠️  Error loading {pickle_file}: {e}")
+            error_count += 1
             continue
         
         task_id = int(pickle_file.replace(".pkl", ""))
@@ -210,27 +247,44 @@ def store_cues_from_raw_trajectories(
         
         if task is None:
             print(f"\nWarning: No task found for task_id {task_id}, skipping")
+            error_count += 1
+            continue
+        
+        # Skip if already processed
+        if skip_existing and task in already_processed:
+            skipped_count += 1
             continue
         
         # Find corresponding result row
         row = df_results[df_results['task'] == task].values
         if len(row) == 0:
             print(f"\nWarning: No result found for task: {task} (ID={task_id}), skipping")
+            error_count += 1
             continue
         
         row = row[0]
         success = int(row[2]) == 1
         
         # Use store_trajectory_testing which handles everything internally
-        # Pass prompt_constructor=None since it's optional
-        memory_manager.store_trajectory_testing(
-            trajectory=trajectory,
-            goal=task,
-            success=success,
-            prompt_constructor=None
-        )
+        # Wrap in try-except to skip problematic observations
+        try:
+            memory_manager.store_trajectory_testing(
+                trajectory=trajectory,
+                goal=task,
+                success=success,
+                prompt_constructor=None
+            )
+            processed_count += 1
+        except Exception as e:
+            print(f"\n⚠️  Error processing task {task_id}: {e}")
+            print(f"   Skipping this trajectory and continuing...")
+            error_count += 1
+            continue
     
-    print(f"✅ Processed {len(pickle_files)} trajectories from {run_path}")
+    print(f"\n✅ Summary for {run_path}:")
+    print(f"   Processed: {processed_count}")
+    print(f"   Skipped (already in DB): {skipped_count}")
+    print(f"   Errors: {error_count}")
     return True
 
 
@@ -261,6 +315,11 @@ def main():
         "--force_raw",
         action="store_true",
         help="Force processing raw trajectories (skip summarized if available)"
+    )
+    parser.add_argument(
+        "--no_skip_existing",
+        action="store_true",
+        help="Don't skip already processed tasks (will create duplicates!)"
     )
     
     args = parser.parse_args()
@@ -308,7 +367,10 @@ def main():
         
         # Fall back to slow path (raw trajectories)
         store_cues_from_raw_trajectories(
-            memory_manager, traj_dir, task_id_to_task
+            memory_manager, 
+            traj_dir, 
+            task_id_to_task,
+            skip_existing=not args.no_skip_existing
         )
     
     # Summary

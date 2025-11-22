@@ -631,17 +631,27 @@ class MemoryManager:
                 print(f"⚠️  Warning: Could not create index on '{field_name}' field: {e}")
 
     def summarize_webarena_observation(self, obs_text: str) -> str:
+        # Truncate extremely long observations to avoid API errors
+        MAX_OBS_LENGTH = 8000  # chars
+        if len(obs_text) > MAX_OBS_LENGTH:
+            obs_text = obs_text[:MAX_OBS_LENGTH] + "\n... [truncated]"
+        
         query = f"""Summarize the following web observation according to the instructions:
         {obs_text}
         """
 
-        response = completion(model="together_ai/OpenAI/gpt-oss-120B", 
-                            system=summarize_observation_prompt, 
-                            messages=[{"role": "user", "content": query}],
-                            temperature=0.8,
-                            max_tokens=200)
-
-        return response["choices"][0]["message"]["content"]
+        try:
+            response = completion(model="together_ai/OpenAI/gpt-oss-120B", 
+                                system=summarize_observation_prompt, 
+                                messages=[{"role": "user", "content": query}],
+                                temperature=0.8,
+                                max_tokens=200)
+            return response["choices"][0]["message"]["content"]
+        except Exception as e:
+            # If summarization fails, return truncated raw observation
+            print(f"⚠️  LLM summarization failed: {e}")
+            print(f"   Using truncated raw observation instead")
+            return obs_text[:500] + "..." if len(obs_text) > 500 else obs_text
 
     # TODO: ReasoningBank stuff here
     def _derive_lesson(self, metadata: Dict[str, Any]) -> str:
