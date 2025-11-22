@@ -164,6 +164,9 @@ def get_already_processed_tasks(memory_manager: MemoryManager) -> set:
     """
     Get set of tasks that have already been processed and stored in Qdrant.
     
+    Checks the CUES collection (not metadata) since metadata might be stored
+    even if cue processing failed.
+    
     Args:
         memory_manager: MemoryManager instance
     
@@ -171,13 +174,14 @@ def get_already_processed_tasks(memory_manager: MemoryManager) -> set:
         Set of task goals (strings) that have been processed
     """
     try:
-        # Scroll through all trajectory history to find processed tasks
+        # Scroll through all CUES to find tasks with actual memories stored
         points, _ = memory_manager.client.scroll(
-            collection_name=memory_manager.collection_trajectory_history,
-            limit=10000,  # Get all (should be ~600 max)
+            collection_name=memory_manager.collection_cues,
+            limit=100000,  # Get all step memories
             with_payload=True
         )
         
+        # Get unique goals from cue memories
         processed_goals = {p.payload['goal'] for p in points}
         return processed_goals
     except Exception as e:

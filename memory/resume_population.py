@@ -5,6 +5,9 @@ Usage:
     python memory/resume_population.py
 """
 
+import sys
+sys.path.append('.')
+
 from memory.manager import MemoryManager
 
 # Check what's already stored
@@ -21,21 +24,23 @@ try:
     print(f"✅ Trajectory metadata stored: {info_hist.points_count}")
     print()
     
-    # Get which tasks are already processed
+    # Get which tasks are already processed (check CUES not metadata)
     points, _ = mm.client.scroll(
-        collection_name='webarena-trajectory-history',
-        limit=1000,  # Get all
+        collection_name='webarena-cues',
+        limit=100000,  # Get all cue memories
         with_payload=True
     )
     
     processed_goals = {p.payload['goal'] for p in points}
-    print(f"📊 Unique tasks already processed: {len(processed_goals)}")
+    print(f"📊 Unique tasks with cues: {len(processed_goals)}")
     
     # Show a few examples
     if processed_goals:
         print("\nExample processed tasks:")
         for i, goal in enumerate(list(processed_goals)[:3]):
             print(f"  {i+1}. {goal[:80]}...")
+    else:
+        print("\n⚠️  No cue memories found! Ready to start fresh.")
     
     print()
     print("="*80)
@@ -50,9 +55,13 @@ try:
     print("        tmp/20251118161129_qwen_full \\")
     print("    --collection_name webarena")
     print()
-    print("The script will:")
-    print(f"  • Skip {len(processed_goals)} already processed tasks")
-    print("  • Process remaining tasks only")
+    if processed_goals:
+        print("The script will:")
+        print(f"  • Skip {len(processed_goals)} already processed tasks")
+        print("  • Process remaining tasks only")
+    else:
+        print("The script will:")
+        print("  • Process all tasks (none have cues yet)")
     print("  • Handle LLM errors gracefully (skip problematic tasks)")
     print("  • Print summary at the end")
     print()
