@@ -12,4 +12,5 @@ dist/
 
 runs/*
 models/
-QUICKSTART.md
+tmp/
+__MACOSX/
