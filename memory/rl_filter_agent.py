@@ -516,6 +516,7 @@ class RLMemoryFilter:
         self.optimizer.step()
         
         # Collect metrics
+        advantages = np.array(list(episode_advantages.values()))
         metrics = {
             'loss': loss.item(),
             'policy_loss': policy_loss.item(),
