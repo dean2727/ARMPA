@@ -10,11 +10,20 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from memory.prompts.storage import summarize_observation_prompt
-from webarena.browser_env.helper_functions import get_action_description
-from webarena.agent.prompts import PromptConstructor
+
+# Optional WebArena imports (only needed for specific methods)
+try:
+    from webarena.browser_env.helper_functions import get_action_description
+    from webarena.agent.prompts import PromptConstructor
+    WEBARENA_AVAILABLE = True
+except ImportError:
+    WEBARENA_AVAILABLE = False
+    get_action_description = None
+    PromptConstructor = None
 
 class MemoryManager:
     def __init__(self, collection_name: str = None):
+        # Use BGE-large for embeddings (1024 dims, 512 token limit)
         self.embed_model = "together_ai/BAAI/bge-large-en-v1.5"
         self.summarize_model = "together_ai/OpenAI/gpt-oss-120B"
 
@@ -71,7 +80,7 @@ class MemoryManager:
         # Also store trajectory history entry
         self.store_trajectory_history(goal=goal, num_steps=len(points), success=success)
 
-    def store_trajectory_testing(self, trajectory: List[Dict[str, Any]], goal: str, success: bool, prompt_constructor: PromptConstructor = None):
+    def store_trajectory_testing(self, trajectory: List[Dict[str, Any]], goal: str, success: bool, prompt_constructor = None):
         points = []
         observations_actions_reasonings = []
         step_id = 0
@@ -163,31 +172,48 @@ class MemoryManager:
         return rest.PointStruct(id=metadata["memory_id"], vector=cue_emb, payload=metadata)
 
     # ---------- RETRIEVE ---------- #
-    def cue_based_recall(self, summarized_obs: str, goal: str, top_k: int = 3):
+    def cue_based_recall(self, summarized_obs: str, goal: str, top_k: int = 3, return_embeddings: bool = True):
+        """
+        Retrieve top-K memories based on cue similarity.
+        
+        Args:
+            summarized_obs: Summarized current observation
+            goal: Task goal/intent
+            top_k: Number of memories to retrieve
+            return_embeddings: If True, include memory embeddings in output (needed for RL filter)
+        
+        Returns:
+            recalls: List of memory dicts with metadata and optionally embeddings
+        """
         cue_emb = self._create_cue_embedding(goal, summarized_obs, last_action=None)
 
         results = self.client.search(
             collection_name=self.collection_cues,
             query_vector=cue_emb,
             limit=top_k,
+            with_vectors=return_embeddings,  # Request vectors from Qdrant if needed
         )
 
         recalls = []
         for r in results:
             m = r.payload
-            recalls.append(
-                {
-                    "score": r.score,  # Score from the search result
-                    "memory_id": m["memory_id"],
-                    "step_id": m["step_id"],
-                    "goal": m["goal"],
-                    "obs_summary": m["obs_summary"],
-                    "action_taken": m["action_taken"],  # Corrected key from "action"
-                    "success": m["success"],
-                    "strength": m["strength"],
-                    "timestamp": m["timestamp"],
-                }
-            )
+            memory_dict = {
+                "score": r.score,  # Score from the search result
+                "memory_id": m["memory_id"],
+                "step_id": m["step_id"],
+                "goal": m["goal"],
+                "obs_summary": m["obs_summary"],
+                "action_taken": m["action_taken"],  # Corrected key from "action"
+                "success": m["success"],
+                "strength": m["strength"],
+                "timestamp": m["timestamp"],
+            }
+            
+            # Add embedding if requested (for RL filter)
+            if return_embeddings and r.vector is not None:
+                memory_dict["embedding"] = r.vector
+            
+            recalls.append(memory_dict)
 
         return recalls
 
@@ -351,9 +377,48 @@ class MemoryManager:
         
         return formatted_mems
 
+    def _get_embedding(self, text: str):
+        """
+        Get embedding for a single text string.
+        
+        This is a helper method for RL filter integration, allowing
+        embeddings to be generated for task goals and observations separately.
+        
+        Args:
+            text: Input text to embed
+        
+        Returns:
+            embedding: 1024-dim numpy array or list
+        """
+        emb = embedding(model=self.embed_model, input=[text])
+        return emb["data"][0]["embedding"]
+    
     def _create_cue_embedding(self, goal: str, current_obs: str, last_action: str = None):
-        # A cue consists of <goal> | <what I last did> | <what I now see (summarized)>
-        cue_text = f"{goal} | {current_obs}{f' | {last_action}' if last_action else ''}"
+        """
+        Create cue embedding for memory retrieval.
+        
+        A cue consists of <goal> | <what I last did> | <what I now see (summarized)>
+        BGE-large has 512 token limit. Empirically: ~4 chars per token.
+        Strategy: Truncate each field to ensure total stays under 512 tokens (~2000 chars total)
+        
+        Args:
+            goal: Task goal/intent
+            current_obs: Current observation (summarized)
+            last_action: Optional previous action taken
+        
+        Returns:
+            cue_emb: 1024-dim embedding vector
+        """
+        max_goal_chars = 400
+        max_obs_chars = 1200  # Observations are most important
+        max_action_chars = 300
+        
+        goal_trunc = goal[:max_goal_chars] if len(goal) > max_goal_chars else goal
+        obs_trunc = current_obs[:max_obs_chars] if len(current_obs) > max_obs_chars else current_obs
+        action_trunc = last_action[:max_action_chars] if last_action and len(last_action) > max_action_chars else last_action
+        
+        cue_text = f"{goal_trunc} | {obs_trunc}{f' | {action_trunc}' if action_trunc else ''}"
+        
         cue_emb = embedding(model=self.embed_model, input=[cue_text])
         cue_emb = cue_emb["data"][0]["embedding"]
         return cue_emb
@@ -596,21 +661,27 @@ class MemoryManager:
                 print(f"⚠️  Warning: Could not create index on '{field_name}' field: {e}")
 
     def summarize_webarena_observation(self, obs_text: str, model: str = "together_ai/OpenAI/gpt-oss-120B", temperature: float = 0.0, max_tokens: int = 1000) -> str:
+        # Truncate extremely long observations to avoid API errors
+        MAX_OBS_LENGTH = 8000  # chars
+        if len(obs_text) > MAX_OBS_LENGTH:
+            obs_text = obs_text[:MAX_OBS_LENGTH] + "\n... [truncated]"
+        
         query = f"""Summarize the following web observation according to the instructions:
         {obs_text}
         """
 
-        # print(summarize_observation_prompt)
-        # print(query)
-
-        response = completion(model=model, 
-                            system=summarize_observation_prompt, 
-                            messages=[{"role": "user", "content": query}],
-                            temperature=temperature,
-                            max_tokens=max_tokens)
-
-        #print("DEBUG: response content is {} and reasoning_content is {}".format(response["choices"][0]["message"]["content"], response["choices"][0]["message"].get("reasoning_content")))
-        return response["choices"][0]["message"]["content"]
+        try:
+            response = completion(model=model, 
+                                system=summarize_observation_prompt, 
+                                messages=[{"role": "user", "content": query}],
+                                temperature=0.8,
+                                max_tokens=200)
+            return response["choices"][0]["message"]["content"]
+        except Exception as e:
+            # If summarization fails, return truncated raw observation
+            print(f"⚠️  LLM summarization failed: {e}")
+            print(f"   Using truncated raw observation instead")
+            return obs_text[:500] + "..." if len(obs_text) > 500 else obs_text
 
     # TODO: ReasoningBank stuff here
     def _derive_lesson(self, metadata: Dict[str, Any]) -> str:

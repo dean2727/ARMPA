@@ -1,4 +1,10 @@
 """Script to run end-to-end evaluation on the benchmark"""
+import warnings
+
+# Suppress all beartype warnings before any other imports
+warnings.filterwarnings("ignore", message=".*PEP 484 type hint.*deprecated by PEP 585.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="beartype")
+
 import argparse
 import csv
 import glob
@@ -7,6 +13,7 @@ import logging
 import os
 import random
 import subprocess
+import sys
 import tempfile
 import time
 import pickle
@@ -14,6 +21,7 @@ from pathlib import Path
 
 import openai
 from tqdm import tqdm
+import torch  # For RL filter device detection
 
 from agent import (
     Agent,
@@ -39,6 +47,14 @@ from browser_env.helper_functions import (
 from evaluation_harness import evaluator_router
 
 # MemoryManager will be imported lazily only when memory features are enabled
+
+# RL Filter Agent (optional, only loaded if used)
+try:
+    from memory.rl_filter_agent import RLMemoryFilter
+    RL_FILTER_AVAILABLE = True
+except ImportError:
+    RL_FILTER_AVAILABLE = False
+    RLMemoryFilter = None
 
 LOG_FOLDER = "log_files"
 Path(LOG_FOLDER).mkdir(parents=True, exist_ok=True)
@@ -158,6 +174,20 @@ def config() -> argparse.Namespace:
     parser.add_argument("--get_memory", action="store_true", help="Get memories (from Qdrant)post-trajectory and store them per-step")
     # numebr of memories to retrieve
     parser.add_argument("--num_memories", type=int, default=3, help="Number of memories to retrieve")
+    
+    # RL Filter Agent: data collection and inference
+    parser.add_argument("--collect_rl_data", action="store_true",
+                       help="Collect training data for RL memory filter (logs memory states)")
+    parser.add_argument("--use_rl_filter", action="store_true",
+                       help="Use trained RL filter to select memories")
+    parser.add_argument("--rl_filter_model", type=str, default="",
+                       help="Path to trained RL filter model")
+    parser.add_argument("--rl_filter_threshold", type=float, default=0.5,
+                       help="Score threshold for memory selection")
+    parser.add_argument("--recall_threshold", type=float, default=0.0,
+                       help="Entropy threshold for triggering recall (0.0 = always recall)")
+    parser.add_argument("--reward_gamma", type=float, default=0.5,
+                       help="Weight for step efficiency in episodic reward")
 
     # logging related
     parser.add_argument("--result_dir", type=str, default="")
@@ -247,6 +277,36 @@ def test(
         from memory.manager import MemoryManager
         memory_manager = MemoryManager(collection_name=MEMORY_COLLECTION_NAME)
     
+    # Initialize RL Filter Agent if requested
+    rl_filter = None
+    if args.use_rl_filter:
+        if not RL_FILTER_AVAILABLE:
+            raise ImportError("RL Filter Agent not available. Check memory/rl_filter_agent.py")
+        if not args.rl_filter_model or not Path(args.rl_filter_model).exists():
+            raise ValueError(f"RL filter model not found: {args.rl_filter_model}")
+        
+        # Determine device
+        if torch.cuda.is_available():
+            device = "cuda"
+        elif torch.backends.mps.is_available():
+            device = "mps"
+        else:
+            device = "cpu"
+        
+        rl_filter = RLMemoryFilter(
+            model_path=args.rl_filter_model,
+            score_threshold=args.rl_filter_threshold,
+            gamma=args.reward_gamma,
+            max_steps=args.max_steps,
+            device=device,
+        )
+        logger.info(f"[RL Filter] Loaded model from {args.rl_filter_model}, threshold={args.rl_filter_threshold}, device={device}")
+    
+    # Data collection for RL training
+    rl_training_data = [] if args.collect_rl_data else None
+    if args.collect_rl_data:
+        logger.info("[RL Data Collection] Enabled - will log memory states for training")
+    
     early_stop_thresholds = {
         "parsing_failure": args.parsing_failure_th,
         "repeating_action": args.repeating_action_failure_th,
@@ -285,7 +345,7 @@ def test(
                     # subprocess to renew the cookie
                     subprocess.run(
                         [
-                            "python",
+                            sys.executable,
                             "browser_env/auto_login.py",
                             "--auth_folder",
                             temp_dir,
@@ -307,6 +367,19 @@ def test(
             trajectory: Trajectory = []
             # Stores (observation summary, action taken, reason for action) tuples
             observations_actions_reasonings = []
+            
+            # Initialize episode buffer for RL filter training/evaluation
+            episode_buffer = None
+            if args.collect_rl_data or args.use_rl_filter:
+                episode_buffer = {
+                    'task_id': task_id,
+                    'intent': intent,
+                    'recall_events': [],
+                    'final_reward': 0.0,
+                    'success': False,
+                    'num_steps': 0,
+                }
+            
             obs, info = env.reset(options={"config_file": config_file})
             state_info: StateInfo = {"observation": obs, "info": info}
             trajectory.append(state_info)
@@ -326,24 +399,75 @@ def test(
                     action = create_stop_action(f"Early stop: {stop_info}")
                 else:
                     formatted_memories = None
+                    memories = None  # Initialize for RL data collection
+                    mean_entropy = 0.0  # Default if not available
+                    
                     if args.get_memory and memory_manager is not None and observation_summary is not None:
-                        memories = memory_manager.cue_based_recall(
-                            summarized_obs=observation_summary,
-                            goal=intent,
-                            top_k=args.num_memories
-                        )
-                        formatted_memories = memory_manager.get_formatted_memories_for_prompt(memories)
-
-                        # TODO: use recall agent to give us back the best memories (use entropy)
-
-                        print(f"[Retrieved and formatted {len(formatted_memories)} memories]")
+                        # Check uncertainty threshold for recall trigger
+                        should_recall = (args.recall_threshold == 0.0)  # Always recall if threshold is 0
+                        
+                        if should_recall:
+                            memories = memory_manager.cue_based_recall(
+                                summarized_obs=observation_summary,
+                                goal=intent,
+                                top_k=args.num_memories,
+                                return_embeddings=True,  # Need embeddings for RL filter
+                            )
+                            
+                            # Get embeddings for RL filter
+                            task_emb = memory_manager._get_embedding(intent)
+                            obs_emb = memory_manager._get_embedding(observation_summary)
+                            
+                            # Apply RL filter if enabled
+                            if args.use_rl_filter and rl_filter is not None and memories:
+                                original_count = len(memories)
+                                # Note: mean_entropy will be updated after agent.next_action()
+                                # For now, use 0.0 as placeholder
+                                memories = rl_filter.filter_memories(
+                                    memories=memories,
+                                    task_embedding=task_emb,
+                                    obs_embedding=obs_emb,
+                                    entropy=mean_entropy,
+                                    return_scores=True,  # Add gate scores to memories
+                                )
+                                logger.info(f"[RL Filter] {original_count} → {len(memories)} memories")
+                            
+                            # Log recall event for RL data collection
+                            if episode_buffer is not None and memories:
+                                recall_data = {
+                                    'task_embedding': task_emb,
+                                    'obs_embedding': obs_emb,
+                                    'entropy': mean_entropy,  # Will be updated after action
+                                    'candidates': [
+                                        {
+                                            'memory_id': m.get('memory_id'),
+                                            'embedding': m.get('embedding'),
+                                            'similarity_score': m.get('score'),
+                                            'gate_score': m.get('gate_score'),
+                                            'selected': m.get('gate_score', 0.0) > args.rl_filter_threshold if args.use_rl_filter else True,
+                                        }
+                                        for m in memories
+                                    ],
+                                }
+                                episode_buffer['recall_events'].append(recall_data)
+                            
+                            # Format memories for prompt
+                            formatted_memories = memory_manager.get_formatted_memories_for_prompt(memories)
+                            print(f"[Retrieved and formatted {len(formatted_memories)} memories]")
+                    
                     try:
                         response = agent.next_action(
                             trajectory, intent, meta_data=meta_data, past_memories=formatted_memories
                         )
                         action = response["action"]
-                        # mean_entropy = response["mean_entropy"]
-                        # action_decision_entropy = response["action_decision_entropy"]
+                        # Extract entropy for RL filter (if available)
+                        mean_entropy = response.get("mean_entropy", 0.0)
+                        action_decision_entropy = response.get("action_decision_entropy", None)
+                        
+                        # Update entropy in the last recall event if it exists
+                        if episode_buffer is not None and len(episode_buffer['recall_events']) > 0:
+                            episode_buffer['recall_events'][-1]['entropy'] = mean_entropy if mean_entropy is not None else 0.0
+                        
                     except ValueError as e:
                         # get the error message
                         action = create_stop_action(f"ERROR: {str(e)}")
@@ -401,6 +525,24 @@ def test(
                 logger.info(f"[Result] (PASS) {config_file}")
             else:
                 logger.info(f"[Result] (FAIL) {config_file}")
+            
+            # Compute episodic reward and save episode buffer
+            if episode_buffer is not None:
+                actions = trajectory[1::2]  # type: ignore[assignment]
+                num_steps = sum(1 for a in actions if a["action_type"] != ActionTypes.STOP)
+                
+                # Episodic reward: r = success + γ(1 - steps/max_steps) * success
+                if score == 1:
+                    efficiency_bonus = args.reward_gamma * (1.0 - min(num_steps, args.max_steps) / args.max_steps)
+                    final_reward = 1.0 + efficiency_bonus
+                else:
+                    final_reward = 0.0
+                
+                episode_buffer['final_reward'] = final_reward
+                episode_buffer['success'] = (score == 1)
+                episode_buffer['num_steps'] = num_steps
+                
+                logger.info(f"[Episode] Reward={final_reward:.4f}, Steps={num_steps}, Success={score==1}")
 
             # If memory enabled, store the trajectory
             if args.store_memory and memory_manager is not None:
@@ -417,6 +559,13 @@ def test(
                 (run_dir / "observations_actions_reasonings").mkdir(parents=True, exist_ok=True)
                 with open(run_dir / "observations_actions_reasonings" / f"{task_id}.pkl", "wb") as f:
                     pickle.dump(observations_actions_reasonings, f)
+            
+            # Save episode buffer for RL training
+            if episode_buffer is not None:
+                (run_dir / "episode_buffers").mkdir(parents=True, exist_ok=True)
+                with open(run_dir / "episode_buffers" / f"{task_id}.pkl", "wb") as f:
+                    pickle.dump(episode_buffer, f)
+                logger.info(f"[RL Data] Saved episode buffer with {len(episode_buffer['recall_events'])} recall events")
 
             # append results to runs/<timestamp>/results.csv with columns: success,steps
             actions = trajectory[1::2]  # type: ignore[assignment]

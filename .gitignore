@@ -7,5 +7,10 @@ dist/
 .venv/
 .vscode/
 *.pem
+*.pdf
+*.log
 
 runs/*
+models/
+tmp/
+__MACOSX/
