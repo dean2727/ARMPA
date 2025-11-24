@@ -2,19 +2,19 @@
 
 (Assumes a Mac with apple silicon)
 
-An AWS EC2 instance was set up to run ARMPA WebArena, following the README from `webarena/environment_docker/`. The current EC2 is accessible at `http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com`. 
+An AWS EC2 instance was set up to run ARMPA WebArena, following the README from `webarena/environment_docker/`. The current EC2 is accessible at `http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com`. 
 
 1. Create a .env at the root of the project with these variables:
 
 ```bash
 TOGETHER_API_KEY=<YOUR TOGETHER API KEY>
 HUGGINGFACE_HUB_TOKEN=<YOUR HF TOKEN>
-SHOPPING=http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7770
-SHOPPING_ADMIN=http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:7780/admin
-REDDIT=http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:9999
-GITLAB=http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8023
-MAP=http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:3000
-WIKIPEDIA=http://ec2-18-224-1-226.us-east-2.compute.amazonaws.com:8888/wikipedia_en_all_maxi_2022-05/A/User:The_other_Kiwix_guy/Landing
+SHOPPING=http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770
+SHOPPING_ADMIN=http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin
+REDDIT=http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999
+GITLAB=http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023
+MAP=http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000
+WIKIPEDIA=http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8888/wikipedia_en_all_maxi_2022-05/A/User:The_other_Kiwix_guy/Landing
 HOMEPAGE=PASS
 QDRANT_URL=<URL>
 QDRANT_API_KEY=<API KEY>

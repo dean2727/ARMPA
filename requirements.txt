@@ -28,6 +28,7 @@ playwright>=1.40.0
 requests
 sympy
 tenacity
+tensorboard
 text-generation
 tiktoken
 torch
