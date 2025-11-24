@@ -831,7 +831,7 @@ WHAT I DID{pointer}:
             collection_name=self.collection_reasoningbank,
             query_vector=query_emb,
             query_filter=None,
-            limit=5,
+            limit=12,
             with_vectors=return_embeddings,
         )
         
