@@ -660,7 +660,7 @@ class MemoryManager:
             else:
                 print(f"⚠️  Warning: Could not create index on '{field_name}' field: {e}")
 
-    def summarize_webarena_observation(self, obs_text: str, model: str = "together_ai/OpenAI/gpt-oss-120B", temperature: float = 0.0, max_tokens: int = 1000) -> str:
+    def summarize_webarena_observation(self, obs_text: str, model: str = "together_ai/meta-llama/Llama-3.3-70B-Instruct-Turbo", temperature: float = 0.0, max_tokens: int = 1000) -> str:
         # Truncate extremely long observations to avoid API errors
         MAX_OBS_LENGTH = 8000  # chars
         if len(obs_text) > MAX_OBS_LENGTH:
