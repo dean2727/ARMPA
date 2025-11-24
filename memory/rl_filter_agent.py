@@ -441,8 +441,8 @@ class RLMemoryFilter:
                 for candidate in recall_event['candidates']:
                     mem_emb = candidate['embedding']
                     # Use the gate score from collection time (old policy)
-                    old_gate_prob = candidate.get('gate_score', 0.5)  # Default if not present
-                    
+                    old_gate_prob = candidate.get('gate_score') or 0.5  # Default if not present
+
                     batch_data.append({
                         'task_emb': task_emb,
                         'obs_emb': obs_emb,
@@ -513,6 +513,7 @@ class RLMemoryFilter:
         self.optimizer.step()
         
         # Collect metrics
+        advantages = np.array(list(episode_advantages.values()))
         metrics = {
             'loss': loss.item(),
             'policy_loss': policy_loss.item(),
