@@ -66,7 +66,7 @@ class MemoryManager:
             step_id += 1
 
         self.client.upsert(collection_name=self.collection_cues, points=points)
-        print(f"✅ Stored {len(points)} step memories.")
+        #print(f"✅ Stored {len(points)} step memories.")
         
         # Also store trajectory history entry
         self.store_trajectory_history(goal=goal, num_steps=len(points), success=success)
@@ -138,7 +138,7 @@ class MemoryManager:
         )
         
         self.client.upsert(collection_name=self.collection_trajectory_history, points=[point])
-        print(f"✅ Stored trajectory history entry: {num_steps} steps, success={success}")
+        #print(f"✅ Stored trajectory history entry: {num_steps} steps, success={success}")
 
     def _get_trajectory_step_point(self, goal: str, obs_text: str, action_taken: str, 
                               reason_for_action: str, success: bool, step_id: int) -> rest.PointStruct:
@@ -359,37 +359,67 @@ class MemoryManager:
         return cue_emb
 
     # ---------- INSPECT ---------- #
-    def print_all_memories(self, limit: int = None, collection: str = None):
-        """Pretty print all memories in the collection"""
-        # Default to cues collection if not specified
+    def print_all_memories(self, limit: int = None, collection: str = None, pages: int = None):
+        """
+        Pretty print all memories, with optional page-based scroll.
+        
+        Args:
+            limit: Number of points per page. If None, Qdrant default (64) is used.
+            collection: Qdrant collection name.
+            pages: Number of pages to scroll. If None, scroll until the end.
+        """
         collection_name = collection or self.collection_cues
+
+        offset = None
+        page_count = 0
+        total_count = 0
+        all_goals = set()
+
         try:
-            # Get all points from the collection
-            points, _ = self.client.scroll(
-                collection_name=collection_name,
-                limit=limit,
-                with_payload=True,
-                with_vectors=False
-            )
+            while True:
+                points, offset = self.client.scroll(
+                    collection_name=collection_name,
+                    limit=limit,
+                    offset=offset,
+                    with_payload=True,
+                    with_vectors=False
+                )
+
+                if not points:
+                    break
+
+                page_count += 1
+
+                print(f"\n📄 Page {page_count}")
+                print("=" * 80)
+
+                for point in points:
+                    total_count += 1
+                    payload = point.payload
+                    all_goals.add(payload.get('goal', 'N/A'))
+                    print(f"\n--- Memory {total_count} (ID: {point.id}) ---")
+                    print(f"📝 Goal: {payload.get('goal', 'N/A')}")
+                    print(f"👁️  Observation: {payload.get('obs_summary', 'N/A')}")
+                    print(f"🎯 Action: {payload.get('action_taken', 'N/A')}")
+                    print(f"✅ Success: {payload.get('success', 'N/A')}")
+                    print(f"💪 Strength: {payload.get('strength', 'N/A')}")
+                    print(f"🕒 Timestamp: {payload.get('timestamp', 'N/A')}")
+                    print(f"🔢 Step ID: {payload.get('step_id', 'N/A')}")
+
+                # If user requested only a certain number of pages
+                if pages is not None and page_count >= pages:
+                    break
+
+                # If no more pages
+                if offset is None:
+                    break
             
-            if not points:
+            print(f"\n🎯 Unique goals (count: {len(all_goals)}): {all_goals}")
+            if total_count == 0:
                 print(f"📭 No memories found in the collection '{collection_name}'.")
-                return
-            
-            print(f"🧠 Found {len(points)} memories in collection '{collection_name}':")
-            print("=" * 80)
-            
-            for i, point in enumerate(points, 1):
-                payload = point.payload
-                print(f"\n--- Memory {i} (ID: {point.id}) ---")
-                print(f"📝 Goal: {payload.get('goal', 'N/A')}")
-                print(f"👁️  Observation: {payload.get('obs_summary', 'N/A')}")
-                print(f"🎯 Action: {payload.get('action_taken', 'N/A')}")
-                print(f"✅ Success: {payload.get('success', 'N/A')}")
-                print(f"💪 Strength: {payload.get('strength', 'N/A')}")
-                print(f"🕒 Timestamp: {payload.get('timestamp', 'N/A')}")
-                print(f"🔢 Step ID: {payload.get('step_id', 'N/A')}")
-                
+            else:
+                print(f"\n🧠 Total memories printed: {total_count}")
+
         except Exception as e:
             print(f"❌ Error retrieving memories: {e}")
     
@@ -565,17 +595,21 @@ class MemoryManager:
             else:
                 print(f"⚠️  Warning: Could not create index on '{field_name}' field: {e}")
 
-    def summarize_webarena_observation(self, obs_text: str) -> str:
+    def summarize_webarena_observation(self, obs_text: str, model: str = "together_ai/OpenAI/gpt-oss-120B", temperature: float = 0.0, max_tokens: int = 1000) -> str:
         query = f"""Summarize the following web observation according to the instructions:
         {obs_text}
         """
 
-        response = completion(model="together_ai/OpenAI/gpt-oss-120B", 
+        # print(summarize_observation_prompt)
+        # print(query)
+
+        response = completion(model=model, 
                             system=summarize_observation_prompt, 
                             messages=[{"role": "user", "content": query}],
-                            temperature=0.8,
-                            max_tokens=200)
+                            temperature=temperature,
+                            max_tokens=max_tokens)
 
+        #print("DEBUG: response content is {} and reasoning_content is {}".format(response["choices"][0]["message"]["content"], response["choices"][0]["message"].get("reasoning_content")))
         return response["choices"][0]["message"]["content"]
 
     # TODO: ReasoningBank stuff here
