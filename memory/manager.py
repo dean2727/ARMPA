@@ -52,6 +52,10 @@ class MemoryManager:
         self._ensure_goal_index(self.collection_cues)
         self._ensure_goal_index(self.collection_trajectory_history)
         self._ensure_payload_index(self.collection_trajectory_history, "success", rest.PayloadSchemaType.BOOL)
+        
+        # Create indexes for reasoningbank collection
+        self._ensure_goal_index(self.collection_reasoningbank)
+        self._ensure_payload_index(self.collection_reasoningbank, "success", rest.PayloadSchemaType.BOOL)
 
     # ---------- STORE ---------- #
     def store_trajectory(self, observations_actions_reasonings: List[Tuple[str, str, str]], goal: str, success: bool):
@@ -366,14 +370,23 @@ class MemoryManager:
                 pointer = "(DONT DO AGAIN)" if m['success'] else ""
                 formatted_mems.append(f"""Last time I was in a similar situation, I tried doing the corresponding action, and it ultimately led to {success}:
 
-        WHAT I SAW:
-        {m['obs_summary']}
+WHAT I SAW:
+{m['obs_summary']}
 
-        WHAT I DID{pointer}:
-        {m['action_taken']}
+WHAT I DID{pointer}:
+{m['action_taken']}
         """)
-            else: # Learned skills -> just take the embedding (TODO)
-                ...
+            # If there is a 'title' and 'content' field, then we know it's a ReasoningBank memory
+            elif 'title' in m and 'content' in m:
+                success_indicator = "✅" if m.get('success', False) else "❌"
+                formatted_mems.append(f"""{success_indicator} {m.get('title', 'Memory')}
+
+        {m.get('description', '')}
+
+        {m.get('content', '')}
+        """)
+            else: # Unknown memory type
+                formatted_mems.append(f"Memory: {str(m)}")
         
         return formatted_mems
 
@@ -600,7 +613,9 @@ class MemoryManager:
         elif is_trajectory_history:
             self._ensure_goal_index(actual_collection_name)
             self._ensure_payload_index(actual_collection_name, "success", rest.PayloadSchemaType.BOOL)
-        # reasoningbank doesn't have indexes yet (TODO)
+        elif is_reasoningbank:
+            self._ensure_goal_index(actual_collection_name)
+            self._ensure_payload_index(actual_collection_name, "success", rest.PayloadSchemaType.BOOL)
 
     # ---------- UTILITIES ---------- #
     def _ensure_collection(self, collection_name: str):
@@ -683,11 +698,178 @@ class MemoryManager:
             print(f"   Using truncated raw observation instead")
             return obs_text[:500] + "..." if len(obs_text) > 500 else obs_text
 
-    # TODO: ReasoningBank stuff here
-    def _derive_lesson(self, metadata: Dict[str, Any]) -> str:
-        if not metadata["success"]:
-            return "Avoid navigating to external links when searching internal reports."
-        return "Correctly located the reporting dashboard; reuse approach."
+    # ---------- REASONINGBANK ---------- #
+    def store_reasoningbank_memory(
+        self,
+        title: str,
+        description: str,
+        content: str,
+        goal: str,
+        success: bool,
+        source_trajectory_id: str = None,
+        additional_metadata: Dict[str, Any] = None
+    ):
+        """
+        Store a ReasoningBank-style memory item.
+        
+        Args:
+            title: Strategy/lesson title
+            description: One-sentence summary
+            content: 1-3 sentences describing the insight/strategy
+            goal: Task goal/query
+            success: Whether the trajectory was successful
+            source_trajectory_id: Optional identifier for the source trajectory
+            additional_metadata: Optional additional metadata to store
+        """
+        memory_id = str(uuid.uuid4())
+        
+        # Create embedding from the goal/task for semantic search by task similarity
+        # Truncate to stay within BGE-large's 512 token limit (~2000 chars)
+        embedding_text = goal[:2000] if len(goal) > 2000 else goal
+        
+        mem_emb = embedding(model=self.embed_model, input=[embedding_text])
+        mem_emb = mem_emb["data"][0]["embedding"]
+        
+        # Create metadata
+        metadata = {
+            "memory_id": memory_id,
+            "title": title,
+            "description": description,
+            "content": content,
+            "goal": goal,
+            "success": success,
+            "created_at": datetime.utcnow().isoformat(),
+        }
+        
+        if source_trajectory_id:
+            metadata["source_trajectory_id"] = source_trajectory_id
+        
+        # Add any additional metadata if provided
+        if additional_metadata:
+            metadata.update(additional_metadata)
+        
+        point = rest.PointStruct(
+            id=memory_id,
+            vector=mem_emb,
+            payload=metadata
+        )
+        
+        self.client.upsert(collection_name=self.collection_reasoningbank, points=[point])
+        return memory_id
+    
+    def store_reasoningbank_memories(
+        self,
+        memory_items: List[Dict[str, Any]],
+        goal: str,
+        success: bool,
+        source_trajectory_id: str = None
+    ):
+        """
+        Store multiple ReasoningBank-style memory items at once.
+        
+        Args:
+            memory_items: List of dicts with 'title', 'description', 'content' keys
+            goal: Task goal/query
+            success: Whether the trajectory was successful
+            source_trajectory_id: Optional identifier for the source trajectory
+        """
+        stored_count = 0
+        
+        for mem_item in tqdm(memory_items, desc="Storing ReasoningBank memories"):
+            title = mem_item.get("title", "")
+            description = mem_item.get("description", "")
+            content = mem_item.get("content", "")
+            
+            if not (title and description and content):
+                print(f"⚠️  Skipping memory item with missing fields: {mem_item}")
+                continue
+            
+            # Extract any additional metadata from the memory item
+            additional_metadata = {}
+            for key in mem_item:
+                if key not in ["title", "description", "content"]:
+                    additional_metadata[key] = mem_item[key]
+            
+            # Call store_reasoningbank_memory for each item
+            self.store_reasoningbank_memory(
+                title=title,
+                description=description,
+                content=content,
+                goal=goal,
+                success=success,
+                source_trajectory_id=source_trajectory_id,
+                additional_metadata=additional_metadata if additional_metadata else None
+            )
+            stored_count += 1
+        
+        if stored_count > 0:
+            print(f"✅ Stored {stored_count} ReasoningBank memories.")
+        else:
+            print("⚠️  No valid memory items to store.")
+    
+    def retrieve_reasoningbank_memories(
+        self,
+        goal: str,
+        return_embeddings: bool = False
+    ) -> List[Dict[str, Any]]:
+        """
+        Retrieve ReasoningBank memories by semantic similarity to the goal/task.
+        Retrieves top 5 matches, then filters to only return those with similarity score > 0.9.
+        
+        Args:
+            goal: Task goal/query to search for
+            return_embeddings: If True, include memory embeddings in output
+        
+        Returns:
+            List of memory dicts with similarity score > 0.9, sorted by score (highest first)
+        """
+        # Create query embedding from the goal
+        query_emb = self._get_embedding(goal)
+        
+        # Perform search - get top 5
+        results = self.client.search(
+            collection_name=self.collection_reasoningbank,
+            query_vector=query_emb,
+            query_filter=None,
+            limit=12,
+            with_vectors=return_embeddings,
+        )
+        
+        recalls = []
+        for r in results:
+            # Only include results with similarity > 0.9 (cosine similarity)
+            if r.score <= 0.9:
+                continue
+                
+            m = r.payload
+            memory_dict = {
+                "score": r.score,
+                "memory_id": m.get("memory_id"),
+                "title": m.get("title"),
+                "description": m.get("description"),
+                "content": m.get("content"),
+                "goal": m.get("goal"),
+                "success": m.get("success"),
+                "created_at": m.get("created_at"),
+            }
+            
+            if "source_trajectory_id" in m:
+                memory_dict["source_trajectory_id"] = m["source_trajectory_id"]
+            
+            # Include any other metadata fields
+            for key in m:
+                if key not in memory_dict:
+                    memory_dict[key] = m[key]
+            
+            # Add embedding if requested
+            if return_embeddings and r.vector is not None:
+                memory_dict["embedding"] = r.vector
+            
+            recalls.append(memory_dict)
+        
+        # Sort by score (highest first)
+        recalls.sort(key=lambda x: x["score"], reverse=True)
+        return recalls
 
 if __name__ == "__main__":
     print("=" * 80)
