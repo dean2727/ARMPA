@@ -373,7 +373,7 @@ def test(
                     comb = get_site_comb_from_filepath(cookie_file_name)
                     temp_dir = tempfile.mkdtemp()
                     # subprocess to renew the cookie
-                    subprocess.run(
+                    result = subprocess.run(
                         [
                             sys.executable,
                             "browser_env/auto_login.py",
@@ -381,10 +381,27 @@ def test(
                             temp_dir,
                             "--site_list",
                             *comb,
-                        ]
+                        ],
+                        capture_output=True,
+                        text=True
                     )
+                    
+                    if result.returncode != 0:
+                        logger.warning(f"[SKIP] auto_login.py failed with code {result.returncode}")
+                        logger.warning(f"       STDOUT: {result.stdout[:200]}")
+                        logger.warning(f"       STDERR: {result.stderr[:200]}")
+                        logger.warning(f"       Skipping task {task_id}")
+                        continue
+                    
                     _c["storage_state"] = f"{temp_dir}/{cookie_file_name}"
-                    assert os.path.exists(_c["storage_state"])
+                    
+                    # Check if auth file was created successfully
+                    if not os.path.exists(_c["storage_state"]):
+                        logger.warning(f"[SKIP] Auth file not found: {_c['storage_state']}")
+                        logger.warning(f"       Task requires authentication but auth setup failed")
+                        logger.warning(f"       Run 'cd webarena && bash prepare.sh' to generate auth files")
+                        continue
+                    
                     # update the config file
                     config_file = f"{temp_dir}/{os.path.basename(config_file)}"
                     with open(config_file, "w") as f:
