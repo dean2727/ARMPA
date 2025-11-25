@@ -136,6 +136,11 @@ def collect_episodes_with_filter(
             # Run the command from webarena directory
             webarena_dir = Path.cwd() / "webarena"
             
+            if task_idx == 0 and sample_idx == 0:
+                # Log first command for debugging
+                logger.info(f"📝 First command: {' '.join(cmd)}")
+                logger.info(f"📁 Running from: {webarena_dir}")
+            
             try:
                 process = subprocess.Popen(
                     cmd,
@@ -152,13 +157,26 @@ def collect_episodes_with_filter(
                 
                 if process.returncode != 0:
                     stderr = process.stderr.read() if process.stderr else ""
-                    logger.error(f"❌ Episode collection failed: {stderr[:200]}")
+                    stdout = process.stdout.read() if process.stdout else ""
+                    logger.error(f"❌ Episode collection failed with code {process.returncode}")
+                    logger.error(f"STDERR: {stderr[:500]}")
+                    logger.error(f"STDOUT: {stdout[:500]}")
+                    overall_pbar.update(1)
                     continue
                 
                 # Load the episode from this run
                 webarena_runs_dir = Path.cwd() / "webarena" / "runs"
+                
+                if not webarena_runs_dir.exists():
+                    logger.error(f"❌ Runs directory doesn't exist: {webarena_runs_dir}")
+                    overall_pbar.update(1)
+                    continue
+                
                 run_dirs = sorted([d for d in webarena_runs_dir.iterdir() if d.is_dir()], 
                                   key=lambda x: x.stat().st_mtime, reverse=True)
+                
+                if task_idx == 0 and sample_idx == 0:
+                    logger.info(f"📂 Found {len(run_dirs)} run directories")
                 
                 episode_dir = None
                 for run_dir in run_dirs:
@@ -177,6 +195,10 @@ def collect_episodes_with_filter(
                         episode['task_group_id'] = task_idx
                         episode['sample_id'] = sample_idx
                         task_episodes.append(episode)
+                    else:
+                        logger.error(f"❌ No episode files found in {episode_dir}")
+                else:
+                    logger.error(f"❌ No episode_buffers directory found in recent runs")
                 
                 overall_pbar.update(1)
                 
