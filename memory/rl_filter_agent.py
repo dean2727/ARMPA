@@ -257,8 +257,8 @@ class RLMemoryFilter:
         self.policy_net.eval()
         with torch.no_grad():
             for memory in memories:
-                # Get memory embedding
-                mem_emb_np = memory.get('embedding')
+                # Get memory embedding (Cue embedding or the 'content' named embedding from ReasoningBank collection)
+                mem_emb_np = memory.get('embedding') or memory.get('embeddings')['content']
                 if mem_emb_np is None:
                     logger.warning(f"[RL Filter] Memory {memory.get('memory_id')} missing embedding, skipping")
                     continue
@@ -313,7 +313,8 @@ class RLMemoryFilter:
         for i, candidate in enumerate(candidates):
             candidate_data = {
                 'memory_id': candidate.get('memory_id'),
-                'embedding': candidate.get('embedding'),  # np.ndarray
+                # Cue embedding or the 'content' named embedding from ReasoningBank collection
+                'embedding': candidate.get('embedding') or candidate.get('embeddings')['content'],  # np.ndarray
                 'similarity_score': candidate.get('score'),
                 'gate_score': gate_scores[i] if gate_scores else None,
                 'selected': None,  # Filled during inference or training

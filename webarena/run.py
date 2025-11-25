@@ -407,13 +407,15 @@ def test(
                         should_recall = (args.recall_threshold == 0.0)  # Always recall if threshold is 0
                         
                         if should_recall:
-                            memories = memory_manager.cue_based_recall(
+                            cue_memories = memory_manager.cue_based_recall(
                                 summarized_obs=observation_summary,
                                 goal=intent,
                                 top_k=args.num_memories,
                                 return_embeddings=True,  # Need embeddings for RL filter
                             )
-                            
+                            lesson_memories = memory_manager.retrieve_reasoningbank_memories(intent, top_k=args.num_memories, search_by="goal")
+                            memories = cue_memories + lesson_memories
+
                             # Get embeddings for RL filter
                             task_emb = memory_manager._get_embedding(intent)
                             obs_emb = memory_manager._get_embedding(observation_summary)
@@ -441,7 +443,7 @@ def test(
                                     'candidates': [
                                         {
                                             'memory_id': m.get('memory_id'),
-                                            'embedding': m.get('embedding'),
+                                            'embedding': m.get('embedding') or m.get('embeddings')['content'],
                                             'similarity_score': m.get('score'),
                                             'gate_score': m.get('gate_score'),
                                             'selected': m.get('gate_score', 0.0) > args.rl_filter_threshold if args.use_rl_filter else True,

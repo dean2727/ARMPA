@@ -46,7 +46,8 @@ class MemoryManager:
         # Create all three collections if they don't exist
         self._ensure_collection(self.collection_cues)
         self._ensure_collection_without_vectors(self.collection_trajectory_history)
-        self._ensure_collection(self.collection_reasoningbank)
+        # ReasoningBank can use named vectors (goal + content) or single vector (goal only)
+        self._ensure_reasoningbank_collection(self.collection_reasoningbank)
         
         # Create payload indexes for filtering
         self._ensure_goal_index(self.collection_cues)
@@ -239,7 +240,7 @@ class MemoryManager:
                 with_payload=True,
                 with_vectors=False
             )
-            
+
             recalls = []
             for point in points:
                 payload = point.payload
@@ -256,7 +257,7 @@ class MemoryManager:
                         "timestamp": payload.get("timestamp"),
                     }
                 )
-            
+
             # Sort by step_id before returning
             recalls.sort(key=lambda x: x.get("step_id", 0))
             
@@ -379,12 +380,7 @@ WHAT I DID{pointer}:
             # If there is a 'title' and 'content' field, then we know it's a ReasoningBank memory
             elif 'title' in m and 'content' in m:
                 success_indicator = "✅" if m.get('success', False) else "❌"
-                formatted_mems.append(f"""{success_indicator} {m.get('title', 'Memory')}
-
-        {m.get('description', '')}
-
-        {m.get('content', '')}
-        """)
+                formatted_mems.append(f"LESSON LEARNED FROM THE PAST: {m.get('content', '')}")
             else: # Unknown memory type
                 formatted_mems.append(f"Memory: {str(m)}")
         
@@ -574,6 +570,7 @@ WHAT I DID{pointer}:
         is_reasoningbank = collection_name == 'reasoningbank' or collection_name == self.collection_reasoningbank or collection_name.endswith('-reasoningbank')
         
         # Get the actual collection name to use
+        use_named_vectors = False
         if is_cues:
             actual_collection_name = self.collection_cues
             has_vectors = True
@@ -583,6 +580,8 @@ WHAT I DID{pointer}:
         elif is_reasoningbank:
             actual_collection_name = self.collection_reasoningbank
             has_vectors = True
+            # Use named vectors for reasoningbank
+            use_named_vectors = True
         else:
             # Unknown collection, try to use the provided name as-is
             actual_collection_name = collection_name
@@ -602,7 +601,11 @@ WHAT I DID{pointer}:
         
         # Recreate the collection
         if has_vectors:
-            self._ensure_collection(actual_collection_name)
+            if is_reasoningbank:
+                # Use named vectors for reasoningbank
+                self._ensure_reasoningbank_collection(actual_collection_name, use_named_vectors=True)
+            else:
+                self._ensure_collection(actual_collection_name)
         else:
             self._ensure_collection_without_vectors(actual_collection_name)
         print(f"✅ Recreated empty collection '{actual_collection_name}'")
@@ -628,6 +631,50 @@ WHAT I DID{pointer}:
         except Exception as e:
             if "already exists" in str(e):
                 print(f"Collection '{collection_name}' already exists, using existing collection.")
+            else:
+                raise e
+    
+    def _ensure_reasoningbank_collection(self, collection_name: str, use_named_vectors: bool = True):
+        """
+        Ensure that the reasoningbank collection exists with named vectors support.
+        
+        Args:
+            collection_name: Name of the collection
+            use_named_vectors: If True, creates collection with named vectors ('goal' and 'content').
+                              If False, creates collection with single vector (backward compatible).
+        """
+        try:
+            if use_named_vectors:
+                # Create collection with named vectors: 'goal' and 'content'
+                self.client.create_collection(
+                    collection_name=collection_name,
+                    vectors_config={
+                        "goal": rest.VectorParams(size=1024, distance=rest.Distance.COSINE),
+                        "content": rest.VectorParams(size=1024, distance=rest.Distance.COSINE),
+                    },
+                )
+                print(f"Created reasoningbank collection '{collection_name}' with named vectors (goal, content).")
+            else:
+                # Single vector for backward compatibility
+                self.client.create_collection(
+                    collection_name=collection_name,
+                    vectors_config=rest.VectorParams(size=1024, distance=rest.Distance.COSINE),
+                )
+        except Exception as e:
+            if "already exists" in str(e):
+                # Collection already exists - check if it has named vectors
+                try:
+                    collection_info = self.client.get_collection(collection_name)
+                    if hasattr(collection_info.config, 'params') and hasattr(collection_info.config.params, 'vectors'):
+                        vectors_config = collection_info.config.params.vectors
+                        if isinstance(vectors_config, dict):
+                            print(f"Collection '{collection_name}' already exists with named vectors.")
+                        else:
+                            print(f"Collection '{collection_name}' already exists with single vector (backward compatible).")
+                    else:
+                        print(f"Collection '{collection_name}' already exists, using existing collection.")
+                except:
+                    print(f"Collection '{collection_name}' already exists, using existing collection.")
             else:
                 raise e
     
@@ -707,7 +754,8 @@ WHAT I DID{pointer}:
         goal: str,
         success: bool,
         source_trajectory_id: str = None,
-        additional_metadata: Dict[str, Any] = None
+        additional_metadata: Dict[str, Any] = None,
+        store_content_embedding: bool = True
     ):
         """
         Store a ReasoningBank-style memory item.
@@ -720,15 +768,16 @@ WHAT I DID{pointer}:
             success: Whether the trajectory was successful
             source_trajectory_id: Optional identifier for the source trajectory
             additional_metadata: Optional additional metadata to store
+            store_content_embedding: If True, stores both goal and content embeddings (named vectors).
+                                   If False, stores only goal embedding (single vector, backward compatible).
         """
         memory_id = str(uuid.uuid4())
         
         # Create embedding from the goal/task for semantic search by task similarity
         # Truncate to stay within BGE-large's 512 token limit (~2000 chars)
-        embedding_text = goal[:2000] if len(goal) > 2000 else goal
-        
-        mem_emb = embedding(model=self.embed_model, input=[embedding_text])
-        mem_emb = mem_emb["data"][0]["embedding"]
+        goal_text = goal[:2000] if len(goal) > 2000 else goal
+        goal_emb = embedding(model=self.embed_model, input=[goal_text])
+        goal_emb = goal_emb["data"][0]["embedding"]
         
         # Create metadata
         metadata = {
@@ -748,11 +797,42 @@ WHAT I DID{pointer}:
         if additional_metadata:
             metadata.update(additional_metadata)
         
-        point = rest.PointStruct(
-            id=memory_id,
-            vector=mem_emb,
-            payload=metadata
-        )
+        # Check if collection supports named vectors by trying to get collection info
+        try:
+            collection_info = self.client.get_collection(self.collection_reasoningbank)
+            has_named_vectors = (
+                hasattr(collection_info.config, 'params') and 
+                hasattr(collection_info.config.params, 'vectors') and
+                isinstance(collection_info.config.params.vectors, dict)
+            )
+        except:
+            has_named_vectors = False
+        
+        # Store vectors based on collection type and user preference
+        if store_content_embedding and has_named_vectors:
+            # Create content embedding
+            # Combine title, description, and content for richer semantic representation
+            content_text = content[:2000] if len(content) > 2000 else content
+            content_text = f"LESSON LEARNED FROM THE PAST: {content_text}"
+            content_emb = embedding(model=self.embed_model, input=[content_text])
+            content_emb = content_emb["data"][0]["embedding"]
+            
+            # Use named vectors
+            point = rest.PointStruct(
+                id=memory_id,
+                vector={
+                    "goal": goal_emb,
+                    "content": content_emb
+                },
+                payload=metadata
+            )
+        else:
+            # Use single vector (goal only) - backward compatible
+            point = rest.PointStruct(
+                id=memory_id,
+                vector=goal_emb,
+                payload=metadata
+            )
         
         self.client.upsert(collection_name=self.collection_reasoningbank, points=[point])
         return memory_id
@@ -762,7 +842,8 @@ WHAT I DID{pointer}:
         memory_items: List[Dict[str, Any]],
         goal: str,
         success: bool,
-        source_trajectory_id: str = None
+        source_trajectory_id: str = None,
+        store_content_embedding: bool = True
     ):
         """
         Store multiple ReasoningBank-style memory items at once.
@@ -772,10 +853,12 @@ WHAT I DID{pointer}:
             goal: Task goal/query
             success: Whether the trajectory was successful
             source_trajectory_id: Optional identifier for the source trajectory
+            store_content_embedding: If True, stores both goal and content embeddings (named vectors).
+                                   If False, stores only goal embedding (single vector, backward compatible).
         """
         stored_count = 0
         
-        for mem_item in tqdm(memory_items, desc="Storing ReasoningBank memories"):
+        for mem_item in tqdm(memory_items):
             title = mem_item.get("title", "")
             description = mem_item.get("description", "")
             content = mem_item.get("content", "")
@@ -798,42 +881,68 @@ WHAT I DID{pointer}:
                 goal=goal,
                 success=success,
                 source_trajectory_id=source_trajectory_id,
-                additional_metadata=additional_metadata if additional_metadata else None
+                additional_metadata=additional_metadata if additional_metadata else None,
+                store_content_embedding=store_content_embedding
             )
             stored_count += 1
         
-        if stored_count > 0:
-            print(f"✅ Stored {stored_count} ReasoningBank memories.")
-        else:
-            print("⚠️  No valid memory items to store.")
+        # if stored_count > 0:
+        #     print(f"✅ Stored {stored_count} ReasoningBank memories.")
+        # else:
+        #     print("⚠️  No valid memory items to store.")
     
     def retrieve_reasoningbank_memories(
         self,
         goal: str,
-        return_embeddings: bool = False
+        top_k: int = 3,
+        return_embeddings: bool = True,
+        search_by: str = "goal"
     ) -> List[Dict[str, Any]]:
         """
-        Retrieve ReasoningBank memories by semantic similarity to the goal/task.
-        Retrieves top 5 matches, then filters to only return those with similarity score > 0.9.
+        Retrieve ReasoningBank memories by semantic similarity.
+        Retrieves top matches, then filters to only return those with similarity score > 0.9.
         
         Args:
-            goal: Task goal/query to search for
+            goal: Task goal/query to search for (or content query if search_by="content")
             return_embeddings: If True, include memory embeddings in output
+            search_by: Which vector to search by - "goal" (default) or "content"
         
         Returns:
             List of memory dicts with similarity score > 0.9, sorted by score (highest first)
         """
-        # Create query embedding from the goal
+        # Create query embedding
         query_emb = self._get_embedding(goal)
         
-        # Perform search - get top 5
-        results = self.client.search(
-            collection_name=self.collection_reasoningbank,
-            query_vector=query_emb,
-            query_filter=None,
-            limit=12,
-            with_vectors=return_embeddings,
-        )
+        # Check if collection supports named vectors
+        try:
+            collection_info = self.client.get_collection(self.collection_reasoningbank)
+            has_named_vectors = (
+                hasattr(collection_info.config, 'params') and 
+                hasattr(collection_info.config.params, 'vectors') and
+                isinstance(collection_info.config.params.vectors, dict)
+            )
+        except:
+            has_named_vectors = False
+        
+        # Perform search - use named vector if available and requested
+        if has_named_vectors and search_by in ["goal", "content"]:
+            # Use named vector search
+            results = self.client.search(
+                collection_name=self.collection_reasoningbank,
+                query_vector=(search_by, query_emb),
+                query_filter=None,
+                limit=12,
+                with_vectors=return_embeddings,
+            )
+        else:
+            # Use single vector search (backward compatible)
+            results = self.client.search(
+                collection_name=self.collection_reasoningbank,
+                query_vector=query_emb,
+                query_filter=None,
+                limit=12,
+                with_vectors=return_embeddings,
+            )
         
         recalls = []
         for r in results:
@@ -862,8 +971,13 @@ WHAT I DID{pointer}:
                     memory_dict[key] = m[key]
             
             # Add embedding if requested
-            if return_embeddings and r.vector is not None:
-                memory_dict["embedding"] = r.vector
+            if return_embeddings:
+                if has_named_vectors and isinstance(r.vector, dict):
+                    # Return both embeddings if available
+                    memory_dict["embeddings"] = r.vector
+                elif r.vector is not None:
+                    # Single vector
+                    memory_dict["embedding"] = r.vector
             
             recalls.append(memory_dict)
         
