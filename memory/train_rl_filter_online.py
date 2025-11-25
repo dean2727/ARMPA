@@ -441,9 +441,9 @@ def main():
     # Online RL arguments
     parser.add_argument("--num_cycles", type=int, default=20,
                        help="Number of rollout-update cycles")
-    parser.add_argument("--tasks_per_cycle", type=int, default=10,
+    parser.add_argument("--tasks_per_cycle", type=int, default=3,
                        help="Number of unique tasks per cycle")
-    parser.add_argument("--num_samples_per_task", type=int, default=5,
+    parser.add_argument("--num_samples_per_task", type=int, default=3,
                        help="Number of samples per task for GRPO (group size)")
     parser.add_argument("--convergence_threshold", type=float, default=0.01,
                        help="Stop if reward improvement < this")
