@@ -164,6 +164,15 @@ def collect_episodes_with_filter(
                     overall_pbar.update(1)
                     continue
                 
+                # Check if there was an error during execution
+                error_file = temp_dir / f"task_{task_idx}_sample_{sample_idx}" / "error.txt"
+                if error_file.exists():
+                    with open(error_file, 'r') as f:
+                        error_content = f.read()
+                    logger.error(f"❌ Task execution error: {error_content[:500]}")
+                    overall_pbar.update(1)
+                    continue
+                
                 # Load the episode from this run
                 webarena_runs_dir = Path.cwd() / "webarena" / "runs"
                 
