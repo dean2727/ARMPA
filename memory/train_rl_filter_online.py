@@ -303,7 +303,7 @@ def train_online_rl(
     rl_filter_threshold: float,
     model_dir: Path,
     convergence_threshold: float = 0.01,
-    patience: int = 3,
+    patience: int = 10,
     disable_early_stopping: bool = False,
 ) -> None:
     """

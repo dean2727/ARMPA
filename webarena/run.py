@@ -465,22 +465,27 @@ def test(
                             task_emb = memory_manager._get_embedding(intent)
                             obs_emb = memory_manager._get_embedding(observation_summary)
                             
+                            # Store all candidates BEFORE filtering (for RL data collection)
+                            all_candidates = memories.copy() if episode_buffer is not None else None
+                            
                             # Apply RL filter if enabled
                             if args.use_rl_filter and rl_filter is not None and memories:
                                 original_count = len(memories)
                                 # Note: mean_entropy will be updated after agent.next_action()
                                 # For now, use 0.0 as placeholder
+                                # Use training_mode=True when collecting RL data for stochastic sampling
                                 memories = rl_filter.filter_memories(
                                     memories=memories,
                                     task_embedding=task_emb,
                                     obs_embedding=obs_emb,
                                     entropy=mean_entropy,
-                                    return_scores=True,  # Add gate scores to memories
+                                    return_scores=True,  # Add gate scores and actions to memories
+                                    training_mode=args.collect_rl_data,  # Stochastic sampling during training
                                 )
                                 logger.info(f"[RL Filter] {original_count} → {len(memories)} memories")
                             
-                            # Log recall event for RL data collection
-                            if episode_buffer is not None and memories:
+                            # Log recall event for RL data collection (use all_candidates, not just selected)
+                            if episode_buffer is not None and all_candidates:
                                 recall_data = {
                                     'task_embedding': task_emb,
                                     'obs_embedding': obs_emb,
@@ -491,9 +496,10 @@ def test(
                                             'embedding': m.get('embedding'),
                                             'similarity_score': m.get('score'),
                                             'gate_score': m.get('gate_score'),
-                                            'selected': m.get('gate_score', 0.0) > args.rl_filter_threshold if args.use_rl_filter else True,
+                                            'gate_action': m.get('gate_action'),  # Store actual sampled action
+                                            'selected': m.get('gate_action', True),  # Use actual action for selection status
                                         }
-                                        for m in memories
+                                        for m in all_candidates
                                     ],
                                 }
                                 episode_buffer['recall_events'].append(recall_data)

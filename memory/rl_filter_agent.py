@@ -176,6 +176,7 @@ class RLMemoryFilter:
         gamma: float = 0.5,  # Reward shaping for step efficiency
         max_steps: int = 30,
         score_threshold: float = 0.5,
+        exploration_epsilon: float = 0.1,  # Epsilon-greedy exploration
         device: str = "cpu",
         model_path: Optional[str] = None,
     ):
@@ -198,6 +199,7 @@ class RLMemoryFilter:
         """
         self.device = torch.device(device)
         self.score_threshold = score_threshold
+        self.exploration_epsilon = exploration_epsilon
         self.gamma = gamma
         self.max_steps = max_steps
         self.clip_epsilon = clip_epsilon
@@ -230,6 +232,7 @@ class RLMemoryFilter:
         obs_embedding: np.ndarray,
         entropy: float,
         return_scores: bool = False,
+        training_mode: bool = False,  # Use stochastic sampling for on-policy training
     ) -> List[Dict[str, Any]]:
         """
         Filter candidate memories using learned gating policy (inference mode).
@@ -269,12 +272,26 @@ class RLMemoryFilter:
                 gate_prob = self.policy_net(task_emb, obs_emb, mem_emb, entropy_tensor)
                 gate_score = gate_prob.item()
                 
-                # Add score to memory dict if requested
+                # Decide whether to select memory
+                if training_mode:
+                    # Stochastic sampling for on-policy training (with exploration)
+                    if np.random.random() < self.exploration_epsilon:
+                        # Epsilon-greedy: random action
+                        gate_action = np.random.random() < 0.5
+                    else:
+                        # Sample from policy
+                        gate_action = np.random.random() < gate_score
+                else:
+                    # Deterministic inference (threshold-based)
+                    gate_action = gate_score > self.score_threshold
+                
+                # Add score and action to memory dict if requested
                 if return_scores:
                     memory['gate_score'] = gate_score
+                    memory['gate_action'] = gate_action
                 
-                # Select if above threshold
-                if gate_score > self.score_threshold:
+                # Select based on gate action
+                if gate_action:
                     filtered.append(memory)
         
         return filtered
@@ -446,6 +463,14 @@ class RLMemoryFilter:
                     if old_gate_prob is None:
                         old_gate_prob = 0.5
                     
+                    # Use the actual sampled action (not re-sampled)
+                    gate_action = candidate.get('gate_action')
+                    if gate_action is None:
+                        # Fallback: sample from old_gate_prob for backward compatibility
+                        gate_action = 1.0 if np.random.random() < old_gate_prob else 0.0
+                    else:
+                        gate_action = float(gate_action)  # Convert bool to float
+                    
                     batch_data.append({
                         'task_emb': task_emb,
                         'obs_emb': obs_emb,
@@ -453,6 +478,7 @@ class RLMemoryFilter:
                         'entropy': entropy,
                         'advantage': advantage,
                         'old_gate_prob': old_gate_prob,
+                        'gate_action': gate_action,
                     })
         
         if len(batch_data) == 0:
@@ -480,9 +506,10 @@ class RLMemoryFilter:
         ).to(self.device)
         old_gate_probs = torch.clamp(old_gate_probs, min=1e-8, max=1-1e-8)
         
-        # Sample gate actions from old policy (from collection time)
-        # These are the actions that were actually executed during collection
-        gate_actions = (torch.rand_like(old_gate_probs) < old_gate_probs).float()
+        # Use the actual gate actions from collection time (not re-sampled)
+        gate_actions = torch.tensor(
+            [[d['gate_action']] for d in batch_data], dtype=torch.float32
+        ).to(self.device)
         
         # Policy update
         self.policy_net.train()
@@ -546,6 +573,7 @@ class RLMemoryFilter:
                 'max_steps': self.max_steps,
                 'clip_epsilon': self.clip_epsilon,
                 'kl_beta': self.kl_beta,
+                'exploration_epsilon': self.exploration_epsilon,
             }
         }, path)
         logger.info(f"[RL Filter] Saved model to {path}")
@@ -564,6 +592,7 @@ class RLMemoryFilter:
             self.max_steps = config.get('max_steps', self.max_steps)
             self.clip_epsilon = config.get('clip_epsilon', self.clip_epsilon)
             self.kl_beta = config.get('kl_beta', self.kl_beta)
+            self.exploration_epsilon = config.get('exploration_epsilon', self.exploration_epsilon)
         
         logger.info(f"[RL Filter] Loaded model from {path}")
 
