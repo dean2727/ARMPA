@@ -447,7 +447,7 @@ def main():
                        help="Number of samples per task for GRPO (group size)")
     parser.add_argument("--convergence_threshold", type=float, default=0.01,
                        help="Stop if reward improvement < this")
-    parser.add_argument("--patience", type=int, default=3,
+    parser.add_argument("--patience", type=int, default=15,
                        help="Cycles without improvement before stopping")
     parser.add_argument("--disable_early_stopping", action="store_true",
                        help="If set, train for all num_cycles regardless of convergence")
