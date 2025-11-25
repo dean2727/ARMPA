@@ -116,6 +116,7 @@ def collect_episodes_with_filter(
                 "--temperature", str(temperature),
                 "--get_memory",
                 "--num_memories", str(num_memories),
+                "--recall_threshold", "0.0",  # Always trigger memory recall
                 "--collect_rl_data",
                 "--num_tasks", "1",  # Run one task at a time
                 "--result_dir", str(temp_dir / f"task_{task_idx}_sample_{sample_idx}"),
