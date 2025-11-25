@@ -177,12 +177,18 @@ def collect_episodes_with_filter(
                 
                 if task_idx == 0 and sample_idx == 0:
                     logger.info(f"📂 Found {len(run_dirs)} run directories")
+                    if run_dirs:
+                        latest_run = run_dirs[0]
+                        logger.info(f"📁 Latest run: {latest_run}")
+                        logger.info(f"📁 Contents: {list(latest_run.iterdir())}")
                 
                 episode_dir = None
                 for run_dir in run_dirs:
                     potential_dir = run_dir / "episode_buffers"
                     if potential_dir.exists():
                         episode_dir = potential_dir
+                        if task_idx == 0 and sample_idx == 0:
+                            logger.info(f"✅ Found episode_buffers at: {episode_dir}")
                         break
                 
                 if episode_dir:
