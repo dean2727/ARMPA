@@ -136,6 +136,13 @@ def collect_episodes_with_filter(
             # Run the command from webarena directory
             webarena_dir = Path.cwd() / "webarena"
             
+            # Clean up the result directory to avoid stale error files
+            result_dir = temp_dir / f"task_{task_idx}_sample_{sample_idx}"
+            if result_dir.exists():
+                import shutil
+                shutil.rmtree(result_dir)
+            result_dir.mkdir(parents=True, exist_ok=True)
+            
             if task_idx == 0 and sample_idx == 0:
                 # Log first command for debugging
                 logger.info(f"📝 First command: {' '.join(cmd)}")
