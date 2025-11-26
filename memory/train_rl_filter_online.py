@@ -34,6 +34,7 @@ import torch
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 from memory.rl_filter_agent import RLMemoryFilter
+import json
 
 logging.basicConfig(
     level=logging.INFO,
@@ -298,6 +299,49 @@ def evaluate_policy(episodes: List[Dict[str, Any]]) -> Dict[str, float]:
     return metrics
 
 
+def save_analysis_logs(episodes: List[Dict[str, Any]], output_path: Path) -> None:
+    """
+    Save detailed episode logs to a JSONL file for analysis.
+    
+    Args:
+        episodes: List of episode dictionaries
+        output_path: Path to save the JSONL file
+    """
+    with open(output_path, 'w') as f:
+        for ep in episodes:
+            # Create a serializable version of the episode
+            log_entry = {
+                'episode_id': id(ep),
+                'final_reward': ep.get('final_reward'),
+                'success': ep.get('success'),
+                'num_steps': ep.get('num_steps'),
+                'recall_events': []
+            }
+            
+            for recall in ep.get('recall_events', []):
+                recall_log = {
+                    'entropy': recall.get('entropy'),
+                    'observation_text': recall.get('observation_text'),
+                    'goal_text': recall.get('goal_text'),
+                    'candidates': []
+                }
+                
+                for cand in recall.get('candidates', []):
+                    cand_log = {
+                        'memory_id': cand.get('memory_id'),
+                        'similarity_score': cand.get('similarity_score'),
+                        'gate_score': cand.get('gate_score'),
+                        'gate_action': cand.get('gate_action'),
+                        'selected': cand.get('selected'),
+                        'memory_content': cand.get('memory_content')
+                    }
+                    recall_log['candidates'].append(cand_log)
+                
+                log_entry['recall_events'].append(recall_log)
+            
+            f.write(json.dumps(log_entry) + '\n')
+
+
 def train_online_rl(
     rl_filter: RLMemoryFilter,
     num_cycles: int,
@@ -400,6 +444,11 @@ def train_online_rl(
         
         logger.info(f"   Loss: {update_metrics.get('loss', 0):.4f}")
         logger.info(f"   KL Div: {update_metrics.get('kl_div', 0):.4f}")
+        
+        # Save detailed analysis logs
+        analysis_log_path = model_dir / f"analysis_logs_cycle_{cycle + 1}.jsonl"
+        save_analysis_logs(episodes, analysis_log_path)
+        logger.info(f"   Saved analysis logs to {analysis_log_path}")
         
         # Step 4: Save checkpoint
         checkpoint_path = model_dir / f"checkpoint_cycle_{cycle + 1}.pt"

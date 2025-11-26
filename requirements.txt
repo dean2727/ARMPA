@@ -39,3 +39,5 @@ urllib3
 yarl
 playwright
 tokenizers==0.13
+matplotlib
+seaborn

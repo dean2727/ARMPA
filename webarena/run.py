@@ -490,6 +490,8 @@ def test(
                                     'task_embedding': task_emb,
                                     'obs_embedding': obs_emb,
                                     'entropy': mean_entropy,  # Will be updated after action
+                                    'observation_text': observation_summary,  # Log text for analysis
+                                    'goal_text': intent,  # Log goal for analysis
                                     'candidates': [
                                         {
                                             'memory_id': m.get('memory_id'),
@@ -498,6 +500,12 @@ def test(
                                             'gate_score': m.get('gate_score'),
                                             'gate_action': m.get('gate_action'),  # Store actual sampled action
                                             'selected': m.get('gate_action', True),  # Use actual action for selection status
+                                            'memory_content': {
+                                                'obs_summary': m.get('obs_summary'),
+                                                'action_taken': m.get('action_taken'),
+                                                'goal': m.get('goal'),
+                                                'success': m.get('success')
+                                            }
                                         }
                                         for m in all_candidates
                                     ],
