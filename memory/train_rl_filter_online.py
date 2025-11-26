@@ -33,7 +33,6 @@ import numpy as np
 import torch
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
-
 from memory.rl_filter_agent import RLMemoryFilter
 
 logging.basicConfig(
@@ -50,9 +49,10 @@ def collect_episodes_with_filter(
     model: str,
     instruction_path: str,
     temperature: float = 0.7,
-    num_memories: int = 10,
+    num_memories: int = 3,
     rl_filter_threshold: float = 0.5,
     temp_dir: Optional[Path] = None,
+    fixed_task_ids: Optional[List[int]] = None,
 ) -> List[Dict[str, Any]]:
     """
     Collect episodes using the current filter policy.
@@ -70,6 +70,7 @@ def collect_episodes_with_filter(
         num_memories: Max memories to retrieve
         rl_filter_threshold: Gate threshold for selection
         temp_dir: Temporary directory for episode buffers
+        fixed_task_ids: If provided, cycle through these task IDs instead of random
     
     Returns:
         episodes: List of episode dictionaries with recall events and rewards
@@ -121,6 +122,11 @@ def collect_episodes_with_filter(
                 "--num_tasks", "1",  # Run one task at a time
                 "--result_dir", str(temp_dir / f"task_{task_idx}_sample_{sample_idx}"),
             ]
+            
+            # If using fixed task IDs, specify which task to run
+            if fixed_task_ids is not None:
+                task_id = fixed_task_ids[task_idx % len(fixed_task_ids)]
+                cmd.extend(["--task", str(task_id)])
             
             # Add filter arguments if we have a trained filter
             if filter_model_path is not None:
@@ -305,6 +311,7 @@ def train_online_rl(
     convergence_threshold: float = 0.01,
     patience: int = 10,
     disable_early_stopping: bool = False,
+    fixed_task_ids: Optional[List[int]] = None,
 ) -> None:
     """
     Train RL filter using online, on-policy learning with GRPO.
@@ -323,6 +330,7 @@ def train_online_rl(
         convergence_threshold: Stop if reward improvement < this
         patience: Number of cycles without improvement before stopping
         disable_early_stopping: If True, train for all num_cycles regardless of convergence
+        fixed_task_ids: If provided, use these task IDs for all cycles (for consistent evaluation)
     """
     model_dir.mkdir(parents=True, exist_ok=True)
     
@@ -359,6 +367,7 @@ def train_online_rl(
             num_memories=num_memories,
             rl_filter_threshold=rl_filter_threshold,
             temp_dir=model_dir / f"cycle_{cycle}",
+            fixed_task_ids=fixed_task_ids,
         )
         
         if not episodes:
@@ -461,8 +470,10 @@ def main():
                        help="Path to prompt template")
     parser.add_argument("--temperature", type=float, default=0.7,
                        help="Sampling temperature")
-    parser.add_argument("--num_memories", type=int, default=10,
+    parser.add_argument("--num_memories", type=int, default=3,
                        help="Max number of memories to retrieve")
+    parser.add_argument("--fixed_task_ids", type=str, default=None,
+                       help="Comma-separated task IDs to use for all cycles (e.g., '0,1,2,3,4')")
     
     # RL filter arguments
     parser.add_argument("--rl_filter_threshold", type=float, default=0.5,
@@ -510,6 +521,14 @@ def main():
     
     model_dir = Path(args.model_dir)
     
+    # Parse fixed task IDs if provided
+    fixed_task_ids = None
+    if args.fixed_task_ids:
+        fixed_task_ids = [int(x.strip()) for x in args.fixed_task_ids.split(',')]
+        logger.info(f"Using fixed task IDs: {fixed_task_ids}")
+        if len(fixed_task_ids) < args.tasks_per_cycle:
+            logger.warning(f"Only {len(fixed_task_ids)} fixed tasks provided, but tasks_per_cycle={args.tasks_per_cycle}. Will cycle through the list.")
+    
     # Start online RL training
     train_online_rl(
         rl_filter=rl_filter,
@@ -525,6 +544,7 @@ def main():
         convergence_threshold=args.convergence_threshold,
         patience=args.patience,
         disable_early_stopping=args.disable_early_stopping,
+        fixed_task_ids=fixed_task_ids,
     )
 
 
