@@ -54,6 +54,7 @@ def collect_episodes_with_filter(
     rl_filter_threshold: float = 0.5,
     temp_dir: Optional[Path] = None,
     fixed_task_ids: Optional[List[int]] = None,
+    cycle_num: int = 0,
 ) -> List[Dict[str, Any]]:
     """
     Collect episodes using the current filter policy.
@@ -72,6 +73,7 @@ def collect_episodes_with_filter(
         rl_filter_threshold: Gate threshold for selection
         temp_dir: Temporary directory for episode buffers
         fixed_task_ids: If provided, cycle through these task IDs instead of random
+        cycle_num: Current training cycle number (used to offset into fixed_task_ids)
     
     Returns:
         episodes: List of episode dictionaries with recall events and rewards
@@ -97,6 +99,12 @@ def collect_episodes_with_filter(
     
     logger.info(f"\n{'='*70}")
     logger.info(f"📊 Collecting {num_tasks} tasks × {num_samples_per_task} samples = {total_runs} episodes")
+    
+    # Log which task IDs will be used this cycle
+    if fixed_task_ids is not None:
+        cycle_task_ids = [fixed_task_ids[(cycle_num * num_tasks + i) % len(fixed_task_ids)] for i in range(num_tasks)]
+        logger.info(f"📋 Task IDs for this cycle: {cycle_task_ids}")
+    
     logger.info(f"{'='*70}")
     
     # Create overall progress bar
@@ -125,8 +133,10 @@ def collect_episodes_with_filter(
             ]
             
             # If using fixed task IDs, specify which task to run
+            # Use cycle_num to offset into the list so different cycles use different tasks
             if fixed_task_ids is not None:
-                task_id = fixed_task_ids[task_idx % len(fixed_task_ids)]
+                global_task_idx = (cycle_num * num_tasks + task_idx) % len(fixed_task_ids)
+                task_id = fixed_task_ids[global_task_idx]
                 cmd.extend(["--test_start_idx", str(task_id)])
                 cmd.extend(["--test_end_idx", str(task_id + 1)])
             
@@ -413,6 +423,7 @@ def train_online_rl(
             rl_filter_threshold=rl_filter_threshold,
             temp_dir=model_dir / f"cycle_{cycle}",
             fixed_task_ids=fixed_task_ids,
+            cycle_num=cycle,
         )
         
         if not episodes:
