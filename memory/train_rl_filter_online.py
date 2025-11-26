@@ -126,7 +126,8 @@ def collect_episodes_with_filter(
             # If using fixed task IDs, specify which task to run
             if fixed_task_ids is not None:
                 task_id = fixed_task_ids[task_idx % len(fixed_task_ids)]
-                cmd.extend(["--task", str(task_id)])
+                cmd.extend(["--test_start_idx", str(task_id)])
+                cmd.extend(["--test_end_idx", str(task_id + 1)])
             
             # Add filter arguments if we have a trained filter
             if filter_model_path is not None:
