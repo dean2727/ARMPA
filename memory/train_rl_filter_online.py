@@ -33,8 +33,8 @@ import numpy as np
 import torch
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
-
 from memory.rl_filter_agent import RLMemoryFilter
+import json
 
 logging.basicConfig(
     level=logging.INFO,
@@ -50,9 +50,11 @@ def collect_episodes_with_filter(
     model: str,
     instruction_path: str,
     temperature: float = 0.7,
-    num_memories: int = 10,
+    num_memories: int = 3,
     rl_filter_threshold: float = 0.5,
     temp_dir: Optional[Path] = None,
+    fixed_task_ids: Optional[List[int]] = None,
+    cycle_num: int = 0,
 ) -> List[Dict[str, Any]]:
     """
     Collect episodes using the current filter policy.
@@ -70,6 +72,8 @@ def collect_episodes_with_filter(
         num_memories: Max memories to retrieve
         rl_filter_threshold: Gate threshold for selection
         temp_dir: Temporary directory for episode buffers
+        fixed_task_ids: If provided, cycle through these task IDs instead of random
+        cycle_num: Current training cycle number (used to offset into fixed_task_ids)
     
     Returns:
         episodes: List of episode dictionaries with recall events and rewards
@@ -95,6 +99,12 @@ def collect_episodes_with_filter(
     
     logger.info(f"\n{'='*70}")
     logger.info(f"📊 Collecting {num_tasks} tasks × {num_samples_per_task} samples = {total_runs} episodes")
+    
+    # Log which task IDs will be used this cycle
+    if fixed_task_ids is not None:
+        cycle_task_ids = [fixed_task_ids[(cycle_num * num_tasks + i) % len(fixed_task_ids)] for i in range(num_tasks)]
+        logger.info(f"📋 Task IDs for this cycle: {cycle_task_ids}")
+    
     logger.info(f"{'='*70}")
     
     # Create overall progress bar
@@ -116,10 +126,19 @@ def collect_episodes_with_filter(
                 "--temperature", str(temperature),
                 "--get_memory",
                 "--num_memories", str(num_memories),
+                "--recall_threshold", "0.0",  # Always trigger memory recall
                 "--collect_rl_data",
                 "--num_tasks", "1",  # Run one task at a time
                 "--result_dir", str(temp_dir / f"task_{task_idx}_sample_{sample_idx}"),
             ]
+            
+            # If using fixed task IDs, specify which task to run
+            # Use cycle_num to offset into the list so different cycles use different tasks
+            if fixed_task_ids is not None:
+                global_task_idx = (cycle_num * num_tasks + task_idx) % len(fixed_task_ids)
+                task_id = fixed_task_ids[global_task_idx]
+                cmd.extend(["--test_start_idx", str(task_id)])
+                cmd.extend(["--test_end_idx", str(task_id + 1)])
             
             # Add filter arguments if we have a trained filter
             if filter_model_path is not None:
@@ -135,6 +154,18 @@ def collect_episodes_with_filter(
             
             # Run the command from webarena directory
             webarena_dir = Path.cwd() / "webarena"
+            
+            # Clean up the result directory to avoid stale error files
+            result_dir = temp_dir / f"task_{task_idx}_sample_{sample_idx}"
+            if result_dir.exists():
+                import shutil
+                shutil.rmtree(result_dir)
+            result_dir.mkdir(parents=True, exist_ok=True)
+            
+            if task_idx == 0 and sample_idx == 0:
+                # Log first command for debugging
+                logger.info(f"📝 First command: {' '.join(cmd)}")
+                logger.info(f"📁 Running from: {webarena_dir}")
             
             try:
                 process = subprocess.Popen(
@@ -152,19 +183,47 @@ def collect_episodes_with_filter(
                 
                 if process.returncode != 0:
                     stderr = process.stderr.read() if process.stderr else ""
-                    logger.error(f"❌ Episode collection failed: {stderr[:200]}")
+                    stdout = process.stdout.read() if process.stdout else ""
+                    logger.error(f"❌ Episode collection failed with code {process.returncode}")
+                    logger.error(f"STDERR: {stderr[:500]}")
+                    logger.error(f"STDOUT: {stdout[:500]}")
+                    overall_pbar.update(1)
+                    continue
+                
+                # Check if there was an error during execution
+                error_file = temp_dir / f"task_{task_idx}_sample_{sample_idx}" / "error.txt"
+                if error_file.exists():
+                    with open(error_file, 'r') as f:
+                        error_content = f.read()
+                    logger.error(f"❌ Task execution error: {error_content[:500]}")
+                    overall_pbar.update(1)
                     continue
                 
                 # Load the episode from this run
                 webarena_runs_dir = Path.cwd() / "webarena" / "runs"
+                
+                if not webarena_runs_dir.exists():
+                    logger.error(f"❌ Runs directory doesn't exist: {webarena_runs_dir}")
+                    overall_pbar.update(1)
+                    continue
+                
                 run_dirs = sorted([d for d in webarena_runs_dir.iterdir() if d.is_dir()], 
                                   key=lambda x: x.stat().st_mtime, reverse=True)
+                
+                if task_idx == 0 and sample_idx == 0:
+                    logger.info(f"📂 Found {len(run_dirs)} run directories")
+                    if run_dirs:
+                        latest_run = run_dirs[0]
+                        logger.info(f"📁 Latest run: {latest_run}")
+                        logger.info(f"📁 Contents: {list(latest_run.iterdir())}")
                 
                 episode_dir = None
                 for run_dir in run_dirs:
                     potential_dir = run_dir / "episode_buffers"
                     if potential_dir.exists():
                         episode_dir = potential_dir
+                        if task_idx == 0 and sample_idx == 0:
+                            logger.info(f"✅ Found episode_buffers at: {episode_dir}")
                         break
                 
                 if episode_dir:
@@ -177,6 +236,10 @@ def collect_episodes_with_filter(
                         episode['task_group_id'] = task_idx
                         episode['sample_id'] = sample_idx
                         task_episodes.append(episode)
+                    else:
+                        logger.error(f"❌ No episode files found in {episode_dir}")
+                else:
+                    logger.error(f"❌ No episode_buffers directory found in recent runs")
                 
                 overall_pbar.update(1)
                 
@@ -246,6 +309,49 @@ def evaluate_policy(episodes: List[Dict[str, Any]]) -> Dict[str, float]:
     return metrics
 
 
+def save_analysis_logs(episodes: List[Dict[str, Any]], output_path: Path) -> None:
+    """
+    Save detailed episode logs to a JSONL file for analysis.
+    
+    Args:
+        episodes: List of episode dictionaries
+        output_path: Path to save the JSONL file
+    """
+    with open(output_path, 'w') as f:
+        for ep in episodes:
+            # Create a serializable version of the episode
+            log_entry = {
+                'episode_id': id(ep),
+                'final_reward': ep.get('final_reward'),
+                'success': ep.get('success'),
+                'num_steps': ep.get('num_steps'),
+                'recall_events': []
+            }
+            
+            for recall in ep.get('recall_events', []):
+                recall_log = {
+                    'entropy': recall.get('entropy'),
+                    'observation_text': recall.get('observation_text'),
+                    'goal_text': recall.get('goal_text'),
+                    'candidates': []
+                }
+                
+                for cand in recall.get('candidates', []):
+                    cand_log = {
+                        'memory_id': cand.get('memory_id'),
+                        'similarity_score': cand.get('similarity_score'),
+                        'gate_score': cand.get('gate_score'),
+                        'gate_action': cand.get('gate_action'),
+                        'selected': cand.get('selected'),
+                        'memory_content': cand.get('memory_content')
+                    }
+                    recall_log['candidates'].append(cand_log)
+                
+                log_entry['recall_events'].append(recall_log)
+            
+            f.write(json.dumps(log_entry) + '\n')
+
+
 def train_online_rl(
     rl_filter: RLMemoryFilter,
     num_cycles: int,
@@ -258,8 +364,9 @@ def train_online_rl(
     rl_filter_threshold: float,
     model_dir: Path,
     convergence_threshold: float = 0.01,
-    patience: int = 3,
+    patience: int = 10,
     disable_early_stopping: bool = False,
+    fixed_task_ids: Optional[List[int]] = None,
 ) -> None:
     """
     Train RL filter using online, on-policy learning with GRPO.
@@ -278,6 +385,7 @@ def train_online_rl(
         convergence_threshold: Stop if reward improvement < this
         patience: Number of cycles without improvement before stopping
         disable_early_stopping: If True, train for all num_cycles regardless of convergence
+        fixed_task_ids: If provided, use these task IDs for all cycles (for consistent evaluation)
     """
     model_dir.mkdir(parents=True, exist_ok=True)
     
@@ -314,6 +422,8 @@ def train_online_rl(
             num_memories=num_memories,
             rl_filter_threshold=rl_filter_threshold,
             temp_dir=model_dir / f"cycle_{cycle}",
+            fixed_task_ids=fixed_task_ids,
+            cycle_num=cycle,
         )
         
         if not episodes:
@@ -345,6 +455,11 @@ def train_online_rl(
         
         logger.info(f"   Loss: {update_metrics.get('loss', 0):.4f}")
         logger.info(f"   KL Div: {update_metrics.get('kl_div', 0):.4f}")
+        
+        # Save detailed analysis logs
+        analysis_log_path = model_dir / f"analysis_logs_cycle_{cycle + 1}.jsonl"
+        save_analysis_logs(episodes, analysis_log_path)
+        logger.info(f"   Saved analysis logs to {analysis_log_path}")
         
         # Step 4: Save checkpoint
         checkpoint_path = model_dir / f"checkpoint_cycle_{cycle + 1}.pt"
@@ -396,13 +511,13 @@ def main():
     # Online RL arguments
     parser.add_argument("--num_cycles", type=int, default=20,
                        help="Number of rollout-update cycles")
-    parser.add_argument("--tasks_per_cycle", type=int, default=10,
+    parser.add_argument("--tasks_per_cycle", type=int, default=3,
                        help="Number of unique tasks per cycle")
-    parser.add_argument("--num_samples_per_task", type=int, default=5,
+    parser.add_argument("--num_samples_per_task", type=int, default=3,
                        help="Number of samples per task for GRPO (group size)")
     parser.add_argument("--convergence_threshold", type=float, default=0.01,
                        help="Stop if reward improvement < this")
-    parser.add_argument("--patience", type=int, default=3,
+    parser.add_argument("--patience", type=int, default=15,
                        help="Cycles without improvement before stopping")
     parser.add_argument("--disable_early_stopping", action="store_true",
                        help="If set, train for all num_cycles regardless of convergence")
@@ -416,8 +531,10 @@ def main():
                        help="Path to prompt template")
     parser.add_argument("--temperature", type=float, default=0.7,
                        help="Sampling temperature")
-    parser.add_argument("--num_memories", type=int, default=10,
+    parser.add_argument("--num_memories", type=int, default=3,
                        help="Max number of memories to retrieve")
+    parser.add_argument("--fixed_task_ids", type=str, default=None,
+                       help="Comma-separated task IDs to use for all cycles (e.g., '0,1,2,3,4')")
     
     # RL filter arguments
     parser.add_argument("--rl_filter_threshold", type=float, default=0.5,
@@ -465,6 +582,14 @@ def main():
     
     model_dir = Path(args.model_dir)
     
+    # Parse fixed task IDs if provided
+    fixed_task_ids = None
+    if args.fixed_task_ids:
+        fixed_task_ids = [int(x.strip()) for x in args.fixed_task_ids.split(',')]
+        logger.info(f"Using fixed task IDs: {fixed_task_ids}")
+        if len(fixed_task_ids) < args.tasks_per_cycle:
+            logger.warning(f"Only {len(fixed_task_ids)} fixed tasks provided, but tasks_per_cycle={args.tasks_per_cycle}. Will cycle through the list.")
+    
     # Start online RL training
     train_online_rl(
         rl_filter=rl_filter,
@@ -480,6 +605,7 @@ def main():
         convergence_threshold=args.convergence_threshold,
         patience=args.patience,
         disable_early_stopping=args.disable_early_stopping,
+        fixed_task_ids=fixed_task_ids,
     )
 
 
