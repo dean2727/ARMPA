@@ -111,8 +111,14 @@ def collect_episodes_with_filter(
     overall_pbar = tqdm(total=total_runs, desc="GRPO sampling", unit="episode",
                        bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]')
     
+    # Randomize task order for each cycle using cycle_num as seed for reproducibility
+    # This ensures each cycle gets a different permutation
+    rng = np.random.RandomState(seed=42)
+    task_indices = rng.permutation(num_tasks).tolist()
+    logger.info(f"🎲 Randomized task order (cycle {cycle_num}): {task_indices}")
+    
     # Collect samples for each task
-    for task_idx in range(num_tasks):
+    for task_idx in task_indices:
         task_episodes = []
         
         for sample_idx in range(num_samples_per_task):
@@ -128,17 +134,25 @@ def collect_episodes_with_filter(
                 "--num_memories", str(num_memories),
                 "--recall_threshold", "0.0",  # Always trigger memory recall
                 "--collect_rl_data",
-                "--num_tasks", "1",  # Run one task at a time
                 "--result_dir", str(temp_dir / f"task_{task_idx}_sample_{sample_idx}"),
             ]
             
-            # If using fixed task IDs, specify which task to run
-            # Use cycle_num to offset into the list so different cycles use different tasks
+            # Specify which task to run
+            # Note: We use --test_start_idx/--test_end_idx instead of --num_tasks
+            # because --num_tasks causes random sampling, which we don't want
             if fixed_task_ids is not None:
+                # Use fixed task IDs, cycling through them
                 global_task_idx = (cycle_num * num_tasks + task_idx) % len(fixed_task_ids)
                 task_id = fixed_task_ids[global_task_idx]
-                cmd.extend(["--test_start_idx", str(task_id)])
-                cmd.extend(["--test_end_idx", str(task_id + 1)])
+            else:
+                # If no fixed task IDs, use task_idx to select different tasks
+                # This ensures each task_idx gets a different task
+                task_id = task_idx
+            
+            # Set start/end indices to run exactly one task (task_id)
+            # This will use the index-based selection in run.py, not random sampling
+            cmd.extend(["--test_start_idx", str(task_id)])
+            cmd.extend(["--test_end_idx", str(task_id + 1)])
             
             # Add filter arguments if we have a trained filter
             if filter_model_path is not None:
@@ -151,6 +165,10 @@ def collect_episodes_with_filter(
             # Set environment variable for PYTHONPATH
             env = os.environ.copy()
             env["PYTHONPATH"] = str(Path.cwd()) + ":" + env.get("PYTHONPATH", "")
+            
+            # Print the full command for debugging
+            logger.info(f"🔧 Running command for task_{task_idx}_sample_{sample_idx}:")
+            logger.info(f"   {' '.join(cmd)}")
             
             # Run the command from webarena directory
             webarena_dir = Path.cwd() / "webarena"
@@ -322,6 +340,9 @@ def save_analysis_logs(episodes: List[Dict[str, Any]], output_path: Path) -> Non
             # Create a serializable version of the episode
             log_entry = {
                 'episode_id': id(ep),
+                'task_group_id': ep.get('task_group_id'),  # Which task group (0, 1, 2, ...) for GRPO
+                'sample_id': ep.get('sample_id'),  # Which sample within the task group (0, 1, 2, ...)
+                'task_id': ep.get('task_id'),  # Actual task ID from config file
                 'final_reward': ep.get('final_reward'),
                 'success': ep.get('success'),
                 'num_steps': ep.get('num_steps'),
