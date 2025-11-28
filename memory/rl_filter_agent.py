@@ -442,8 +442,11 @@ class RLMemoryFilter:
                 for candidate in recall_event['candidates']:
                     mem_emb = candidate['embedding']
                     # Use the gate score from collection time (old policy)
-                    old_gate_prob = candidate.get('gate_score') or 0.5  # Default if not present
-
+                    # If None (first cycle with no trained filter), default to 0.5 (random)
+                    old_gate_prob = candidate.get('gate_score')
+                    if old_gate_prob is None:
+                        old_gate_prob = 0.5
+                    
                     batch_data.append({
                         'task_emb': task_emb,
                         'obs_emb': obs_emb,
@@ -521,7 +524,7 @@ class RLMemoryFilter:
             'kl_div': kl_div.item(),
             'mean_reward': mean_reward,
             'std_reward': std_reward,
-            'mean_advantage': advantages.mean(),
+            'mean_advantage': advantages_tensor.mean().item(),
             'mean_gate_prob': gate_probs.mean().item(),
             'num_episodes': len(episodes),
             'num_samples': len(batch_data),
