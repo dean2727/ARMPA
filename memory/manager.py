@@ -187,12 +187,14 @@ class MemoryManager:
         """
         cue_emb = self._create_cue_embedding(goal, summarized_obs, last_action=None)
 
-        results = self.client.search(
+        result = self.client.query_points(
             collection_name=self.collection_cues,
-            query_vector=cue_emb,
+            query=cue_emb,
             limit=top_k,
+            with_payload=True,
             with_vectors=return_embeddings,  # Request vectors from Qdrant if needed
         )
+        results = result.points
 
         recalls = []
         for r in results:
@@ -212,6 +214,62 @@ class MemoryManager:
             # Add embedding if requested (for RL filter)
             if return_embeddings and r.vector is not None:
                 memory_dict["embedding"] = r.vector
+            
+            recalls.append(memory_dict)
+
+        return recalls
+
+    def reasoningbank_recall(self, summarized_obs: str, goal: str, top_k: int = 3, return_embeddings: bool = True):
+        """
+        Retrieve top-K memories from ReasoningBank based on goal similarity.
+        ReasoningBank contains abstracted lessons/patterns, not raw step memories.
+        
+        Args:
+            summarized_obs: Summarized current observation (used for context, search uses goal)
+            goal: Task goal/intent (primary search vector)
+            top_k: Number of memories to retrieve
+            return_embeddings: If True, include memory embeddings in output (needed for RL filter)
+        
+        Returns:
+            recalls: List of memory dicts with metadata and optionally embeddings
+        """
+        # ReasoningBank uses named vectors: 'goal' and 'content'
+        # Search using goal vector for task similarity
+        goal_emb = self._get_embedding(goal)
+        
+        result = self.client.query_points(
+            collection_name=self.collection_reasoningbank,
+            query=goal_emb,
+            using="goal",  # Named vector search
+            limit=top_k,
+            with_payload=True,
+            with_vectors=return_embeddings,
+        )
+        results = result.points
+
+        recalls = []
+        for r in results:
+            m = r.payload
+            memory_dict = {
+                "score": r.score,  # Similarity score
+                "memory_id": m.get("memory_id"),
+                "goal": m.get("goal"),
+                "title": m.get("title"),
+                "description": m.get("description"),
+                "content": m.get("content"),
+                "success": m.get("success", True),  # Assume success for abstracted lessons
+                "created_at": m.get("created_at"),
+                "source_trajectory_id": m.get("source_trajectory_id"),
+            }
+            
+            # Add embedding if requested (for RL filter)
+            # Use the goal vector as the memory embedding for filter compatibility
+            if return_embeddings and r.vector is not None:
+                if isinstance(r.vector, dict):
+                    # Named vectors - use goal embedding
+                    memory_dict["embedding"] = r.vector.get("goal", r.vector.get("content"))
+                else:
+                    memory_dict["embedding"] = r.vector
             
             recalls.append(memory_dict)
 
@@ -360,7 +418,7 @@ class MemoryManager:
     def get_formatted_memories_for_prompt(self, mems: List[Dict[str, Any]]):
         formatted_mems = []
         for m in mems:
-            # If there is an 'obs_summary' field, then we know it's a cue-action mapping
+            # If there is an 'obs_summary' field, then we know it's a cue-action mapping (step-level)
             if 'obs_summary' in m:
                 success = "success" if m['success'] else "failure"
                 pointer = "(DONT DO AGAIN)" if m['success'] else ""
@@ -372,8 +430,18 @@ class MemoryManager:
         WHAT I DID{pointer}:
         {m['action_taken']}
         """)
-            else: # Learned skills -> just take the embedding (TODO)
-                ...
+            # ReasoningBank format: abstracted lessons with title/description/content
+            elif 'title' in m:
+                formatted_mems.append(f"""LEARNED LESSON: {m['title']}
+
+        WHEN TO APPLY:
+        {m.get('description', 'N/A')}
+
+        HOW TO DO IT:
+        {m.get('content', 'N/A')}
+        """)
+            else: # Unknown format - skip
+                continue
         
         return formatted_mems
 

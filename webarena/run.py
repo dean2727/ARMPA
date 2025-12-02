@@ -176,6 +176,8 @@ def config() -> argparse.Namespace:
     parser.add_argument("--get_memory", action="store_true", help="Get memories (from Qdrant)post-trajectory and store them per-step")
     # numebr of memories to retrieve
     parser.add_argument("--num_memories", type=int, default=3, help="Number of memories to retrieve")
+    parser.add_argument("--memory_source", type=str, default="cues", choices=["cues", "reasoningbank"],
+                       help="Memory source: 'cues' (step-level) or 'reasoningbank' (abstracted lessons)")
     
     # RL Filter Agent: data collection and inference
     parser.add_argument("--collect_rl_data", action="store_true",
@@ -454,12 +456,21 @@ def test(
                         should_recall = (args.recall_threshold == 0.0)  # Always recall if threshold is 0
                         
                         if should_recall:
-                            memories = memory_manager.cue_based_recall(
-                                summarized_obs=observation_summary,
-                                goal=intent,
-                                top_k=args.num_memories,
-                                return_embeddings=True,  # Need embeddings for RL filter
-                            )
+                            # Select memory source based on --memory_source argument
+                            if args.memory_source == "reasoningbank":
+                                memories = memory_manager.reasoningbank_recall(
+                                    summarized_obs=observation_summary,
+                                    goal=intent,
+                                    top_k=args.num_memories,
+                                    return_embeddings=True,  # Need embeddings for RL filter
+                                )
+                            else:  # default: cues
+                                memories = memory_manager.cue_based_recall(
+                                    summarized_obs=observation_summary,
+                                    goal=intent,
+                                    top_k=args.num_memories,
+                                    return_embeddings=True,  # Need embeddings for RL filter
+                                )
                             
                             # Get embeddings for RL filter
                             task_emb = memory_manager._get_embedding(intent)
@@ -492,6 +503,7 @@ def test(
                                     'entropy': mean_entropy,  # Will be updated after action
                                     'observation_text': observation_summary,  # Log text for analysis
                                     'goal_text': intent,  # Log goal for analysis
+                                    'memory_source': args.memory_source,  # Track which collection was used
                                     'candidates': [
                                         {
                                             'memory_id': m.get('memory_id'),
@@ -501,8 +513,14 @@ def test(
                                             'gate_action': m.get('gate_action'),  # Store actual sampled action
                                             'selected': m.get('gate_action', True),  # Use actual action for selection status
                                             'memory_content': {
+                                                # Cue-based fields
                                                 'obs_summary': m.get('obs_summary'),
                                                 'action_taken': m.get('action_taken'),
+                                                # ReasoningBank fields
+                                                'title': m.get('title'),
+                                                'description': m.get('description'),
+                                                'content': m.get('content'),
+                                                # Common fields
                                                 'goal': m.get('goal'),
                                                 'success': m.get('success')
                                             }

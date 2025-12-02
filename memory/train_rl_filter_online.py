@@ -51,6 +51,7 @@ def collect_episodes_with_filter(
     instruction_path: str,
     temperature: float = 0.7,
     num_memories: int = 3,
+    memory_source: str = "reasoningbank",  # 'cues' or 'reasoningbank'
     rl_filter_threshold: float = 0.5,
     temp_dir: Optional[Path] = None,
     fixed_task_ids: Optional[List[int]] = None,
@@ -70,6 +71,7 @@ def collect_episodes_with_filter(
         instruction_path: Path to prompt template
         temperature: Sampling temperature
         num_memories: Max memories to retrieve
+        memory_source: Memory collection to use ('cues' or 'reasoningbank')
         rl_filter_threshold: Gate threshold for selection
         temp_dir: Temporary directory for episode buffers
         fixed_task_ids: If provided, cycle through these task IDs instead of random
@@ -126,19 +128,22 @@ def collect_episodes_with_filter(
                 "--temperature", str(temperature),
                 "--get_memory",
                 "--num_memories", str(num_memories),
+                "--memory_source", memory_source,  # 'cues' or 'reasoningbank'
                 "--recall_threshold", "0.0",  # Always trigger memory recall
                 "--collect_rl_data",
-                "--num_tasks", "1",  # Run one task at a time
                 "--result_dir", str(temp_dir / f"task_{task_idx}_sample_{sample_idx}"),
             ]
             
-            # If using fixed task IDs, specify which task to run
-            # Use cycle_num to offset into the list so different cycles use different tasks
+            # If using fixed task IDs, specify which task to run via start/end indices
+            # NOTE: Do NOT use --num_tasks here, as it triggers random sampling and ignores indices
             if fixed_task_ids is not None:
                 global_task_idx = (cycle_num * num_tasks + task_idx) % len(fixed_task_ids)
                 task_id = fixed_task_ids[global_task_idx]
                 cmd.extend(["--test_start_idx", str(task_id)])
                 cmd.extend(["--test_end_idx", str(task_id + 1)])
+            else:
+                # Only use --num_tasks when not using fixed task IDs (for random sampling)
+                cmd.extend(["--num_tasks", "1"])
             
             # Add filter arguments if we have a trained filter
             if filter_model_path is not None:
@@ -361,6 +366,7 @@ def train_online_rl(
     instruction_path: str,
     temperature: float,
     num_memories: int,
+    memory_source: str,
     rl_filter_threshold: float,
     model_dir: Path,
     convergence_threshold: float = 0.01,
@@ -380,6 +386,7 @@ def train_online_rl(
         instruction_path: Path to prompt template
         temperature: Sampling temperature
         num_memories: Max memories to retrieve
+        memory_source: Memory collection ('cues' or 'reasoningbank')
         rl_filter_threshold: Gate threshold
         model_dir: Directory to save model checkpoints
         convergence_threshold: Stop if reward improvement < this
@@ -420,6 +427,7 @@ def train_online_rl(
             instruction_path=instruction_path,
             temperature=temperature,
             num_memories=num_memories,
+            memory_source=memory_source,
             rl_filter_threshold=rl_filter_threshold,
             temp_dir=model_dir / f"cycle_{cycle}",
             fixed_task_ids=fixed_task_ids,
@@ -533,6 +541,9 @@ def main():
                        help="Sampling temperature")
     parser.add_argument("--num_memories", type=int, default=3,
                        help="Max number of memories to retrieve")
+    parser.add_argument("--memory_source", type=str, default="reasoningbank",
+                       choices=["cues", "reasoningbank"],
+                       help="Memory source: 'cues' (step-level) or 'reasoningbank' (abstracted lessons)")
     parser.add_argument("--fixed_task_ids", type=str, default=None,
                        help="Comma-separated task IDs to use for all cycles (e.g., '0,1,2,3,4')")
     
@@ -600,6 +611,7 @@ def main():
         instruction_path=args.instruction_path,
         temperature=args.temperature,
         num_memories=args.num_memories,
+        memory_source=args.memory_source,
         rl_filter_threshold=args.rl_filter_threshold,
         model_dir=model_dir,
         convergence_threshold=args.convergence_threshold,
