@@ -1,5 +1,6 @@
 import argparse
 import json
+import time
 from typing import Any, Dict, Union
 
 #import tiktoken
@@ -222,6 +223,21 @@ class PromptAgent(Agent):
                 model=self.model,
                 temperature=self.temperature,
             )
+            
+            # Handle API errors that return None
+            if response is None:
+                n += 1
+                if n >= 3:
+                    action = create_none_action()
+                    action["raw_prediction"] = "API error - no response"
+                    action["llm_reasoning"] = "API error - no response"
+                    return {
+                        "action": action,
+                    }
+                print(f"API returned None (attempt {n}), retrying in 2 seconds...")
+                time.sleep(2)  # Wait before retrying
+                continue
+                
             answer = response["answer"]
             reasoning = response["reasoning"]
             
