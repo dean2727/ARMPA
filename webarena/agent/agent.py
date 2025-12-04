@@ -145,7 +145,12 @@ class PromptAgent(Agent):
         template = self.prompt_template["template"]
         # Default value if past_memories is not provided
         if past_memories is None:
-            past_memories = "None"
+            past_memories_str = "None"
+        elif isinstance(past_memories, list):
+            # Join list of memories with newlines for readable formatting
+            past_memories_str = "\n\n".join(past_memories) if past_memories else "None"
+        else:
+            past_memories_str = past_memories
         
         # Check if template requires past_memories
         format_args = {
@@ -157,7 +162,7 @@ class PromptAgent(Agent):
         
         # Only include past_memories if the template has the placeholder
         if "{past_memories}" in template:
-            format_args["past_memories"] = past_memories
+            format_args["past_memories"] = past_memories_str
         
         return template.format(**format_args)
 
