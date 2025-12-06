@@ -600,15 +600,17 @@ def test(
 
             scores.append(score)
 
+            # Always compute num_steps for logging
+            actions = trajectory[1::2]  # type: ignore[assignment]
+            num_steps = sum(1 for a in actions if a["action_type"] != ActionTypes.STOP)
+
             if score == 1:
-                logger.info(f"[Result] (PASS) {config_file}")
+                logger.info(f"[Result] (PASS) {config_file} [Steps: {num_steps}]")
             else:
-                logger.info(f"[Result] (FAIL) {config_file}")
+                logger.info(f"[Result] (FAIL) {config_file} [Steps: {num_steps}]")
             
             # Compute episodic reward and save episode buffer
             if episode_buffer is not None:
-                actions = trajectory[1::2]  # type: ignore[assignment]
-                num_steps = sum(1 for a in actions if a["action_type"] != ActionTypes.STOP)
                 
                 # Episodic reward: r = success + γ(1 - steps/max_steps) * success
                 if score == 1:
