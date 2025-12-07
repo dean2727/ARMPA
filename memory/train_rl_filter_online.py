@@ -292,12 +292,44 @@ def evaluate_policy(episodes: List[Dict[str, Any]]) -> Dict[str, float]:
     total_candidates = 0
     total_selected = 0
     
+    # Collect gate scores for variance analysis (CRITICAL for GRPO)
+    all_gate_scores = []
+    
     for ep in episodes:
         for recall_event in ep.get('recall_events', []):
             total_recall_events += 1
             candidates = recall_event.get('candidates', [])
             total_candidates += len(candidates)
             total_selected += sum(1 for c in candidates if c.get('selected', False))
+            
+            # Collect gate scores for variance analysis
+            for c in candidates:
+                gate_score = c.get('gate_score')
+                if gate_score is not None:
+                    all_gate_scores.append(gate_score)
+    
+    # Compute gate score statistics (variance is critical for GRPO)
+    gate_score_stats = {}
+    if all_gate_scores:
+        gate_score_stats = {
+            'mean_gate_score': np.mean(all_gate_scores),
+            'std_gate_score': np.std(all_gate_scores),
+            'min_gate_score': np.min(all_gate_scores),
+            'max_gate_score': np.max(all_gate_scores),
+        }
+    
+    # Group episodes by task for per-task analysis
+    from collections import defaultdict
+    task_rewards = defaultdict(list)
+    for ep in episodes:
+        task_group_id = ep.get('task_group_id', 0)
+        task_rewards[task_group_id].append(ep.get('final_reward', 0.0))
+    
+    # Compute per-task reward variance (CRITICAL for GRPO advantages)
+    per_task_variances = []
+    for task_id, rewards_list in task_rewards.items():
+        if len(rewards_list) > 1:
+            per_task_variances.append(np.std(rewards_list))
     
     metrics = {
         'num_episodes': len(episodes),
@@ -309,6 +341,11 @@ def evaluate_policy(episodes: List[Dict[str, Any]]) -> Dict[str, float]:
         'avg_candidates_per_recall': total_candidates / max(total_recall_events, 1),
         'avg_selected_per_recall': total_selected / max(total_recall_events, 1),
         'selection_rate': total_selected / max(total_candidates, 1),
+        # Gate score statistics (variance is critical for GRPO)
+        **gate_score_stats,
+        # Per-task reward variance (non-zero needed for GRPO advantages)
+        'avg_per_task_reward_std': np.mean(per_task_variances) if per_task_variances else 0.0,
+        'num_tasks_with_variance': sum(1 for v in per_task_variances if v > 0.01),
     }
     
     return metrics
@@ -317,6 +354,9 @@ def evaluate_policy(episodes: List[Dict[str, Any]]) -> Dict[str, float]:
 def save_analysis_logs(episodes: List[Dict[str, Any]], output_path: Path) -> None:
     """
     Save detailed episode logs to a JSONL file for analysis.
+    
+    This includes per-episode gate scores, rewards, and task groupings for
+    post-training analysis of GRPO effectiveness.
     
     Args:
         episodes: List of episode dictionaries
@@ -327,6 +367,8 @@ def save_analysis_logs(episodes: List[Dict[str, Any]], output_path: Path) -> Non
             # Create a serializable version of the episode
             log_entry = {
                 'episode_id': id(ep),
+                'task_group_id': ep.get('task_group_id'),  # For GRPO grouping
+                'sample_id': ep.get('sample_id'),  # Which sample within the group
                 'final_reward': ep.get('final_reward'),
                 'success': ep.get('success'),
                 'num_steps': ep.get('num_steps'),
@@ -448,9 +490,16 @@ def train_online_rl(
         
         logger.info(f"\n📈 Cycle {cycle + 1} Metrics:")
         logger.info(f"   Success Rate: {metrics['success_rate']:.1%}")
-        logger.info(f"   Avg Reward: {metrics['avg_reward']:.4f}")
+        logger.info(f"   Avg Reward: {metrics['avg_reward']:.4f} (±{metrics['std_reward']:.4f})")
         logger.info(f"   Selection Rate: {metrics['selection_rate']:.1%}")
         logger.info(f"   Avg Steps: {metrics['avg_steps']:.1f}")
+        
+        # Log GRPO-critical metrics (gate variance is essential for learning)
+        if 'mean_gate_score' in metrics:
+            logger.info(f"   Gate Scores: {metrics['mean_gate_score']:.4f} (±{metrics.get('std_gate_score', 0):.4f})")
+            logger.info(f"   Gate Range: [{metrics.get('min_gate_score', 0):.4f}, {metrics.get('max_gate_score', 0):.4f}]")
+        logger.info(f"   Per-Task Reward Std: {metrics.get('avg_per_task_reward_std', 0):.4f}")
+        logger.info(f"   Tasks with Variance: {metrics.get('num_tasks_with_variance', 0)}/{tasks_per_cycle}")
         
         # Step 3: Update policy using GRPO
         logger.info(f"\n🔧 Updating policy with {len(episodes)} episodes...")
@@ -461,8 +510,16 @@ def train_online_rl(
             if isinstance(value, (int, float)):
                 writer.add_scalar(f"training/{key}", value, cycle)
         
-        logger.info(f"   Loss: {update_metrics.get('loss', 0):.4f}")
+        logger.info(f"   Loss: {update_metrics.get('loss', 0):.4f} (policy: {update_metrics.get('policy_loss', 0):.4f})")
         logger.info(f"   KL Div: {update_metrics.get('kl_div', 0):.4f}")
+        logger.info(f"   Gate Prob (policy): {update_metrics.get('mean_gate_prob', 0):.4f} (±{update_metrics.get('std_gate_prob', 0):.4f})")
+        logger.info(f"   Advantages: mean={update_metrics.get('mean_advantage', 0):.4f}, std={update_metrics.get('advantage_std', 0):.4f}")
+        logger.info(f"   Advantage Range: [{update_metrics.get('advantage_min', 0):.4f}, {update_metrics.get('advantage_max', 0):.4f}]")
+        
+        # CRITICAL: Check if advantages have variance (needed for GRPO learning)
+        adv_std = update_metrics.get('advantage_std', 0)
+        if adv_std < 0.01:
+            logger.warning(f"   ⚠️  LOW ADVANTAGE VARIANCE ({adv_std:.4f}) - GRPO may not learn effectively!")
         
         # Save detailed analysis logs
         analysis_log_path = model_dir / f"analysis_logs_cycle_{cycle + 1}.jsonl"
