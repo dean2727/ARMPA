@@ -46,17 +46,12 @@ class MemoryManager:
         # Create all three collections if they don't exist
         self._ensure_collection(self.collection_cues)
         self._ensure_collection_without_vectors(self.collection_trajectory_history)
-        # ReasoningBank can use named vectors (goal + content) or single vector (goal only)
-        self._ensure_reasoningbank_collection(self.collection_reasoningbank)
+        self._ensure_collection(self.collection_reasoningbank)
         
         # Create payload indexes for filtering
         self._ensure_goal_index(self.collection_cues)
         self._ensure_goal_index(self.collection_trajectory_history)
         self._ensure_payload_index(self.collection_trajectory_history, "success", rest.PayloadSchemaType.BOOL)
-        
-        # Create indexes for reasoningbank collection
-        self._ensure_goal_index(self.collection_reasoningbank)
-        self._ensure_payload_index(self.collection_reasoningbank, "success", rest.PayloadSchemaType.BOOL)
 
     # ---------- STORE ---------- #
     def store_trajectory(self, observations_actions_reasonings: List[Tuple[str, str, str]], goal: str, success: bool):
@@ -80,7 +75,7 @@ class MemoryManager:
             step_id += 1
 
         self.client.upsert(collection_name=self.collection_cues, points=points)
-        #print(f"✅ Stored {len(points)} step memories.")
+        print(f"✅ Stored {len(points)} step memories.")
         
         # Also store trajectory history entry
         self.store_trajectory_history(goal=goal, num_steps=len(points), success=success)
@@ -152,7 +147,7 @@ class MemoryManager:
         )
         
         self.client.upsert(collection_name=self.collection_trajectory_history, points=[point])
-        #print(f"✅ Stored trajectory history entry: {num_steps} steps, success={success}")
+        print(f"✅ Stored trajectory history entry: {num_steps} steps, success={success}")
 
     def _get_trajectory_step_point(self, goal: str, obs_text: str, action_taken: str, 
                               reason_for_action: str, success: bool, step_id: int) -> rest.PointStruct:
@@ -192,12 +187,14 @@ class MemoryManager:
         """
         cue_emb = self._create_cue_embedding(goal, summarized_obs, last_action=None)
 
-        results = self.client.search(
+        result = self.client.query_points(
             collection_name=self.collection_cues,
-            query_vector=cue_emb,
+            query=cue_emb,
             limit=top_k,
+            with_payload=True,
             with_vectors=return_embeddings,  # Request vectors from Qdrant if needed
         )
+        results = result.points
 
         recalls = []
         for r in results:
@@ -222,6 +219,62 @@ class MemoryManager:
 
         return recalls
 
+    def reasoningbank_recall(self, summarized_obs: str, goal: str, top_k: int = 3, return_embeddings: bool = True):
+        """
+        Retrieve top-K memories from ReasoningBank based on goal similarity.
+        ReasoningBank contains abstracted lessons/patterns, not raw step memories.
+        
+        Args:
+            summarized_obs: Summarized current observation (used for context, search uses goal)
+            goal: Task goal/intent (primary search vector)
+            top_k: Number of memories to retrieve
+            return_embeddings: If True, include memory embeddings in output (needed for RL filter)
+        
+        Returns:
+            recalls: List of memory dicts with metadata and optionally embeddings
+        """
+        # ReasoningBank uses named vectors: 'goal' and 'content'
+        # Search using goal vector for task similarity
+        goal_emb = self._get_embedding(goal)
+        
+        result = self.client.query_points(
+            collection_name=self.collection_reasoningbank,
+            query=goal_emb,
+            using="goal",  # Named vector search
+            limit=top_k,
+            with_payload=True,
+            with_vectors=return_embeddings,
+        )
+        results = result.points
+
+        recalls = []
+        for r in results:
+            m = r.payload
+            memory_dict = {
+                "score": r.score,  # Similarity score
+                "memory_id": m.get("memory_id"),
+                "goal": m.get("goal"),
+                "title": m.get("title"),
+                "description": m.get("description"),
+                "content": m.get("content"),
+                "success": m.get("success", True),  # Assume success for abstracted lessons
+                "created_at": m.get("created_at"),
+                "source_trajectory_id": m.get("source_trajectory_id"),
+            }
+            
+            # Add embedding if requested (for RL filter)
+            # Use the goal vector as the memory embedding for filter compatibility
+            if return_embeddings and r.vector is not None:
+                if isinstance(r.vector, dict):
+                    # Named vectors - use goal embedding
+                    memory_dict["embedding"] = r.vector.get("goal", r.vector.get("content"))
+                else:
+                    memory_dict["embedding"] = r.vector
+            
+            recalls.append(memory_dict)
+
+        return recalls
+
     def get_memories_by_goal(self, goal: str, limit: int = None) -> List[Dict[str, Any]]:
         """Retrieve cue-based memories by searching the 'goal' metadata field"""
         try:
@@ -240,7 +293,7 @@ class MemoryManager:
                 with_payload=True,
                 with_vectors=False
             )
-
+            
             recalls = []
             for point in points:
                 payload = point.payload
@@ -257,7 +310,7 @@ class MemoryManager:
                         "timestamp": payload.get("timestamp"),
                     }
                 )
-
+            
             # Sort by step_id before returning
             recalls.sort(key=lambda x: x.get("step_id", 0))
             
@@ -365,24 +418,30 @@ class MemoryManager:
     def get_formatted_memories_for_prompt(self, mems: List[Dict[str, Any]]):
         formatted_mems = []
         for m in mems:
-            # If there is an 'obs_summary' field, then we know it's a cue-action mapping
+            # If there is an 'obs_summary' field, then we know it's a cue-action mapping (step-level)
             if 'obs_summary' in m:
                 success = "success" if m['success'] else "failure"
                 pointer = "(DONT DO AGAIN)" if m['success'] else ""
                 formatted_mems.append(f"""Last time I was in a similar situation, I tried doing the corresponding action, and it ultimately led to {success}:
 
-WHAT I SAW:
-{m['obs_summary']}
+        WHAT I SAW:
+        {m['obs_summary']}
 
-WHAT I DID{pointer}:
-{m['action_taken']}
+        WHAT I DID{pointer}:
+        {m['action_taken']}
         """)
-            # If there is a 'title' and 'content' field, then we know it's a ReasoningBank memory
-            elif 'title' in m and 'content' in m:
-                success_indicator = "✅" if m.get('success', False) else "❌"
-                formatted_mems.append(f"LESSON LEARNED FROM THE PAST: {m.get('content', '')}")
-            else: # Unknown memory type
-                formatted_mems.append(f"Memory: {str(m)}")
+            # ReasoningBank format: abstracted lessons with title/description/content
+            elif 'title' in m:
+                formatted_mems.append(f"""LEARNED LESSON: {m['title']}
+
+        WHEN TO APPLY:
+        {m.get('description', 'N/A')}
+
+        HOW TO DO IT:
+        {m.get('content', 'N/A')}
+        """)
+            else: # Unknown format - skip
+                continue
         
         return formatted_mems
 
@@ -433,67 +492,37 @@ WHAT I DID{pointer}:
         return cue_emb
 
     # ---------- INSPECT ---------- #
-    def print_all_memories(self, limit: int = None, collection: str = None, pages: int = None):
-        """
-        Pretty print all memories, with optional page-based scroll.
-        
-        Args:
-            limit: Number of points per page. If None, Qdrant default (64) is used.
-            collection: Qdrant collection name.
-            pages: Number of pages to scroll. If None, scroll until the end.
-        """
+    def print_all_memories(self, limit: int = None, collection: str = None):
+        """Pretty print all memories in the collection"""
+        # Default to cues collection if not specified
         collection_name = collection or self.collection_cues
-
-        offset = None
-        page_count = 0
-        total_count = 0
-        all_goals = set()
-
         try:
-            while True:
-                points, offset = self.client.scroll(
-                    collection_name=collection_name,
-                    limit=limit,
-                    offset=offset,
-                    with_payload=True,
-                    with_vectors=False
-                )
-
-                if not points:
-                    break
-
-                page_count += 1
-
-                print(f"\n📄 Page {page_count}")
-                print("=" * 80)
-
-                for point in points:
-                    total_count += 1
-                    payload = point.payload
-                    all_goals.add(payload.get('goal', 'N/A'))
-                    print(f"\n--- Memory {total_count} (ID: {point.id}) ---")
-                    print(f"📝 Goal: {payload.get('goal', 'N/A')}")
-                    print(f"👁️  Observation: {payload.get('obs_summary', 'N/A')}")
-                    print(f"🎯 Action: {payload.get('action_taken', 'N/A')}")
-                    print(f"✅ Success: {payload.get('success', 'N/A')}")
-                    print(f"💪 Strength: {payload.get('strength', 'N/A')}")
-                    print(f"🕒 Timestamp: {payload.get('timestamp', 'N/A')}")
-                    print(f"🔢 Step ID: {payload.get('step_id', 'N/A')}")
-
-                # If user requested only a certain number of pages
-                if pages is not None and page_count >= pages:
-                    break
-
-                # If no more pages
-                if offset is None:
-                    break
+            # Get all points from the collection
+            points, _ = self.client.scroll(
+                collection_name=collection_name,
+                limit=limit,
+                with_payload=True,
+                with_vectors=False
+            )
             
-            print(f"\n🎯 Unique goals (count: {len(all_goals)}): {all_goals}")
-            if total_count == 0:
+            if not points:
                 print(f"📭 No memories found in the collection '{collection_name}'.")
-            else:
-                print(f"\n🧠 Total memories printed: {total_count}")
-
+                return
+            
+            print(f"🧠 Found {len(points)} memories in collection '{collection_name}':")
+            print("=" * 80)
+            
+            for i, point in enumerate(points, 1):
+                payload = point.payload
+                print(f"\n--- Memory {i} (ID: {point.id}) ---")
+                print(f"📝 Goal: {payload.get('goal', 'N/A')}")
+                print(f"👁️  Observation: {payload.get('obs_summary', 'N/A')}")
+                print(f"🎯 Action: {payload.get('action_taken', 'N/A')}")
+                print(f"✅ Success: {payload.get('success', 'N/A')}")
+                print(f"💪 Strength: {payload.get('strength', 'N/A')}")
+                print(f"🕒 Timestamp: {payload.get('timestamp', 'N/A')}")
+                print(f"🔢 Step ID: {payload.get('step_id', 'N/A')}")
+                
         except Exception as e:
             print(f"❌ Error retrieving memories: {e}")
     
@@ -570,7 +599,6 @@ WHAT I DID{pointer}:
         is_reasoningbank = collection_name == 'reasoningbank' or collection_name == self.collection_reasoningbank or collection_name.endswith('-reasoningbank')
         
         # Get the actual collection name to use
-        use_named_vectors = False
         if is_cues:
             actual_collection_name = self.collection_cues
             has_vectors = True
@@ -580,8 +608,6 @@ WHAT I DID{pointer}:
         elif is_reasoningbank:
             actual_collection_name = self.collection_reasoningbank
             has_vectors = True
-            # Use named vectors for reasoningbank
-            use_named_vectors = True
         else:
             # Unknown collection, try to use the provided name as-is
             actual_collection_name = collection_name
@@ -601,11 +627,7 @@ WHAT I DID{pointer}:
         
         # Recreate the collection
         if has_vectors:
-            if is_reasoningbank:
-                # Use named vectors for reasoningbank
-                self._ensure_reasoningbank_collection(actual_collection_name, use_named_vectors=True)
-            else:
-                self._ensure_collection(actual_collection_name)
+            self._ensure_collection(actual_collection_name)
         else:
             self._ensure_collection_without_vectors(actual_collection_name)
         print(f"✅ Recreated empty collection '{actual_collection_name}'")
@@ -616,9 +638,7 @@ WHAT I DID{pointer}:
         elif is_trajectory_history:
             self._ensure_goal_index(actual_collection_name)
             self._ensure_payload_index(actual_collection_name, "success", rest.PayloadSchemaType.BOOL)
-        elif is_reasoningbank:
-            self._ensure_goal_index(actual_collection_name)
-            self._ensure_payload_index(actual_collection_name, "success", rest.PayloadSchemaType.BOOL)
+        # reasoningbank doesn't have indexes yet (TODO)
 
     # ---------- UTILITIES ---------- #
     def _ensure_collection(self, collection_name: str):
@@ -631,50 +651,6 @@ WHAT I DID{pointer}:
         except Exception as e:
             if "already exists" in str(e):
                 print(f"Collection '{collection_name}' already exists, using existing collection.")
-            else:
-                raise e
-    
-    def _ensure_reasoningbank_collection(self, collection_name: str, use_named_vectors: bool = True):
-        """
-        Ensure that the reasoningbank collection exists with named vectors support.
-        
-        Args:
-            collection_name: Name of the collection
-            use_named_vectors: If True, creates collection with named vectors ('goal' and 'content').
-                              If False, creates collection with single vector (backward compatible).
-        """
-        try:
-            if use_named_vectors:
-                # Create collection with named vectors: 'goal' and 'content'
-                self.client.create_collection(
-                    collection_name=collection_name,
-                    vectors_config={
-                        "goal": rest.VectorParams(size=1024, distance=rest.Distance.COSINE),
-                        "content": rest.VectorParams(size=1024, distance=rest.Distance.COSINE),
-                    },
-                )
-                print(f"Created reasoningbank collection '{collection_name}' with named vectors (goal, content).")
-            else:
-                # Single vector for backward compatibility
-                self.client.create_collection(
-                    collection_name=collection_name,
-                    vectors_config=rest.VectorParams(size=1024, distance=rest.Distance.COSINE),
-                )
-        except Exception as e:
-            if "already exists" in str(e):
-                # Collection already exists - check if it has named vectors
-                try:
-                    collection_info = self.client.get_collection(collection_name)
-                    if hasattr(collection_info.config, 'params') and hasattr(collection_info.config.params, 'vectors'):
-                        vectors_config = collection_info.config.params.vectors
-                        if isinstance(vectors_config, dict):
-                            print(f"Collection '{collection_name}' already exists with named vectors.")
-                        else:
-                            print(f"Collection '{collection_name}' already exists with single vector (backward compatible).")
-                    else:
-                        print(f"Collection '{collection_name}' already exists, using existing collection.")
-                except:
-                    print(f"Collection '{collection_name}' already exists, using existing collection.")
             else:
                 raise e
     
@@ -722,7 +698,7 @@ WHAT I DID{pointer}:
             else:
                 print(f"⚠️  Warning: Could not create index on '{field_name}' field: {e}")
 
-    def summarize_webarena_observation(self, obs_text: str, model: str = "together_ai/meta-llama/Llama-3.3-70B-Instruct-Turbo", temperature: float = 0.0, max_tokens: int = 1000) -> str:
+    def summarize_webarena_observation(self, obs_text: str) -> str:
         # Truncate extremely long observations to avoid API errors
         MAX_OBS_LENGTH = 8000  # chars
         if len(obs_text) > MAX_OBS_LENGTH:
@@ -733,7 +709,7 @@ WHAT I DID{pointer}:
         """
 
         try:
-            response = completion(model=model, 
+            response = completion(model="together_ai/OpenAI/gpt-oss-120B", 
                                 system=summarize_observation_prompt, 
                                 messages=[{"role": "user", "content": query}],
                                 temperature=0.8,
@@ -745,245 +721,11 @@ WHAT I DID{pointer}:
             print(f"   Using truncated raw observation instead")
             return obs_text[:500] + "..." if len(obs_text) > 500 else obs_text
 
-    # ---------- REASONINGBANK ---------- #
-    def store_reasoningbank_memory(
-        self,
-        title: str,
-        description: str,
-        content: str,
-        goal: str,
-        success: bool,
-        source_trajectory_id: str = None,
-        additional_metadata: Dict[str, Any] = None,
-        store_content_embedding: bool = True
-    ):
-        """
-        Store a ReasoningBank-style memory item.
-        
-        Args:
-            title: Strategy/lesson title
-            description: One-sentence summary
-            content: 1-3 sentences describing the insight/strategy
-            goal: Task goal/query
-            success: Whether the trajectory was successful
-            source_trajectory_id: Optional identifier for the source trajectory
-            additional_metadata: Optional additional metadata to store
-            store_content_embedding: If True, stores both goal and content embeddings (named vectors).
-                                   If False, stores only goal embedding (single vector, backward compatible).
-        """
-        memory_id = str(uuid.uuid4())
-        
-        # Create embedding from the goal/task for semantic search by task similarity
-        # Truncate to stay within BGE-large's 512 token limit (~2000 chars)
-        goal_text = goal[:2000] if len(goal) > 2000 else goal
-        goal_emb = embedding(model=self.embed_model, input=[goal_text])
-        goal_emb = goal_emb["data"][0]["embedding"]
-        
-        # Create metadata
-        metadata = {
-            "memory_id": memory_id,
-            "title": title,
-            "description": description,
-            "content": content,
-            "goal": goal,
-            "success": success,
-            "created_at": datetime.utcnow().isoformat(),
-        }
-        
-        if source_trajectory_id:
-            metadata["source_trajectory_id"] = source_trajectory_id
-        
-        # Add any additional metadata if provided
-        if additional_metadata:
-            metadata.update(additional_metadata)
-        
-        # Check if collection supports named vectors by trying to get collection info
-        try:
-            collection_info = self.client.get_collection(self.collection_reasoningbank)
-            has_named_vectors = (
-                hasattr(collection_info.config, 'params') and 
-                hasattr(collection_info.config.params, 'vectors') and
-                isinstance(collection_info.config.params.vectors, dict)
-            )
-        except:
-            has_named_vectors = False
-        
-        # Store vectors based on collection type and user preference
-        if store_content_embedding and has_named_vectors:
-            # Create content embedding
-            # Combine title, description, and content for richer semantic representation
-            content_text = content[:2000] if len(content) > 2000 else content
-            content_text = f"LESSON LEARNED FROM THE PAST: {content_text}"
-            content_emb = embedding(model=self.embed_model, input=[content_text])
-            content_emb = content_emb["data"][0]["embedding"]
-            
-            # Use named vectors
-            point = rest.PointStruct(
-                id=memory_id,
-                vector={
-                    "goal": goal_emb,
-                    "content": content_emb
-                },
-                payload=metadata
-            )
-        else:
-            # Use single vector (goal only) - backward compatible
-            point = rest.PointStruct(
-                id=memory_id,
-                vector=goal_emb,
-                payload=metadata
-            )
-        
-        self.client.upsert(collection_name=self.collection_reasoningbank, points=[point])
-        return memory_id
-    
-    def store_reasoningbank_memories(
-        self,
-        memory_items: List[Dict[str, Any]],
-        goal: str,
-        success: bool,
-        source_trajectory_id: str = None,
-        store_content_embedding: bool = True
-    ):
-        """
-        Store multiple ReasoningBank-style memory items at once.
-        
-        Args:
-            memory_items: List of dicts with 'title', 'description', 'content' keys
-            goal: Task goal/query
-            success: Whether the trajectory was successful
-            source_trajectory_id: Optional identifier for the source trajectory
-            store_content_embedding: If True, stores both goal and content embeddings (named vectors).
-                                   If False, stores only goal embedding (single vector, backward compatible).
-        """
-        stored_count = 0
-        
-        for mem_item in tqdm(memory_items):
-            title = mem_item.get("title", "")
-            description = mem_item.get("description", "")
-            content = mem_item.get("content", "")
-            
-            if not (title and description and content):
-                print(f"⚠️  Skipping memory item with missing fields: {mem_item}")
-                continue
-            
-            # Extract any additional metadata from the memory item
-            additional_metadata = {}
-            for key in mem_item:
-                if key not in ["title", "description", "content"]:
-                    additional_metadata[key] = mem_item[key]
-            
-            # Call store_reasoningbank_memory for each item
-            self.store_reasoningbank_memory(
-                title=title,
-                description=description,
-                content=content,
-                goal=goal,
-                success=success,
-                source_trajectory_id=source_trajectory_id,
-                additional_metadata=additional_metadata if additional_metadata else None,
-                store_content_embedding=store_content_embedding
-            )
-            stored_count += 1
-        
-        # if stored_count > 0:
-        #     print(f"✅ Stored {stored_count} ReasoningBank memories.")
-        # else:
-        #     print("⚠️  No valid memory items to store.")
-    
-    def retrieve_reasoningbank_memories(
-        self,
-        goal: str,
-        top_k: int = 3,
-        return_embeddings: bool = True,
-        search_by: str = "goal"
-    ) -> List[Dict[str, Any]]:
-        """
-        Retrieve ReasoningBank memories by semantic similarity.
-        Retrieves top matches, then filters to only return those with similarity score > 0.9.
-        
-        Args:
-            goal: Task goal/query to search for (or content query if search_by="content")
-            return_embeddings: If True, include memory embeddings in output
-            search_by: Which vector to search by - "goal" (default) or "content"
-        
-        Returns:
-            List of memory dicts with similarity score > 0.9, sorted by score (highest first)
-        """
-        # Create query embedding
-        query_emb = self._get_embedding(goal)
-        
-        # Check if collection supports named vectors
-        try:
-            collection_info = self.client.get_collection(self.collection_reasoningbank)
-            has_named_vectors = (
-                hasattr(collection_info.config, 'params') and 
-                hasattr(collection_info.config.params, 'vectors') and
-                isinstance(collection_info.config.params.vectors, dict)
-            )
-        except:
-            has_named_vectors = False
-        
-        # Perform search - use named vector if available and requested
-        if has_named_vectors and search_by in ["goal", "content"]:
-            # Use named vector search
-            results = self.client.search(
-                collection_name=self.collection_reasoningbank,
-                query_vector=(search_by, query_emb),
-                query_filter=None,
-                limit=12,
-                with_vectors=return_embeddings,
-            )
-        else:
-            # Use single vector search (backward compatible)
-            results = self.client.search(
-                collection_name=self.collection_reasoningbank,
-                query_vector=query_emb,
-                query_filter=None,
-                limit=12,
-                with_vectors=return_embeddings,
-            )
-        
-        recalls = []
-        for r in results:
-            # Only include results with similarity > 0.9 (cosine similarity)
-            if r.score <= 0.9:
-                continue
-                
-            m = r.payload
-            memory_dict = {
-                "score": r.score,
-                "memory_id": m.get("memory_id"),
-                "title": m.get("title"),
-                "description": m.get("description"),
-                "content": m.get("content"),
-                "goal": m.get("goal"),
-                "success": m.get("success"),
-                "created_at": m.get("created_at"),
-            }
-            
-            if "source_trajectory_id" in m:
-                memory_dict["source_trajectory_id"] = m["source_trajectory_id"]
-            
-            # Include any other metadata fields
-            for key in m:
-                if key not in memory_dict:
-                    memory_dict[key] = m[key]
-            
-            # Add embedding if requested
-            if return_embeddings:
-                if has_named_vectors and isinstance(r.vector, dict):
-                    # Return both embeddings if available
-                    memory_dict["embeddings"] = r.vector
-                elif r.vector is not None:
-                    # Single vector
-                    memory_dict["embedding"] = r.vector
-            
-            recalls.append(memory_dict)
-        
-        # Sort by score (highest first)
-        recalls.sort(key=lambda x: x["score"], reverse=True)
-        return recalls
+    # TODO: ReasoningBank stuff here
+    def _derive_lesson(self, metadata: Dict[str, Any]) -> str:
+        if not metadata["success"]:
+            return "Avoid navigating to external links when searching internal reports."
+        return "Correctly located the reporting dashboard; reuse approach."
 
 if __name__ == "__main__":
     print("=" * 80)

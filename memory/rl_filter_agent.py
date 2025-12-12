@@ -36,6 +36,11 @@ class MemoryFilterNetwork(nn.Module):
         Input: [task_emb (1024) | obs_emb (1024) | memory_emb (1024) | entropy (1)] = 3073-dim
         Hidden: 2 MLP layers with ReLU
         Output: 1 sigmoid probability (gate score)
+    
+    Note on Dropout for GRPO:
+        During training sample collection, dropout should be ENABLED (model.train())
+        to create variance in gate probabilities across GRPO samples.
+        This is crucial for GRPO to compute meaningful advantages.
     """
     
     def __init__(
@@ -45,7 +50,7 @@ class MemoryFilterNetwork(nn.Module):
         memory_dim: int = 1024,
         entropy_dim: int = 1,
         hidden_dims: List[int] = [512, 256],
-        dropout: float = 0.1,
+        dropout: float = 0.2,  # Increased from 0.1 for more exploration variance
     ):
         super().__init__()
         
@@ -257,42 +262,53 @@ class RLMemoryFilter:
         
         # Compute gate scores for all candidates
         filtered = []
-        self.policy_net.eval()
-        with torch.no_grad():
-            for memory in memories:
-                # Get memory embedding (Cue embedding or the 'content' named embedding from ReasoningBank collection)
-                mem_emb_np = memory.get('embedding') or memory.get('embeddings')['content']
-                if mem_emb_np is None:
-                    logger.warning(f"[RL Filter] Memory {memory.get('memory_id')} missing embedding, skipping")
-                    continue
-                
-                mem_emb = torch.tensor(mem_emb_np, dtype=torch.float32).unsqueeze(0).to(self.device)
-                
-                # Compute gate probability
+        
+        # CRITICAL FOR GRPO: Use train() mode during training to enable dropout
+        # This creates variance in gate probabilities across GRPO samples
+        if training_mode:
+            self.policy_net.train()  # Dropout ENABLED - different probs per sample
+        else:
+            self.policy_net.eval()   # Dropout DISABLED - deterministic inference
+        
+        # Note: We don't use torch.no_grad() in training_mode because
+        # dropout requires the forward pass to track which neurons to drop
+        for memory in memories:
+            # Get memory embedding
+            mem_emb_np = memory.get('embedding')
+            if mem_emb_np is None:
+                logger.warning(f"[RL Filter] Memory {memory.get('memory_id')} missing embedding, skipping")
+                continue
+            
+            mem_emb = torch.tensor(mem_emb_np, dtype=torch.float32).unsqueeze(0).to(self.device)
+            
+            # Compute gate probability
+            # In training_mode: dropout creates different gate_probs for each sample
+            # In eval mode: deterministic gate_prob
+            with torch.no_grad():  # We don't need gradients during collection
                 gate_prob = self.policy_net(task_emb, obs_emb, mem_emb, entropy_tensor)
-                gate_score = gate_prob.item()
-                
-                # Decide whether to select memory
-                if training_mode:
-                    # Stochastic sampling for on-policy training (with exploration)
-                    if np.random.random() < self.exploration_epsilon:
-                        # Epsilon-greedy: random action
-                        gate_action = np.random.random() < 0.5
-                    else:
-                        # Sample from policy
-                        gate_action = np.random.random() < gate_score
+            gate_score = gate_prob.item()
+            
+            # Decide whether to select memory
+            if training_mode:
+                # Stochastic sampling for on-policy training (with exploration)
+                if np.random.random() < self.exploration_epsilon:
+                    # Epsilon-greedy: random action
+                    gate_action = np.random.random() < 0.5
                 else:
-                    # Deterministic inference (threshold-based)
-                    gate_action = gate_score > self.score_threshold
-                
-                # Add score and action to memory dict if requested
-                if return_scores:
-                    memory['gate_score'] = gate_score
-                    memory['gate_action'] = gate_action
-                
-                # Select based on gate action
-                if gate_action:
-                    filtered.append(memory)
+                    # Sample from policy (gate_prob varies due to dropout!)
+                    gate_action = np.random.random() < gate_score
+            else:
+                # Deterministic inference (threshold-based)
+                gate_action = gate_score > self.score_threshold
+            
+            # Add score and action to memory dict if requested
+            if return_scores:
+                memory['gate_score'] = gate_score
+                memory['gate_action'] = gate_action
+            
+            # Select based on gate action
+            if gate_action:
+                filtered.append(memory)
         
         return filtered
     
@@ -330,8 +346,7 @@ class RLMemoryFilter:
         for i, candidate in enumerate(candidates):
             candidate_data = {
                 'memory_id': candidate.get('memory_id'),
-                # Cue embedding or the 'content' named embedding from ReasoningBank collection
-                'embedding': candidate.get('embedding') or candidate.get('embeddings')['content'],  # np.ndarray
+                'embedding': candidate.get('embedding'),  # np.ndarray
                 'similarity_score': candidate.get('score'),
                 'gate_score': gate_scores[i] if gate_scores else None,
                 'selected': None,  # Filled during inference or training
@@ -553,8 +568,15 @@ class RLMemoryFilter:
             'std_reward': std_reward,
             'mean_advantage': advantages_tensor.mean().item(),
             'mean_gate_prob': gate_probs.mean().item(),
+            'std_gate_prob': gate_probs.std().item(),
+            'min_gate_prob': gate_probs.min().item(),
+            'max_gate_prob': gate_probs.max().item(),
             'num_episodes': len(episodes),
             'num_samples': len(batch_data),
+            'num_task_groups': len(task_groups),
+            'advantage_std': advantages.std() if len(advantages) > 1 else 0.0,
+            'advantage_min': advantages.min() if len(advantages) > 0 else 0.0,
+            'advantage_max': advantages.max() if len(advantages) > 0 else 0.0,
         }
         
         # Clear episode buffer after update

@@ -51,6 +51,7 @@ def collect_episodes_with_filter(
     instruction_path: str,
     temperature: float = 0.7,
     num_memories: int = 3,
+    memory_source: str = "reasoningbank",  # 'cues' or 'reasoningbank'
     rl_filter_threshold: float = 0.5,
     temp_dir: Optional[Path] = None,
     fixed_task_ids: Optional[List[int]] = None,
@@ -70,6 +71,7 @@ def collect_episodes_with_filter(
         instruction_path: Path to prompt template
         temperature: Sampling temperature
         num_memories: Max memories to retrieve
+        memory_source: Memory collection to use ('cues' or 'reasoningbank')
         rl_filter_threshold: Gate threshold for selection
         temp_dir: Temporary directory for episode buffers
         fixed_task_ids: If provided, cycle through these task IDs instead of random
@@ -111,14 +113,8 @@ def collect_episodes_with_filter(
     overall_pbar = tqdm(total=total_runs, desc="GRPO sampling", unit="episode",
                        bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]')
     
-    # Randomize task order for each cycle using cycle_num as seed for reproducibility
-    # This ensures each cycle gets a different permutation
-    rng = np.random.RandomState(seed=42)
-    task_indices = rng.permutation(num_tasks).tolist()
-    logger.info(f"🎲 Randomized task order (cycle {cycle_num}): {task_indices}")
-    
     # Collect samples for each task
-    for task_idx in task_indices:
+    for task_idx in range(num_tasks):
         task_episodes = []
         
         for sample_idx in range(num_samples_per_task):
@@ -132,27 +128,22 @@ def collect_episodes_with_filter(
                 "--temperature", str(temperature),
                 "--get_memory",
                 "--num_memories", str(num_memories),
+                "--memory_source", memory_source,  # 'cues' or 'reasoningbank'
                 "--recall_threshold", "0.0",  # Always trigger memory recall
                 "--collect_rl_data",
                 "--result_dir", str(temp_dir / f"task_{task_idx}_sample_{sample_idx}"),
             ]
             
-            # Specify which task to run
-            # Note: We use --test_start_idx/--test_end_idx instead of --num_tasks
-            # because --num_tasks causes random sampling, which we don't want
+            # If using fixed task IDs, specify which task to run via start/end indices
+            # NOTE: Do NOT use --num_tasks here, as it triggers random sampling and ignores indices
             if fixed_task_ids is not None:
-                # Use fixed task IDs, cycling through them
                 global_task_idx = (cycle_num * num_tasks + task_idx) % len(fixed_task_ids)
                 task_id = fixed_task_ids[global_task_idx]
+                cmd.extend(["--test_start_idx", str(task_id)])
+                cmd.extend(["--test_end_idx", str(task_id + 1)])
             else:
-                # If no fixed task IDs, use task_idx to select different tasks
-                # This ensures each task_idx gets a different task
-                task_id = task_idx
-            
-            # Set start/end indices to run exactly one task (task_id)
-            # This will use the index-based selection in run.py, not random sampling
-            cmd.extend(["--test_start_idx", str(task_id)])
-            cmd.extend(["--test_end_idx", str(task_id + 1)])
+                # Only use --num_tasks when not using fixed task IDs (for random sampling)
+                cmd.extend(["--num_tasks", "1"])
             
             # Add filter arguments if we have a trained filter
             if filter_model_path is not None:
@@ -165,10 +156,6 @@ def collect_episodes_with_filter(
             # Set environment variable for PYTHONPATH
             env = os.environ.copy()
             env["PYTHONPATH"] = str(Path.cwd()) + ":" + env.get("PYTHONPATH", "")
-            
-            # Print the full command for debugging
-            logger.info(f"🔧 Running command for task_{task_idx}_sample_{sample_idx}:")
-            logger.info(f"   {' '.join(cmd)}")
             
             # Run the command from webarena directory
             webarena_dir = Path.cwd() / "webarena"
@@ -305,12 +292,44 @@ def evaluate_policy(episodes: List[Dict[str, Any]]) -> Dict[str, float]:
     total_candidates = 0
     total_selected = 0
     
+    # Collect gate scores for variance analysis (CRITICAL for GRPO)
+    all_gate_scores = []
+    
     for ep in episodes:
         for recall_event in ep.get('recall_events', []):
             total_recall_events += 1
             candidates = recall_event.get('candidates', [])
             total_candidates += len(candidates)
             total_selected += sum(1 for c in candidates if c.get('selected', False))
+            
+            # Collect gate scores for variance analysis
+            for c in candidates:
+                gate_score = c.get('gate_score')
+                if gate_score is not None:
+                    all_gate_scores.append(gate_score)
+    
+    # Compute gate score statistics (variance is critical for GRPO)
+    gate_score_stats = {}
+    if all_gate_scores:
+        gate_score_stats = {
+            'mean_gate_score': np.mean(all_gate_scores),
+            'std_gate_score': np.std(all_gate_scores),
+            'min_gate_score': np.min(all_gate_scores),
+            'max_gate_score': np.max(all_gate_scores),
+        }
+    
+    # Group episodes by task for per-task analysis
+    from collections import defaultdict
+    task_rewards = defaultdict(list)
+    for ep in episodes:
+        task_group_id = ep.get('task_group_id', 0)
+        task_rewards[task_group_id].append(ep.get('final_reward', 0.0))
+    
+    # Compute per-task reward variance (CRITICAL for GRPO advantages)
+    per_task_variances = []
+    for task_id, rewards_list in task_rewards.items():
+        if len(rewards_list) > 1:
+            per_task_variances.append(np.std(rewards_list))
     
     metrics = {
         'num_episodes': len(episodes),
@@ -322,6 +341,11 @@ def evaluate_policy(episodes: List[Dict[str, Any]]) -> Dict[str, float]:
         'avg_candidates_per_recall': total_candidates / max(total_recall_events, 1),
         'avg_selected_per_recall': total_selected / max(total_recall_events, 1),
         'selection_rate': total_selected / max(total_candidates, 1),
+        # Gate score statistics (variance is critical for GRPO)
+        **gate_score_stats,
+        # Per-task reward variance (non-zero needed for GRPO advantages)
+        'avg_per_task_reward_std': np.mean(per_task_variances) if per_task_variances else 0.0,
+        'num_tasks_with_variance': sum(1 for v in per_task_variances if v > 0.01),
     }
     
     return metrics
@@ -330,6 +354,9 @@ def evaluate_policy(episodes: List[Dict[str, Any]]) -> Dict[str, float]:
 def save_analysis_logs(episodes: List[Dict[str, Any]], output_path: Path) -> None:
     """
     Save detailed episode logs to a JSONL file for analysis.
+    
+    This includes per-episode gate scores, rewards, and task groupings for
+    post-training analysis of GRPO effectiveness.
     
     Args:
         episodes: List of episode dictionaries
@@ -340,9 +367,8 @@ def save_analysis_logs(episodes: List[Dict[str, Any]], output_path: Path) -> Non
             # Create a serializable version of the episode
             log_entry = {
                 'episode_id': id(ep),
-                'task_group_id': ep.get('task_group_id'),  # Which task group (0, 1, 2, ...) for GRPO
-                'sample_id': ep.get('sample_id'),  # Which sample within the task group (0, 1, 2, ...)
-                'task_id': ep.get('task_id'),  # Actual task ID from config file
+                'task_group_id': ep.get('task_group_id'),  # For GRPO grouping
+                'sample_id': ep.get('sample_id'),  # Which sample within the group
                 'final_reward': ep.get('final_reward'),
                 'success': ep.get('success'),
                 'num_steps': ep.get('num_steps'),
@@ -382,6 +408,7 @@ def train_online_rl(
     instruction_path: str,
     temperature: float,
     num_memories: int,
+    memory_source: str,
     rl_filter_threshold: float,
     model_dir: Path,
     convergence_threshold: float = 0.01,
@@ -401,6 +428,7 @@ def train_online_rl(
         instruction_path: Path to prompt template
         temperature: Sampling temperature
         num_memories: Max memories to retrieve
+        memory_source: Memory collection ('cues' or 'reasoningbank')
         rl_filter_threshold: Gate threshold
         model_dir: Directory to save model checkpoints
         convergence_threshold: Stop if reward improvement < this
@@ -441,6 +469,7 @@ def train_online_rl(
             instruction_path=instruction_path,
             temperature=temperature,
             num_memories=num_memories,
+            memory_source=memory_source,
             rl_filter_threshold=rl_filter_threshold,
             temp_dir=model_dir / f"cycle_{cycle}",
             fixed_task_ids=fixed_task_ids,
@@ -461,9 +490,16 @@ def train_online_rl(
         
         logger.info(f"\n📈 Cycle {cycle + 1} Metrics:")
         logger.info(f"   Success Rate: {metrics['success_rate']:.1%}")
-        logger.info(f"   Avg Reward: {metrics['avg_reward']:.4f}")
+        logger.info(f"   Avg Reward: {metrics['avg_reward']:.4f} (±{metrics['std_reward']:.4f})")
         logger.info(f"   Selection Rate: {metrics['selection_rate']:.1%}")
         logger.info(f"   Avg Steps: {metrics['avg_steps']:.1f}")
+        
+        # Log GRPO-critical metrics (gate variance is essential for learning)
+        if 'mean_gate_score' in metrics:
+            logger.info(f"   Gate Scores: {metrics['mean_gate_score']:.4f} (±{metrics.get('std_gate_score', 0):.4f})")
+            logger.info(f"   Gate Range: [{metrics.get('min_gate_score', 0):.4f}, {metrics.get('max_gate_score', 0):.4f}]")
+        logger.info(f"   Per-Task Reward Std: {metrics.get('avg_per_task_reward_std', 0):.4f}")
+        logger.info(f"   Tasks with Variance: {metrics.get('num_tasks_with_variance', 0)}/{tasks_per_cycle}")
         
         # Step 3: Update policy using GRPO
         logger.info(f"\n🔧 Updating policy with {len(episodes)} episodes...")
@@ -474,8 +510,16 @@ def train_online_rl(
             if isinstance(value, (int, float)):
                 writer.add_scalar(f"training/{key}", value, cycle)
         
-        logger.info(f"   Loss: {update_metrics.get('loss', 0):.4f}")
+        logger.info(f"   Loss: {update_metrics.get('loss', 0):.4f} (policy: {update_metrics.get('policy_loss', 0):.4f})")
         logger.info(f"   KL Div: {update_metrics.get('kl_div', 0):.4f}")
+        logger.info(f"   Gate Prob (policy): {update_metrics.get('mean_gate_prob', 0):.4f} (±{update_metrics.get('std_gate_prob', 0):.4f})")
+        logger.info(f"   Advantages: mean={update_metrics.get('mean_advantage', 0):.4f}, std={update_metrics.get('advantage_std', 0):.4f}")
+        logger.info(f"   Advantage Range: [{update_metrics.get('advantage_min', 0):.4f}, {update_metrics.get('advantage_max', 0):.4f}]")
+        
+        # CRITICAL: Check if advantages have variance (needed for GRPO learning)
+        adv_std = update_metrics.get('advantage_std', 0)
+        if adv_std < 0.01:
+            logger.warning(f"   ⚠️  LOW ADVANTAGE VARIANCE ({adv_std:.4f}) - GRPO may not learn effectively!")
         
         # Save detailed analysis logs
         analysis_log_path = model_dir / f"analysis_logs_cycle_{cycle + 1}.jsonl"
@@ -554,6 +598,9 @@ def main():
                        help="Sampling temperature")
     parser.add_argument("--num_memories", type=int, default=3,
                        help="Max number of memories to retrieve")
+    parser.add_argument("--memory_source", type=str, default="reasoningbank",
+                       choices=["cues", "reasoningbank"],
+                       help="Memory source: 'cues' (step-level) or 'reasoningbank' (abstracted lessons)")
     parser.add_argument("--fixed_task_ids", type=str, default=None,
                        help="Comma-separated task IDs to use for all cycles (e.g., '0,1,2,3,4')")
     
@@ -621,6 +668,7 @@ def main():
         instruction_path=args.instruction_path,
         temperature=args.temperature,
         num_memories=args.num_memories,
+        memory_source=args.memory_source,
         rl_filter_threshold=args.rl_filter_threshold,
         model_dir=model_dir,
         convergence_threshold=args.convergence_threshold,

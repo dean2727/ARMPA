@@ -168,12 +168,16 @@ def config() -> argparse.Namespace:
     parser.add_argument("--test_end_idx", type=int, default=1000)
     parser.add_argument("--num_tasks", type=int, default=None, 
                        help="Number of config files to randomly sample and run. If specified, overrides test_start_idx and test_end_idx")
+    parser.add_argument("--skip_tasks_csv", type=str, default=None,
+                       help="Path to a CSV file from a previous run. Tasks (intents) already in this CSV will be skipped.")
 
     # NEW: memories
     parser.add_argument("--store_memory", action="store_true", help="Store memories (from Qdrant)post-trajectory and store them per-step")
     parser.add_argument("--get_memory", action="store_true", help="Get memories (from Qdrant)post-trajectory and store them per-step")
     # numebr of memories to retrieve
     parser.add_argument("--num_memories", type=int, default=3, help="Number of memories to retrieve")
+    parser.add_argument("--memory_source", type=str, default="cues", choices=["cues", "reasoningbank"],
+                       help="Memory source: 'cues' (step-level) or 'reasoningbank' (abstracted lessons)")
     
     # RL Filter Agent: data collection and inference
     parser.add_argument("--collect_rl_data", action="store_true",
@@ -262,6 +266,25 @@ def early_stop(
     return False, ""
 
 
+def load_skip_tasks(csv_path: str) -> set[str]:
+    """Load tasks (intents) from a previous run's CSV file."""
+    skip_tasks = set()
+    if not csv_path or not Path(csv_path).exists():
+        return skip_tasks
+    
+    try:
+        with open(csv_path, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                task = row.get('task', '').strip()
+                if task:
+                    skip_tasks.add(task)
+        logger.info(f"Loaded {len(skip_tasks)} tasks from {csv_path} to skip")
+    except Exception as e:
+        logger.warning(f"Failed to load skip tasks from {csv_path}: {e}")
+    
+    return skip_tasks
+
 def test(
     args: argparse.Namespace,
     agent: Agent | PromptAgent | TeacherForcingAgent,
@@ -276,6 +299,11 @@ def test(
     if args.get_memory or args.store_memory:
         from memory.manager import MemoryManager
         memory_manager = MemoryManager(collection_name=MEMORY_COLLECTION_NAME)
+    
+    # Load tasks to skip from previous run CSV if provided
+    skip_tasks = set()
+    if args.skip_tasks_csv:
+        skip_tasks = load_skip_tasks(args.skip_tasks_csv)
     
     # Initialize RL Filter Agent if requested
     rl_filter = None
@@ -336,7 +364,11 @@ def test(
                 _c = json.load(f)
                 intent = _c["intent"]
                 task_id = _c["task_id"]
-
+                
+                # Skip if this task is already in the skip set
+                if intent in skip_tasks:
+                    logger.info(f"[SKIP] Task already completed: {intent} (from {config_file})")
+                    continue
                 # automatically login
                 if _c["storage_state"]:
                     cookie_file_name = os.path.basename(_c["storage_state"])
@@ -424,15 +456,22 @@ def test(
                         should_recall = (args.recall_threshold == 0.0)  # Always recall if threshold is 0
                         
                         if should_recall:
-                            cue_memories = memory_manager.cue_based_recall(
-                                summarized_obs=observation_summary,
-                                goal=intent,
-                                top_k=args.num_memories,
-                                return_embeddings=True,  # Need embeddings for RL filter
-                            )
-                            lesson_memories = memory_manager.retrieve_reasoningbank_memories(intent, top_k=args.num_memories, search_by="goal")
-                            memories = cue_memories + lesson_memories
-
+                            # Select memory source based on --memory_source argument
+                            if args.memory_source == "reasoningbank":
+                                memories = memory_manager.reasoningbank_recall(
+                                    summarized_obs=observation_summary,
+                                    goal=intent,
+                                    top_k=args.num_memories,
+                                    return_embeddings=True,  # Need embeddings for RL filter
+                                )
+                            else:  # default: cues
+                                memories = memory_manager.cue_based_recall(
+                                    summarized_obs=observation_summary,
+                                    goal=intent,
+                                    top_k=args.num_memories,
+                                    return_embeddings=True,  # Need embeddings for RL filter
+                                )
+                            
                             # Get embeddings for RL filter
                             task_emb = memory_manager._get_embedding(intent)
                             obs_emb = memory_manager._get_embedding(observation_summary)
@@ -464,17 +503,24 @@ def test(
                                     'entropy': mean_entropy,  # Will be updated after action
                                     'observation_text': observation_summary,  # Log text for analysis
                                     'goal_text': intent,  # Log goal for analysis
+                                    'memory_source': args.memory_source,  # Track which collection was used
                                     'candidates': [
                                         {
                                             'memory_id': m.get('memory_id'),
-                                            'embedding': m.get('embedding') or m.get('embeddings')['content'],
+                                            'embedding': m.get('embedding'),
                                             'similarity_score': m.get('score'),
                                             'gate_score': m.get('gate_score'),
                                             'gate_action': m.get('gate_action'),  # Store actual sampled action
                                             'selected': m.get('gate_action', True),  # Use actual action for selection status
                                             'memory_content': {
+                                                # Cue-based fields
                                                 'obs_summary': m.get('obs_summary'),
                                                 'action_taken': m.get('action_taken'),
+                                                # ReasoningBank fields
+                                                'title': m.get('title'),
+                                                'description': m.get('description'),
+                                                'content': m.get('content'),
+                                                # Common fields
                                                 'goal': m.get('goal'),
                                                 'success': m.get('success')
                                             }
@@ -554,15 +600,17 @@ def test(
 
             scores.append(score)
 
+            # Always compute num_steps for logging
+            actions = trajectory[1::2]  # type: ignore[assignment]
+            num_steps = sum(1 for a in actions if a["action_type"] != ActionTypes.STOP)
+
             if score == 1:
-                logger.info(f"[Result] (PASS) {config_file}")
+                logger.info(f"[Result] (PASS) {config_file} [Steps: {num_steps}]")
             else:
-                logger.info(f"[Result] (FAIL) {config_file}")
+                logger.info(f"[Result] (FAIL) {config_file} [Steps: {num_steps}]")
             
             # Compute episodic reward and save episode buffer
             if episode_buffer is not None:
-                actions = trajectory[1::2]  # type: ignore[assignment]
-                num_steps = sum(1 for a in actions if a["action_type"] != ActionTypes.STOP)
                 
                 # Episodic reward: r = success + γ(1 - steps/max_steps) * success
                 if score == 1:
