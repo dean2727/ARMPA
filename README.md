@@ -2,19 +2,20 @@
 
 (Assumes a Mac with apple silicon)
 
-An AWS EC2 instance was set up to run ARMPA WebArena, following the README from `webarena/environment_docker/`. The current EC2 is accessible at `http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com`. 
+During project, an AWS EC2 instance was set up to run WebArena tasks for ARMPA, following the README from `webarena/environment_docker/`. An EC2 has the public DNS name formatted as `http://ec2-##-###-###-###.us-east-2.compute.amazonaws.com`. 
+(Note: When configuring the IP address for the docker services when connected to EC2, where it says <your-server-hostname>, use the public IPv4 address, not the DNS name.) All docker services, when running, will take up about 7.4 GB RAM in the 16 GB EC2 instance. One can double the EC2 size to 32 GB, whereby they could then spin up 3 copies of each service (requiring DOM manipulation), running `start_webarena_groups.sh` inside of the EC2. Then, 3 separate terminals can execute WebArena (different port groups) at once. During this project, we only ran 1 set of WebArena services, which was a bit of a bottleneck. With more compute and resources available, we likely would have seen better RL results - it would have learned what memories to choose for max success/reward, rather than merely learning to not select memories (to preserve tokens).
 
 1. Create a .env at the root of the project with these variables:
 
 ```bash
 TOGETHER_API_KEY=<YOUR TOGETHER API KEY>
 HUGGINGFACE_HUB_TOKEN=<YOUR HF TOKEN>
-SHOPPING=http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7770
-SHOPPING_ADMIN=http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:7780/admin
-REDDIT=http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:9999
-GITLAB=http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8023
-MAP=http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:3000
-WIKIPEDIA=http://ec2-18-117-150-206.us-east-2.compute.amazonaws.com:8888/wikipedia_en_all_maxi_2022-05/A/User:The_other_Kiwix_guy/Landing
+SHOPPING=<your-EC2-DNS-name>:7770
+SHOPPING_ADMIN=<your-EC2-DNS-name>:7780/admin
+REDDIT=<your-EC2-DNS-name>:9999
+GITLAB=<your-EC2-DNS-name>:8023
+MAP=<your-EC2-DNS-name>:3000
+WIKIPEDIA=<your-EC2-DNS-name>:8888/wikipedia_en_all_maxi_2022-05/A/User:The_other_Kiwix_guy/Landing
 HOMEPAGE=PASS
 QDRANT_URL=<URL>
 QDRANT_API_KEY=<API KEY>
@@ -27,3 +28,8 @@ QDRANT_API_KEY=<API KEY>
 6. `cd webarena/`
 7. `export PYTHONPATH="<PATH/TO/PROJECT>:<PATH/TO/PROJECT>/webarena:$PYTHONPATH"`
 8. Run an example: `python run.py --instruction_path agent/prompts/raw/p_direct_id_actree_2s_no_na.py --agent_type litellm --model together_ai/OpenAI/gpt-oss-120B --temperature 0.0 --test_start_idx 1 --test_end_idx 2`
+
+To run RL training:
+```bash
+python memory/train_rl_filter_online.py --model_dir models/rl_filter  --num_cycles 3 --tasks_per_cycle 140 --num_samples_per_task 5 --model "together_ai/OpenAI/gpt-oss-120B" --num_memories 10
+```
